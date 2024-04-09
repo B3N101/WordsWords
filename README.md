@@ -22,7 +22,14 @@ Lastly, this site will incorporate vocab from old lists to maintain past vocab k
 - Consistency
 - Question type-specific data: definition, context, spelling, etc
 
-Got it! Here's the README section formatted as a numbered list:
+## Dependencies
+
+Before running the program, make sure you have the following dependencies installed:
+
+- [Docker](https://www.docker.com/) (for running PostgreSQL database)
+- [Rust](https://www.rust-lang.org/) (for compiling and running the backend)
+- [Node.js](https://nodejs.org/) (for installing and running the frontend)
+- [pnpm](https://pnpm.io/) (for managing frontend dependencies)
 
 ## Running the Program
 
