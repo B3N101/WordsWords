@@ -21,3 +21,37 @@ Lastly, this site will incorporate vocab from old lists to maintain past vocab k
 - Level of mastery per mastery and per list
 - Consistency
 - Question type-specific data: definition, context, spelling, etc
+
+Got it! Here's the README section formatted as a numbered list:
+
+## Running the Program
+
+To run the program, follow these steps:
+
+1. **Start PostgreSQL Database**: Make sure you have PostgreSQL installed and running. You can start it using Docker or any other method you prefer. For example:
+
+   ```bash
+   docker run --name postgres -p 5432:5432 -e POSTGRES_PASSWORD=password -d postgres:latest
+   ```
+
+2. **Make the Script Executable**: Set the execute permission for the run script.
+
+   ```bash
+   chmod +x run.sh
+   ```
+
+3. **Run the Program**: Execute the run script to start the Rust backend and Next.js frontend.
+
+   ```bash
+   ./run.sh
+   ```
+
+4. **Check the Website at localhost**: Open your web browser and visit `http://localhost:3000` to access the frontend.
+
+## Additional Notes
+
+- Make sure to adjust configurations and settings as needed for your specific environment.
+- You may need to modify the script for starting the PostgreSQL database depending on your setup.
+- For production deployment, ensure to properly configure and secure your application.
+
+This format provides clear, step-by-step instructions for running the program and accessing the website locally.
