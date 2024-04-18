@@ -15,7 +15,7 @@ The site will use time-based and browser-locking methods to prevent cheating whi
 This site will use gamify techniques to improve vocabulary understanding and memorization.
 
 Lastly, this site will incorporate vocab from old lists to maintain past vocab knowledge.
-
+x
 ## Data Collected
 - Time spent by a student
 - Level of mastery per mastery and per list
