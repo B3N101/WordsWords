@@ -8,7 +8,11 @@ const fontSans = FontSans({
   variable: "--font-sans",
 })
  
-export default function RootLayout({ children }: RootLayoutProps) {
+export default function Layout({
+  children,
+  }: {
+  children: React.ReactNode
+}) {
   return (
     <html lang="en" suppressHydrationWarning>
       <head />
