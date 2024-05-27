@@ -1,10 +1,10 @@
-# VocabPrep
+# WordsWords
 
 ## Description
 A vocabulario trainer built by Middlesex School Students
 
 ## Engineering
-VocabPrep is a web app built with NextJs, React, a Rust backend that uses PostgreSQL.
+WordsWords is a web app built with NextJs, React, a Rust backend that uses PostgreSQL.
 
 The website is designed for teachers' access to student learning and for students to effectively master new vocabulary. 
 
