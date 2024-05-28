@@ -5,7 +5,7 @@ export function SignOut() {
     <form
       action={async () => {
         "use server"
-        await signOut("github")
+        await signOut()
       }}
     >
       <button type="submit">SignOut with GitHub</button>
