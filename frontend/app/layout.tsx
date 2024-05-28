@@ -1,25 +1,34 @@
-import "@/app/globals.css"
-import { Inter as FontSans } from "next/font/google"
- 
-import { cn } from "@/lib/utils"
- 
+import "@/app/globals.css";
+import { Inter as FontSans } from "next/font/google";
+import { cn } from "@/lib/utils";
+import { ThemeProvider } from "@/components/theme-provider";
+import { ModeToggle } from "@/components/ui/mode-toggle";
+
 const fontSans = FontSans({
   subsets: ["latin"],
   variable: "--font-sans",
-})
- 
-export default function Layout({children}: {children: React.ReactNode}) {
+});
+
+export default function Layout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="en" suppressHydrationWarning>
       <head />
       <body
         className={cn(
-          "min-h-screen bg-background bg-red-300 font-sans antialiased",
-          fontSans.variable
+          "min-h-screen bg-background bg-red-300 dark:bg-red-950 font-sans antialiased",
+          fontSans.variable,
         )}
       >
-      {children}
+        <ThemeProvider
+          attribute="class"
+          defaultTheme="system"
+          enableSystem
+          disableTransitionOnChange
+        >
+          <ModeToggle />
+          {children}
+        </ThemeProvider>
       </body>
     </html>
-  )
+  );
 }
