@@ -1,0 +1,11 @@
+C:\Users\Sneez\Desktop\WordsWords Development\WordsWords\backend\target\debug\deps\libsocket2-b77399b8669d1f17.rmeta: C:\Users\Sneez\.cargo\registry\src\index.crates.io-6f17d22bba15001f\socket2-0.5.6\src\lib.rs C:\Users\Sneez\.cargo\registry\src\index.crates.io-6f17d22bba15001f\socket2-0.5.6\src\sockaddr.rs C:\Users\Sneez\.cargo\registry\src\index.crates.io-6f17d22bba15001f\socket2-0.5.6\src\socket.rs C:\Users\Sneez\.cargo\registry\src\index.crates.io-6f17d22bba15001f\socket2-0.5.6\src\sockref.rs C:\Users\Sneez\.cargo\registry\src\index.crates.io-6f17d22bba15001f\socket2-0.5.6\src\sys\windows.rs
+
+C:\Users\Sneez\Desktop\WordsWords Development\WordsWords\backend\target\debug\deps\libsocket2-b77399b8669d1f17.rlib: C:\Users\Sneez\.cargo\registry\src\index.crates.io-6f17d22bba15001f\socket2-0.5.6\src\lib.rs C:\Users\Sneez\.cargo\registry\src\index.crates.io-6f17d22bba15001f\socket2-0.5.6\src\sockaddr.rs C:\Users\Sneez\.cargo\registry\src\index.crates.io-6f17d22bba15001f\socket2-0.5.6\src\socket.rs C:\Users\Sneez\.cargo\registry\src\index.crates.io-6f17d22bba15001f\socket2-0.5.6\src\sockref.rs C:\Users\Sneez\.cargo\registry\src\index.crates.io-6f17d22bba15001f\socket2-0.5.6\src\sys\windows.rs
+
+C:\Users\Sneez\Desktop\WordsWords Development\WordsWords\backend\target\debug\deps\socket2-b77399b8669d1f17.d: C:\Users\Sneez\.cargo\registry\src\index.crates.io-6f17d22bba15001f\socket2-0.5.6\src\lib.rs C:\Users\Sneez\.cargo\registry\src\index.crates.io-6f17d22bba15001f\socket2-0.5.6\src\sockaddr.rs C:\Users\Sneez\.cargo\registry\src\index.crates.io-6f17d22bba15001f\socket2-0.5.6\src\socket.rs C:\Users\Sneez\.cargo\registry\src\index.crates.io-6f17d22bba15001f\socket2-0.5.6\src\sockref.rs C:\Users\Sneez\.cargo\registry\src\index.crates.io-6f17d22bba15001f\socket2-0.5.6\src\sys\windows.rs
+
+C:\Users\Sneez\.cargo\registry\src\index.crates.io-6f17d22bba15001f\socket2-0.5.6\src\lib.rs:
+C:\Users\Sneez\.cargo\registry\src\index.crates.io-6f17d22bba15001f\socket2-0.5.6\src\sockaddr.rs:
+C:\Users\Sneez\.cargo\registry\src\index.crates.io-6f17d22bba15001f\socket2-0.5.6\src\socket.rs:
+C:\Users\Sneez\.cargo\registry\src\index.crates.io-6f17d22bba15001f\socket2-0.5.6\src\sockref.rs:
+C:\Users\Sneez\.cargo\registry\src\index.crates.io-6f17d22bba15001f\socket2-0.5.6\src\sys\windows.rs:
