@@ -1,2 +1,5 @@
 # ignore enviorment variable files
 *.env
+
+# ignore backend target folder
+backend/target
