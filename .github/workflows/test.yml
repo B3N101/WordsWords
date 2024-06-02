@@ -1,32 +1,30 @@
 name: Test Frontend
 
 on:
-  push:
-    branches: 
-      - main
-      - setup
-      - 'feature/*'
-  pull_request:
-    branches: 
-      - main
+  - push
+  - pull_request
+
 
 jobs:
   test:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-22.04
+
+    strategy:
+      matrix:
+        node-version: [20]
 
     steps:
-      - uses: actions/checkout@v4
-      - uses: pnpm/action-setup@0609f0983b7a228f052f81ef4c3d6510cae254ad
-        with:
-          version: 6.10.0
-
-      - name: Set up Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: '20'
-          cache: 'pnpm'
-
-      - name: Install dependencies
+    - uses: actions/checkout@v4
+    - name: Install pnpm
+      uses: pnpm/action-setup@v4
+      with:
+        version: 9
+    - name: Use Node.js ${{ matrix.node-version }}
+      uses: actions/setup-node@v4
+      with:
+        node-version: ${{ matrix.node-version }}
+        cache: 'pnpm'
+    - name: Install dependencies
         run: |
           cd frontend 
           echo "Installing dependencies"
