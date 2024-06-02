@@ -24,20 +24,21 @@ jobs:
       with:
         node-version: ${{ matrix.node-version }}
         cache: 'pnpm'
+          
     - name: Install dependencies
-        run: |
-          cd frontend 
-          echo "Installing dependencies"
-          pnpm install 
+      run: |
+        cd frontend
+        echo "Installing dependencies"
+        pnpm install 
 
-      - name: Run lint test 
-        run: |
-          cd frontend
-          echo "Running lint test"
-          pnpm run lint
+    - name: Run lint test
+      run: |
+        cd frontend
+        echo "Running lint test"
+        pnpm run lint
 
-      - name: Run build test
-        run: |
-          cd frontend 
-          echo "Running build test"
-          pnpm run test-build
+    - name: Run build test
+      run: |
+        cd frontend
+        echo "Running build test"
+        pnpm run test-build
