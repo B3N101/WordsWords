@@ -7,6 +7,7 @@ export default async function Home() {
     <div>
       <p className="text-green-600 font-extrabold text-xl">Home</p>
       <AuthButton />
+      <p>Session: {JSON.stringify(session)}</p>
     </div>
   );
 }
