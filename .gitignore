@@ -4,3 +4,4 @@
 # ignore backend target folder and its content
 backend/target
 backend/target/*
+node_modules
