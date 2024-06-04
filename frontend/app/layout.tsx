@@ -4,7 +4,7 @@ import { cn } from "@/lib/utils";
 import { ThemeProvider } from "@/components/theme-provider";
 import { ModeToggle } from "@/components/ui/mode-toggle";
 import { Analytics } from "@vercel/analytics/react";
-
+import NavBar from "@/components/NavBar";
 const fontSans = FontSans({
   subsets: ["latin"],
   variable: "--font-sans",
@@ -21,15 +21,8 @@ export default function Layout({ children }: { children: React.ReactNode }) {
           fontSans.variable,
         )}
       >
-        <ThemeProvider
-          attribute="class"
-          defaultTheme="system"
-          enableSystem
-          disableTransitionOnChange
-        >
-          <ModeToggle />
-          {children}
-        </ThemeProvider>
+        <NavBar />
+        {children}
       </body>
     </html>
   );
