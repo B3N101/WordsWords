@@ -4,3 +4,6 @@
 # ignore backend target folder and its content
 backend/target
 backend/target/*
+
+# ignore .vscode folder and its content
+.vscode
