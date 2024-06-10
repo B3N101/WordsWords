@@ -1,8 +1,7 @@
 'use client';
 
-// pages/quiz.tsx
 import { useState } from 'react';
-import { Button} from '@/components/ui/button';
+import { Button } from '@/components/ui/button';
 type Question = {
   question: string;
   options: string[];
@@ -46,8 +45,7 @@ export default function Quiz() {
   };
 
   return (
-    <div className="flex-1"> 
-    <div className="items-center justify-center font-bold ">
+    <div className="flex-w-full items-center justify-center font-bold ">
       {!showResults ? (
         <div>
           <h2 className="h-full items-center justify-center text-lg">{quizQuestions[currentQuestion].question}</h2>
@@ -69,7 +67,6 @@ export default function Quiz() {
           <Button onClick={() => window.location.reload()}>Retake Quiz</Button>
         </div>
       )}
-    </div>
     </div>
   );
 }

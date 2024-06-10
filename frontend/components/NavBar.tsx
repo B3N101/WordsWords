@@ -7,11 +7,8 @@ import { cn } from "@/lib/utils";
 import Link from "next/link";
 
 export default async function NavBar() {
-  const session = await auth();
-  const user = session?.user;
-
   return (
-    <nav className="flex w-full items-center justify-between border-b p-4 text-xl font-sans antialiased">
+    <nav className="flex w-full items-center justify-between border-b p-4 text-xl">
       <ThemeProvider
         attribute="class"
         defaultTheme="system"
@@ -21,7 +18,9 @@ export default async function NavBar() {
         <ModeToggle />
       </ThemeProvider>
       <div>WordsWords</div>
-      {user ? <SignOutButton /> : <SignInButton />}
+
+      <SignOutButton /> 
+      <SignInButton />
     </nav>
   );
 }
