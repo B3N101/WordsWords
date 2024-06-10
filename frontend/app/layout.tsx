@@ -1,8 +1,6 @@
 import "@/app/globals.css";
 import { Inter as FontSans } from "next/font/google";
 import { cn } from "@/lib/utils";
-import { ThemeProvider } from "@/components/theme-provider";
-import { ModeToggle } from "@/components/ui/mode-toggle";
 import { Analytics } from "@vercel/analytics/react";
 import { SpeedInsights } from "@vercel/speed-insights/next";
 import NavBar from "@/components/NavBar";
