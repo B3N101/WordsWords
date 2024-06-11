@@ -1,3 +1,17 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+@layer base {
+    :root {
+      --primary: 255 179 179;
+      --secondary: 158 158 158;
+      /* ... */
+    }
+
+    .dark {
+        --primary: 255 115 179;
+        --secondary: 111 114 185;
+        /* ... */
+    }
+  }
