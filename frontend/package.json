@@ -8,9 +8,7 @@
     "start": "next start",
     "lint": "next lint",
     "test-build": "next build && next start",
-    "prepare": "husky",
-    "generate": "drizzle-kit generate",
-    "migrate": "drizzle-kit migrate"
+    "prepare": "husky"
   },
   "dependencies": {
     "@auth/drizzle-adapter": "^1.2.0",

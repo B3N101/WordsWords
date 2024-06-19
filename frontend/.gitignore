@@ -35,3 +35,9 @@ yarn-error.log*
 # vercel
 .vercel
 .env*.local
+
+# vscode
+.vscode
+
+# prisma migrations
+/prisma/migrations
