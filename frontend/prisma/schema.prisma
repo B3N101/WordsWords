@@ -34,6 +34,12 @@ enum Role {
   STUDENT
 }
 
+enum Grade {
+  NINE
+  TEN
+  ELEVEN
+}
+
 model Account {
   userId            String
   type              String
@@ -77,19 +83,21 @@ model Word {
   wordId               String        @id @default(cuid())
   word                 String
   partOfSpeech         partOfSpeech
+  gradeLevel           Grade
+  exampleSentence      String
   context              String
   definition           String
   incorrectDefinitions String[]
-  listId               String
+  listId               String? //TODO: remove optional when seeding is complete
   WordsList            WordsList?    @relation(fields: [listId], references: [listId])
-  WordMastery          WordMastery[]
+  // TODO: implement wordmastery seeding. Uncomment when complete
+  // WordMastery          WordMastery[]
 }
 
 enum partOfSpeech {
   Noun
   Verb
   Adjective
-  Adverb
 }
 
 model WordsList {
@@ -130,7 +138,8 @@ model PublishedList {
 
 model WordMastery {
   wordId       String            @id
-  word         Word              @relation(fields: [wordId], references: [wordId])
+  // TODO: implement wordmastery seeding
+  // word         Word              @relation(fields: [wordId], references: [wordId])
   masteryScore Float?
   attempts     QuestionAttempt[]
   user         User              @relation(fields: [userId], references: [id])

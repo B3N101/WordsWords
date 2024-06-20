@@ -4,3 +4,7 @@
 # ignore backend target folder and its content
 backend/target
 backend/target/*
+
+# google secrets
+sheets_secrets.json
+
