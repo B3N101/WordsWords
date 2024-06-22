@@ -9,6 +9,9 @@ module.exports = {
       fontFamily: {
         sans: ["var(--font-sans)", ...fontFamily.sans],
       },
+      colors:{
+        tan: "#f1efd7"
+      }
     },
   },
 };
