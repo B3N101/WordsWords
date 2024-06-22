@@ -10,7 +10,8 @@ module.exports = {
         sans: ["var(--font-sans)", ...fontFamily.sans],
       },
       colors:{
-        tan: "#f1efd7"
+        tan: "#f1efd7",
+        lightgreen: "#c8ffc5",
       }
     },
   },
