@@ -53,7 +53,7 @@ export default function Quiz()
 
   const handleAnswerClick = (answer: answer) => {
     setSelectedAnswer(answer.id);
-    const isCurrentCorrect = answer.isCorrect;
+    setIsCurrentCorrect(answer.isCorrect);
     if (isCurrentCorrect){
       setScore(score+1);
     }
@@ -118,7 +118,7 @@ export default function Quiz()
           {!started ? null : <Button onClick={handleBack}>{'Back'}</Button>}
         </div>
         <div className="float-right flex flex-col">
-          <p>{isCurrentCorrect ? 'correct' : 'incorrect'}</p>
+          <p>{(isCurrentCorrect)? 'correct' : 'incorrect'}</p>
           <Button onClick={handleNext}>{!started ? 'Start' : (currentQuestion !== quizQuestions.length-1 ? 'Next' : 'Submit')} </Button>
         </div>
       </footer>

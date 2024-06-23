@@ -31,7 +31,7 @@ export default function QuizQuestions(props: Quiz)
 
   const handleAnswerClick = (answer: answer) => {
     setSelectedAnswer(answer.id);
-    const isCurrentCorrect = answer.isCorrect;
+    setIsCurrentCorrect(answer.isCorrect);
     if (isCurrentCorrect){
       setScore(score+1);
     }
