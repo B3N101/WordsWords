@@ -3,6 +3,14 @@ import type { answer, question, Quiz } from './QuizQuestions';
 
 const prisma = new PrismaClient()
 
+const shuffle = (array: answer[]) => { 
+    for (let i = array.length - 1; i > 0; i--) { 
+      const j = Math.floor(Math.random() * (i + 1)); 
+      [array[i], array[j]] = [array[j], array[i]]; 
+    } 
+    return array; 
+  }; 
+  
 export async function getWordList() {
     const wordList = await prisma.word.findMany( {take: 10} );
     console.log(wordList);
@@ -13,6 +21,7 @@ export async function getWordList() {
         for (let j = 0; j < wordList[i].incorrectDefinitions.length; j++){
             answerArray.push({answerText: wordList[i].incorrectDefinitions[j], isCorrect: false, id:j+2});
         }
+        answerArray = shuffle(answerArray);
         let question:question = {
             questionText: wordList[i].word,
             answers: answerArray,
