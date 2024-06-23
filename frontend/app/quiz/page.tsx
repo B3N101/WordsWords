@@ -3,12 +3,13 @@
 import { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import ProgressBar from '@/components/progressBar';
-
+import { getWordList } from './getQuestions';
 type answer = {
   answerText: string,
   isCorrect: boolean,
   id: number
 }
+
 const quizQuestions = [
   {
     question: "What is the definition of \"dog\"?",
@@ -39,7 +40,10 @@ const quizQuestions = [
   }
 ];
 
-export default function Quiz() {
+export default function Quiz() 
+{
+  // const quizQuestions = await getWordList();
+
   const [started, setStarted] = useState(false);
   const [currentQuestion, setCurrentQuestion] = useState<number>(0);
   const [score, setScore] = useState<number>(0);
