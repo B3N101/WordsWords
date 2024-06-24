@@ -1,5 +1,6 @@
 import "@/app/globals.css";
 import { Inter as FontSans } from "next/font/google";
+// import Head from "next/head";
 import { cn } from "@/lib/utils";
 import { ThemeProvider } from "@/components/theme-provider";
 import { ModeToggle } from "@/components/ui/mode-toggle";
@@ -14,7 +15,11 @@ const fontSans = FontSans({
 export default function Layout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="en" suppressHydrationWarning>
-      <head />
+      <head>
+        <title>Words Words</title>
+        <meta name="description" content="Words Words - A Vocab Builder" />
+        <link rel="icon" href="/favicon.png"/>
+      </head>
       <Analytics />
       <SpeedInsights />
       <body

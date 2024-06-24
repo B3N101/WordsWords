@@ -8,18 +8,16 @@ export default async function Home() {
 
   if (!session) redirect("/api/auth/signin");
 
-
-  // const User = {
-  //   name: session.user.name,
-  //   username: session.user.username,
-  //   image: session.user.image,
-  // };
+  const User = {
+    name: session.user!.name,
+    image: session.user!.image,
+  };
 
   return (
     <div>
       <p className="text-green-600 font-extrabold text-xl">Home</p>
       <pre>{JSON.stringify(session, null, 2)}</pre>
-      {/* <Profile user={User} /> */}
+      <Profile user={User} />
     </div>
   );
 }
