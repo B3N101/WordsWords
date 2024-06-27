@@ -24,7 +24,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
       <SpeedInsights />
       <body
         className={cn(
-          "min-h-screen bg-background bg-red-300 dark:bg-red-950 font-sans antialiased",
+          "min-h-screen bg-background bg-tan dark:bg-red-950 font-sans antialiased",
           fontSans.variable,
         )}
       >
