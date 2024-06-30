@@ -8,6 +8,7 @@ import { ModeToggle } from "@/components/ui/mode-toggle";
 import { Analytics } from "@vercel/analytics/react";
 import { SpeedInsights } from "@vercel/speed-insights/next";
 import NavBar from "@/components/NavBar";
+import Nav from "@/components/nav";
 
 const inter = Inter({
   subsets: ["latin"],
@@ -42,7 +43,8 @@ export default function Layout({ children }: { children: React.ReactNode }) {
           poppins.className,
         )}
       >
-        <NavBar />
+        <Nav />
+        {/* <NavBar /> */}
         {children}
       </body>
     </html>
