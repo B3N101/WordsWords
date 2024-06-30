@@ -34,7 +34,7 @@ export default function Component() {
           </form>
           <Link
             href="/"
-            className="w-full inline-flex items-center justify-center rounded-md bg-white text-[#00B894] border border-[#00B894] hover:bg-[#00B894] hover:text-white focus:ring-[#00D1B2]"
+            className="w-full inline-flex items-center justify-center rounded-md bg-white text-[#00B894] border border-[#00B894] hover:bg-[#00B894] hover:text-[#fff] focus:ring-[#00D1B2]"
             prefetch={false}
           >
             Cancel
