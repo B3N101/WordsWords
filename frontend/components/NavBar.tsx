@@ -39,13 +39,17 @@ function SignInButton() {
 
 export function SignOutButton() {
   return (
-    <form
-      action={async () => {
-        "use server";
-        await signOut();
-      }}
-    >
-      <button type="submit">Sign Out</button>
-    </form>
+    // link to sign out page
+    <Link href="/api/auth/signout">
+      Sign out
+    </Link>
+    // <form
+    //   action={async () => {
+    //     "use server";
+    //     await signOut();
+    //   }}
+    // >
+    //   <button type="submit">Sign Out</button>
+    // </form>
   );
 }
