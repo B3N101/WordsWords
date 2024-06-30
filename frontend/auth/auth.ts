@@ -9,6 +9,10 @@ import { pages } from "next/dist/build/templates/app-page";
 const prisma = new PrismaClient();
 
 export const { handlers, signIn, signOut, auth } = NextAuth({
+  pages: {
+    signIn: "/login",
+    signOut: "/logout",
+  },
   adapter: PrismaAdapter(prisma),
   providers: [GitHub, Google],
 });
