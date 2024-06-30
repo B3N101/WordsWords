@@ -7,8 +7,7 @@ import { ThemeProvider } from "@/components/theme-provider";
 import { ModeToggle } from "@/components/ui/mode-toggle";
 import { Analytics } from "@vercel/analytics/react";
 import { SpeedInsights } from "@vercel/speed-insights/next";
-import NavBar from "@/components/NavBar";
-import Nav from "@/components/nav";
+import NavBar from "@/components/Navbar";
 
 const inter = Inter({
   subsets: ["latin"],
@@ -31,7 +30,8 @@ export default function Layout({ children }: { children: React.ReactNode }) {
       <head>
         <title>Words Words</title>
         <meta name="description" content="Words Words - A Vocab Builder" />
-        {/* <link rel="icon" href="/favicon.ico" /> */}
+        {/* favicon */}
+        <link rel="icon" href="/favicon.ico" />
       </head>
       <Analytics />
       <SpeedInsights />
@@ -43,8 +43,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
           poppins.className,
         )}
       >
-        <Nav />
-        {/* <NavBar /> */}
+        <NavBar />
         {children}
       </body>
     </html>
