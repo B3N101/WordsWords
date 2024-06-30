@@ -22,7 +22,7 @@ export default function Component() {
           <form
             action={async (formData) => {
               "use server";
-              await signOut({redirectTo: "/login"});
+              await signOut({ redirectTo: "/login" });
             }}
           >
             <Button
