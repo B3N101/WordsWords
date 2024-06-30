@@ -31,7 +31,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
       <head>
         <title>Words Words</title>
         <meta name="description" content="Words Words - A Vocab Builder" />
-        <link rel="icon" href="/favicon.ico" />
+        {/* <link rel="icon" href="/favicon.ico" /> */}
       </head>
       <Analytics />
       <SpeedInsights />
