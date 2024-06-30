@@ -30,7 +30,7 @@ import {
 import { auth } from "@/auth/auth";
 import Image from "next/image";
 
-export default async function Nav() {
+export default async function Navbar() {
   const session = await auth();
 
   return (
