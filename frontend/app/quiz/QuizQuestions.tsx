@@ -3,7 +3,6 @@
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import ProgressBar from "@/components/progressBar";
-import { getWordList } from "./getQuestions";
 
 export type answer = {
   answerText: string;
@@ -33,17 +32,17 @@ export default function QuizQuestions(props: Quiz) {
   const handleAnswerClick = (answer: answer) => {
     setSelectedAnswer(answer.id);
     setIsCurrentCorrect(answer.isCorrect);
-    if (isCurrentCorrect) {
-      setScore(score + 1);
-    }
-    console.log(isCurrentCorrect);
-    console.log(score);
   };
   const handleNext = () => {
     if (!started) {
       setStarted(true);
       return;
     }
+    if (isCurrentCorrect) {
+      setScore(score + 1);
+    }
+    console.log(isCurrentCorrect);
+    console.log(score);
     if (currentQuestion < questions.length - 1) {
       setCurrentQuestion(currentQuestion + 1);
     } else {
