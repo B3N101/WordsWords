@@ -1,4 +1,5 @@
 import { PrismaClient } from "@prisma/client";
+import { cache } from "react";
 import type { answer, question, Quiz } from "./QuizQuestions";
 
 const prisma = new PrismaClient();
@@ -10,7 +11,6 @@ const shuffle = (array: answer[]) => {
   }
   return array;
 };
-
 export async function getWordList() {
   const wordList = await prisma.word.findMany({ take: 10 });
   console.log(wordList);
