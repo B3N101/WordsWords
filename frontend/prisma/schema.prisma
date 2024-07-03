@@ -21,11 +21,13 @@ model User {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  role            Role              @default(STUDENT)
-  Class           Class?            @relation(fields: [classClassId], references: [classId])
-  classClassId    String?
-  PublishedList   PublishedList[]
-  wordMasteries   WordMastery[]
+  role          Role            @default(STUDENT)
+  Class         Class?          @relation(fields: [classClassId], references: [classId])
+  classClassId  String?
+  PublishedList PublishedList[]
+  wordMasteries WordMastery[]
+  Quiz          Quiz[]
+  Question      Question[]
 }
 
 enum Role {
@@ -80,7 +82,7 @@ model VerificationToken {
 }
 
 model Word {
-  wordId               String        @id @default(cuid())
+  wordId               String       @id @default(cuid())
   word                 String
   partOfSpeech         partOfSpeech
   gradeLevel           Grade
@@ -89,9 +91,10 @@ model Word {
   definition           String
   incorrectDefinitions String[]
   listId               String? //TODO: remove optional when seeding is complete
-  WordsList            WordsList?    @relation(fields: [listId], references: [listId])
+  WordsList            WordsList?   @relation(fields: [listId], references: [listId])
   // TODO: implement wordmastery seeding. Uncomment when complete
   // WordMastery          WordMastery[]
+  Question             Question[]
 }
 
 enum partOfSpeech {
@@ -154,4 +157,37 @@ model QuestionAttempt {
   correct           Boolean
   timeSpent         Int
   questionAttempt   DateTime    @default(now())
+}
+
+model Quiz {
+  quizId    String     @id @default(cuid())
+  questions Question[]
+  user      User       @relation(fields: [userId], references: [id])
+  userId    String
+  completed Boolean
+  score     Float
+}
+
+model Question {
+  questionId String  @id @default(cuid())
+  question   String
+  completed  Boolean
+
+  user   User   @relation(fields: [userId], references: [id])
+  userId String
+
+  wordId String
+  word   Word   @relation(fields: [wordId], references: [wordId])
+
+  Quiz       Quiz?    @relation(fields: [quizQuizId], references: [quizId])
+  quizQuizId String?
+  answers    Answer[]
+}
+
+model Answer {
+  answerId   String   @id @default(cuid())
+  answerText String
+  question   Question @relation(fields: [questionId], references: [questionId])
+  questionId String
+  correct    Boolean
 }
