@@ -2,7 +2,7 @@ import { google } from "googleapis";
 import { PrismaClient, Grade, partOfSpeech } from "@prisma/client";
 const prisma = new PrismaClient();
 
-async function main() {
+async function seedWords() {
   // Create a new instance of the Google Sheets API
   const auth = await google.auth.getClient({
     scopes: ["https://www.googleapis.com/auth/spreadsheets.readonly"],
@@ -64,7 +64,8 @@ async function main() {
     };
   }
 }
-main()
+
+seedWords()
   .then(async () => {
     await prisma.$disconnect();
   })
