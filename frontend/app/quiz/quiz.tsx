@@ -3,62 +3,53 @@
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import ProgressBar from "@/components/progressBar";
-import { getWordList } from "./getQuestions";
+import { upsertQuestionCompleted } from "@/actions/quiz_progress";
+import type { QuestionWithAnswerOptions, Answer } from "@/prisma/queries";
 
-export type answer = {
-  answerText: string;
-  isCorrect: boolean;
-  id: number;
-};
-export type question = {
-  questionText: string;
-  answers: answer[];
-};
-export type Quiz = {
-  questions: question[];
-};
-export default function QuizQuestions(props: Quiz) {
-  const { questions } = props;
-  // const quizQuestions = await getWordList();
+type Props = {
+  quizId: string
+  questions: QuestionWithAnswerOptions[]
+}
 
+export default function QuizPage({quizId, questions}: Props) {
   const [started, setStarted] = useState(false);
-  const [currentQuestion, setCurrentQuestion] = useState<number>(0);
+  // return the first uncompleted question
+  const [currentIndex, setCurrentIndex] = useState<number>(() => {
+    const uncompletedIndex = questions.findIndex((question) => !question.completed);
+    return uncompletedIndex === -1 ? 0 : uncompletedIndex;
+  });
   const [score, setScore] = useState<number>(0);
-  const [selectedAnswer, setSelectedAnswer] = useState<number | null>(null);
-  const [isCurrentCorrect, setIsCurrentCorrect] = useState<boolean | null>(
-    null,
-  );
+  const [isCurrentCorrect, setIsCurrentCorrect] = useState<boolean | null>(null);
   const [submitted, setSubmitted] = useState<boolean>(false);
 
-  const handleAnswerClick = (answer: answer) => {
-    setSelectedAnswer(answer.id);
-    setIsCurrentCorrect(answer.isCorrect);
-    if (isCurrentCorrect) {
-      setScore(score + 1);
-    }
-    console.log(isCurrentCorrect);
-    console.log(score);
+  const question = questions[currentIndex];
+  const options = question.answers;
+  /*TODO: Track user progress so that refresh sends them to the current answer*/
+  const handleAnswerClick = (answer: Answer) => {
+    setIsCurrentCorrect(answer.correct);
   };
+
   const handleNext = () => {
     if (!started) {
       setStarted(true);
       return;
     }
-    if (currentQuestion < questions.length - 1) {
-      setCurrentQuestion(currentQuestion + 1);
-    } else {
+    if (isCurrentCorrect) {
+      setScore(score + 1);
+    }
+    if (currentIndex + 1 < questions.length) {
+      setCurrentIndex(currentIndex + 1);
+      if (isCurrentCorrect !== null) {
+        upsertQuestionCompleted(questions[currentIndex].questionId, isCurrentCorrect);
+      }
+      else{
+        throw Error("No answer selected")
+      }
+    } 
+    else {
       setSubmitted(true);
       return;
     }
-
-    setSelectedAnswer(null);
-    setIsCurrentCorrect(null);
-  };
-  const handleBack = () => {
-    if (currentQuestion > 0) {
-      setCurrentQuestion(currentQuestion - 1);
-    }
-    setSelectedAnswer(null);
     setIsCurrentCorrect(null);
   };
   return (
@@ -67,7 +58,7 @@ export default function QuizQuestions(props: Quiz) {
         <div className="flex flex-col flex-1">
           <div>
             <header>
-              <ProgressBar value={(currentQuestion / questions.length) * 100} />
+              <ProgressBar value={(currentIndex / questions.length) * 100} />
             </header>
           </div>
           <main className="flex justify-center flex-1">
@@ -76,12 +67,12 @@ export default function QuizQuestions(props: Quiz) {
             ) : (
               <div>
                 <h2 className="text-2xl font-bold">
-                  {questions[currentQuestion].questionText}
+                  {questions[currentIndex].question}
                 </h2>
                 <div className="grid grid-cols1 gap-6 m-12">
-                  {questions[currentQuestion].answers.map((answer) => (
+                  {questions[currentIndex].answers.map((answer) => (
                     <Button
-                      key={answer.id}
+                      key={answer.answerId}
                       variant="answer_choice"
                       onClick={() => handleAnswerClick(answer)}
                     >
@@ -93,17 +84,14 @@ export default function QuizQuestions(props: Quiz) {
             )}
           </main>
           <footer className="flow-root pb-9 px-6 bottom mb-0">
-            <div className="float-left flex flex-col">
-              {!started ? null : <Button onClick={handleBack}>{"Back"}</Button>}
-            </div>
             <div className="float-right flex flex-col">
               <p>{isCurrentCorrect ? "correct" : "incorrect"}</p>
               <Button onClick={handleNext}>
                 {!started
                   ? "Start"
-                  : currentQuestion !== questions.length - 1
+                  : currentIndex !== questions.length - 1
                     ? "Next"
-                    : "Submit"}{" "}
+                    : "Submit"}
               </Button>
             </div>
           </footer>
