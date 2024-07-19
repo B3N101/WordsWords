@@ -67,7 +67,7 @@ export default async function Navbar() {
           <SheetContent side="right" className="sm:max-w-xs">
             <nav className="grid gap-4 p-4">
               <Link
-                href="/quiz"
+                href="/quiz/1"
                 className="text-sm font-medium hover:underline hover:underline-offset-4"
                 prefetch={false}
               >
@@ -94,12 +94,19 @@ export default async function Navbar() {
               >
                 Dashboard
               </Link>
+              <Link
+                href="/dashboard"
+                className="text-sm font-medium hover:underline hover:underline-offset-4"
+                prefetch={false}
+              >
+                Dashboard
+              </Link>
             </nav>
           </SheetContent>
         </Sheet>
         <nav className="hidden gap-4 md:flex">
           <Link
-            href="/quiz"
+            href="/quiz/1"
             className="text-sm font-medium hover:underline hover:underline-offset-4"
             prefetch={false}
           >
@@ -118,13 +125,6 @@ export default async function Navbar() {
             prefetch={false}
           >
             Class
-          </Link>
-          <Link
-            href="/dashboard"
-            className="text-sm font-medium hover:underline hover:underline-offset-4"
-            prefetch={false}
-          >
-            Dashboard
           </Link>
         </nav>
         <DropdownMenu>

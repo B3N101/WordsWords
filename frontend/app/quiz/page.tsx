@@ -24,8 +24,62 @@ const page = async () => {
   }
   return (
     <div>
-      <h1>Quiz Context</h1>
-      <Dashboard quizzes={quizzes} masterQuizzes={masterQuizzes}/>
+      {!submitted ? (
+        <div className="flex flex-col flex-1">
+          <div>
+            <header>
+              <ProgressBar
+                value={(currentQuestion / quizQuestions.length) * 100}
+              />
+            </header>
+          </div>
+          <main className="flex justify-center flex-1">
+            {!started ? (
+              <h1 className="text-3xl font-bol">Demo Words Quiz</h1>
+            ) : (
+              <div>
+                <h2 className="text-2xl font-bold">
+                  {quizQuestions[currentQuestion].question}
+                </h2>
+                <div className="grid grid-cols1 gap-6 m-12">
+                  {quizQuestions[currentQuestion].answers.map((answer) => (
+                    <Button
+                      key={answer.id}
+                      variant="answer_choice"
+                      onClick={() => handleAnswerClick(answer)}
+                    >
+                      {answer.answerText}
+                    </Button>
+                  ))}
+                </div>
+              </div>
+            )}
+          </main>
+          <footer className="flow-root pb-9 px-6 bottom mb-0">
+            <div className="float-left flex flex-col">
+              {!started ? null : <Button onClick={handleBack}>{"Back"}</Button>}
+            </div>
+            <div className="float-right flex flex-col">
+              <p>{isCurrentCorrect ? "correct" : "incorrect"}</p>
+              <Button onClick={handleNext}>
+                {!started
+                  ? "Start"
+                  : currentQuestion !== quizQuestions.length - 1
+                    ? "Next"
+                    : "Submit"}{" "}
+              </Button>
+            </div>
+          </footer>
+        </div>
+      ) : (
+        <div className="flex flex-col flex-1 items-center justify-center">
+          <h1>Quiz Results</h1>
+          <p>
+            You scored {score} out of {quizQuestions.length}
+          </p>
+          <Button onClick={() => window.location.reload()}>Retake Quiz</Button>
+        </div>
+      )}
     </div>
   );
 };
