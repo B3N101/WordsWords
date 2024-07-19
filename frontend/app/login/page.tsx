@@ -7,6 +7,12 @@ import Google from "next-auth/providers/google";
 import Component from "./component";
 
 export default async function SignInPage() {
+  // if signed in, redirect to home
+  const session = await auth();
+  if (session) {
+    redirect("/");
+  }
+
   return (
     <div className="flex flex-col gap-2">
       <Component />

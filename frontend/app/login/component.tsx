@@ -24,44 +24,40 @@ export default function Component() {
             Sign in to your account using your Github/Google account.
           </p>
         </div>
-        <Button
-          variant="outline"
-          className="w-full rounded-md bg-[#00B894] text-white hover:bg-[#00D1B2] focus:ring-[#00D1B2]"
-        >
-          <GitHubIcon className="mr-2 h-5 w-5" />
-          <form
-            action={async () => {
-              "use server";
-              try {
-                await signIn("github", { redirectTo: "/" });
-              } catch (error) {
-                // Signin can fail for a number of reasons, such as the user
-                // not existing, or the user not having the correct role.
-                // In some cases, you may want to redirect to a custom error
 
-                if (error instanceof AuthError) {
-                  return redirect(`${SIGNIN_ERROR_URL}?error=${error.type}`);
-                }
+        <form
+          action={async () => {
+            "use server";
+            try {
+              await signIn("github", { redirectTo: "/" });
+            } catch (error) {
+              // Signin can fail for a number of reasons, such as the user
+              // not existing, or the user not having the correct role.
+              // In some cases, you may want to redirect to a custom error
 
-                // Otherwise if a redirects happens NextJS can handle it
-                // so you can just re-thrown the error and let NextJS handle it.
-                // Docs:
-                // https://nextjs.org/docs/app/api-reference/functions/redirect#server-component
-                throw error;
+              if (error instanceof AuthError) {
+                return redirect(`${SIGNIN_ERROR_URL}?error=${error.type}`);
               }
-            }}
-          >
-            <button type="submit">
-              <span>Sign in with GitHub</span>
-            </button>
-          </form>
-        </Button>
 
-        <Button
-          variant="outline"
-          className="w-full rounded-md bg-[#00B894] text-white hover:bg-[#00D1B2] focus:ring-[#00D1B2]"
+              // Otherwise if a redirects happens NextJS can handle it
+              // so you can just re-thrown the error and let NextJS handle it.
+              // Docs:
+              // https://nextjs.org/docs/app/api-reference/functions/redirect#server-component
+              throw error;
+            }
+          }}
         >
-          <ChromeIcon className="mr-2 h-5 w-5" />
+          <Button
+            variant="outline"
+            className="w-full rounded-md bg-[#00B894] text-white hover:bg-[#00D1B2] focus:ring-[#00D1B2]"
+            type="submit"
+          >
+            <GitHubIcon className="mr-2 h-5 w-5" />
+            <span>Sign in with GitHub</span>
+          </Button>
+        </form>
+
+     
           <form
             action={async () => {
               "use server";
@@ -83,11 +79,16 @@ export default function Component() {
               }
             }}
           >
-            <button type="submit">
+            <Button
+              variant="outline"
+              className="w-full rounded-md bg-[#00B894] text-white hover:bg-[#00D1B2] focus:ring-[#00D1B2]"
+              type="submit"
+            >
+              <ChromeIcon className="mr-2 h-5 w-5" />
+
               <span>Sign in with Google</span>
-            </button>
+            </Button>
           </form>
-        </Button>
       </div>
     </div>
   );

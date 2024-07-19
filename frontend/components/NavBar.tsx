@@ -87,6 +87,13 @@ export default async function Navbar() {
               >
                 Class
               </Link>
+              <Link
+                href="/dashboard"
+                className="text-sm font-medium hover:underline hover:underline-offset-4"
+                prefetch={false}
+              >
+                Dashboard
+              </Link>
             </nav>
           </SheetContent>
         </Sheet>
@@ -111,6 +118,13 @@ export default async function Navbar() {
             prefetch={false}
           >
             Class
+          </Link>
+          <Link
+            href="/dashboard"
+            className="text-sm font-medium hover:underline hover:underline-offset-4"
+            prefetch={false}
+          >
+            Dashboard
           </Link>
         </nav>
         <DropdownMenu>

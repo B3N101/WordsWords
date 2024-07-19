@@ -7,39 +7,7 @@ generator client {
   provider = "prisma-client-js"
 }
 
-model User {
-  id            String    @id @default(cuid())
-  name          String?
-  email         String    @unique
-  emailVerified DateTime?
-  image         String?
-  accounts      Account[]
-  sessions      Session[]
-  // Optional for WebAuthn support
-  // Authenticator Authenticator[]
-
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-
-  role            Role              @default(STUDENT)
-  Class           Class?            @relation(fields: [classClassId], references: [classId])
-  classClassId    String?
-  PublishedList   PublishedList[]
-  wordMasteries   WordMastery[]
-}
-
-enum Role {
-  ADMIN
-  TEACHER
-  STUDENT
-}
-
-enum Grade {
-  NINE
-  TEN
-  ELEVEN
-}
-
+// AUTH MODELS
 model Account {
   userId            String
   type              String
@@ -79,8 +47,45 @@ model VerificationToken {
   @@id([identifier, token])
 }
 
+// OUR MODELS
+model User {
+  id            String    @id @default(cuid())
+  name          String?
+  email         String    @unique
+  emailVerified DateTime?
+  image         String?
+  accounts      Account[]
+  sessions      Session[]
+  // Optional for WebAuthn support
+  // Authenticator Authenticator[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  role          Role            @default(STUDENT)
+  // Class         Class?          @relation(fields: [classClassId], references: [classId])
+  // classClassId  String?
+  // _____________ UPDATE _______________
+  // Changed relationship to many to many
+  Classes       Class[]         @relation("UserClasses")
+  PublishedList PublishedList[]
+  wordMasteries UserWordMastery[]
+
+  QuizProgress     UserQuizProgress[]
+  QuestionProgress UserQuestionProgress[]
+}
+model Class {
+  classId             String          @id @default(cuid())
+  className           String
+  teacherId           String
+  students            User[]          @relation("UserClasses")
+  publishedWordsLists PublishedList[]
+  SemesterStart       DateTime
+  SemesterEnd         DateTime
+}
+
 model Word {
-  wordId               String        @id @default(cuid())
+  wordId               String       @id @default(cuid())
   word                 String
   partOfSpeech         partOfSpeech
   gradeLevel           Grade
@@ -89,31 +94,23 @@ model Word {
   definition           String
   incorrectDefinitions String[]
   listId               String? //TODO: remove optional when seeding is complete
-  WordsList            WordsList?    @relation(fields: [listId], references: [listId])
+  WordsList            WordsList?   @relation(fields: [listId], references: [listId])
   // TODO: implement wordmastery seeding. Uncomment when complete
   // WordMastery          WordMastery[]
-}
+  questions             Question[]
 
-enum partOfSpeech {
-  Noun
-  Verb
-  Adjective
+  rankWithinList Int?
+  wordList       Int?
+
+  quizzes           Quiz[]
+  userWordMasteries UserWordMastery[]
 }
 
 model WordsList {
   listId        String          @id @default(cuid())
   words         Word[]
   PublishedList PublishedList[]
-}
-
-model Class {
-  classId             String          @id @default(cuid())
-  className           String
-  teacherId           String
-  students            User[]
-  publishedWordsLists PublishedList[]
-  SemesterStart       DateTime
-  SemesterEnd         DateTime
+  quizzes       Quiz[]
 }
 
 model PublishedList {
@@ -126,32 +123,120 @@ model PublishedList {
   list   WordsList @relation(fields: [listId], references: [listId])
   listId String
 
-  class   Class  @relation(fields: [classId], references: [classId])
-  classId String
+  class   Class?  @relation(fields: [classId], references: [classId])
+  classId String?
 
-  timeGoal    Int
-  masteryGoal Int
-  timeSpent   Int
+  timeGoal    Int?
+  masteryGoal Int?
+  timeSpent   Int?
   isDone      Boolean @default(false)
   Score       Float?
 }
 
-model WordMastery {
-  wordId       String            @id
-  // TODO: implement wordmastery seeding
-  // word         Word              @relation(fields: [wordId], references: [wordId])
-  masteryScore Float?
-  attempts     QuestionAttempt[]
-  user         User              @relation(fields: [userId], references: [id])
-  userId       String
+model UserWordMastery {
+  wordId String @id
+  word   Word   @relation(fields: [wordId], references: [wordId])
+
+  masteryScore Float
+
+  attempts UserQuestionAttempt[]
+
+  user     User              @relation(fields: [userId], references: [id])
+  userId   String
 }
 
-model QuestionAttempt {
+model UserQuestionAttempt {
   questionAttemptId String      @id @default(cuid())
   wordId            String
   userId            String
-  wordMastery       WordMastery @relation(fields: [wordId], references: [wordId])
+  wordMastery       UserWordMastery @relation(fields: [wordId], references: [wordId])
   correct           Boolean
-  timeSpent         Int
+  timeSpent         Int?
   questionAttempt   DateTime    @default(now())
+}
+
+model Quiz {
+  quizId         String @id @default(cuid())
+  wordListNumber Int?
+  quizType       QuizType @default(MINI)
+
+  questions        Question[]
+  words            Word[]
+  UserQuizProgress UserQuizProgress[]
+
+  WordsList       WordsList? @relation(fields: [wordsListListId], references: [listId])
+  wordsListListId String?
+}
+
+model UserQuizProgress {
+  userQuizProgressId String @id @default(cuid())
+
+  user   User   @relation(fields: [userId], references: [id])
+  userId String
+
+  quiz       Quiz   @relation(fields: [quizQuizId], references: [quizId], onDelete: Cascade)
+  quizQuizId String
+
+  learnCompleted Boolean @default(false)
+  completed      Boolean
+  score          Float
+  randomSeed     Int
+}
+
+model Question {
+  questionId String @id @default(cuid())
+  question   String
+  rank       Int
+
+  wordId String
+  word   Word   @relation(fields: [wordId], references: [wordId])
+
+  quiz                 Quiz?                  @relation(fields: [quizQuizId], references: [quizId])
+  quizQuizId           String?
+  answers              Answer[]
+  userQuestionProgress UserQuestionProgress[]
+}
+
+model UserQuestionProgress {
+  userQuestionProgressId String @id @default(cuid())
+  user                   User   @relation(fields: [userId], references: [id])
+  userId                 String
+
+  question           Question @relation(fields: [questionQuestionId], references: [questionId], onDelete: Cascade)
+  questionQuestionId String
+
+  completed Boolean
+}
+
+model Answer {
+  answerId   String   @id @default(cuid())
+  answerText String
+  question   Question @relation(fields: [questionId], references: [questionId], onDelete: Cascade)
+  questionId String
+  correct    Boolean
+}
+
+
+// ENUMS - ROLE, GRADE, PART OF SPEECH
+enum Role {
+  ADMIN
+  TEACHER
+  STUDENT
+}
+
+enum Grade {
+  NINE
+  TEN
+  ELEVEN
+}
+
+enum partOfSpeech {
+  Noun
+  Verb
+  Adjective
+}
+
+enum QuizType {
+  MINI
+  MASTERY
 }
