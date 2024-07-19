@@ -95,7 +95,6 @@ model Word {
   incorrectDefinitions String[]
   listId               String? //TODO: remove optional when seeding is complete
   WordsList            WordsList?   @relation(fields: [listId], references: [listId])
-  WordsList            WordsList?   @relation(fields: [listId], references: [listId])
   // TODO: implement wordmastery seeding. Uncomment when complete
   // WordMastery          WordMastery[]
   questions             Question[]
