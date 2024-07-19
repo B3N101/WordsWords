@@ -35,6 +35,9 @@ yarn-error.log*
 # google secrets
 sheets_secrets.json
 
+# ignore file : "google_sheets_secrets.json"
+google_sheets_secrets.json
+
 # vercel
 .vercel
 .env*.local
