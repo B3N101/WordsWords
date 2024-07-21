@@ -11,15 +11,23 @@ export const getUserWordLists = cache(async ( userID: string) => {
     });
     return data;
 })
-export const getWordList = cache(async ( classID: string) => {
-    const data = await prisma.class.findFirst({ 
-        where: { classId: classID },
-        include: { publishedWordsLists: true } 
-    });
-    const wordsLists = data?.publishedWordsLists;
-    console.log(wordsLists);
-    return wordsLists;
+export const getWordList = cache(async ( wordListID: string) => {
+  const data = await prisma.wordsList.findFirst({
+      where: { listId: wordListID },
+      include: { words: true }
+  });
+
+  return data;
 })
+
+export const getUserWordListProgress = cache(async ( userID: string, wordListID: string) => {
+    const data = await prisma.userWordsListProgress.findFirst({
+        where: { userId: userID, wordsListListId: wordListID },
+        include: { userQuizProgresses: true}
+    });
+    return data;
+})
+
 // TODO: temporary getwords to test. Change this later
 export const getWords = cache(async () => {
     const data = await prisma.word.findMany(

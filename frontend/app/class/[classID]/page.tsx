@@ -1,4 +1,4 @@
-import ClassPage from "@/components/classPage";
+import ClassPage from "../components/classPage";
 
 export default function Page({ params }: { params: { classID: string } }) {
   const classString = params.classID;

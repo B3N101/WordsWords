@@ -124,7 +124,7 @@ model UserWordsListProgress {
   wordsList       WordsList @relation(fields: [wordsListListId], references: [listId])
   wordsListListId String
 
-  userQuizProgress UserQuizProgress[]
+  userQuizProgresses UserQuizProgress[]
 }
 
 model PublishedList {
