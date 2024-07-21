@@ -62,18 +62,20 @@ model User {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  role          Role            @default(STUDENT)
+  role          Role              @default(STUDENT)
   // Class         Class?          @relation(fields: [classClassId], references: [classId])
   // classClassId  String?
   // _____________ UPDATE _______________
   // Changed relationship to many to many
-  Classes       Class[]         @relation("UserClasses")
+  Classes       Class[]           @relation("UserClasses")
   PublishedList PublishedList[]
   wordMasteries UserWordMastery[]
 
-  QuizProgress     UserQuizProgress[]
-  QuestionProgress UserQuestionProgress[]
+  QuizProgress          UserQuizProgress[]
+  QuestionProgress      UserQuestionProgress[]
+  UserWordsListProgress UserWordsListProgress[]
 }
+
 model Class {
   classId             String          @id @default(cuid())
   className           String
@@ -97,7 +99,7 @@ model Word {
   WordsList            WordsList?   @relation(fields: [listId], references: [listId])
   // TODO: implement wordmastery seeding. Uncomment when complete
   // WordMastery          WordMastery[]
-  questions             Question[]
+  questions            Question[]
 
   rankWithinList Int?
   wordList       Int?
@@ -107,10 +109,22 @@ model Word {
 }
 
 model WordsList {
-  listId        String          @id @default(cuid())
-  words         Word[]
-  PublishedList PublishedList[]
-  quizzes       Quiz[]
+  listId                String                  @id @default(cuid())
+  words                 Word[]
+  PublishedList         PublishedList[]
+  quizzes               Quiz[]
+  UserWordsListProgress UserWordsListProgress[]
+}
+
+model UserWordsListProgress {
+  userWordsListProgressId String @id @default(cuid())
+  user                    User   @relation(fields: [userId], references: [id])
+  userId                  String
+
+  wordsList       WordsList @relation(fields: [wordsListListId], references: [listId])
+  wordsListListId String
+
+  userQuizProgress UserQuizProgress[]
 }
 
 model PublishedList {
@@ -141,22 +155,22 @@ model UserWordMastery {
 
   attempts UserQuestionAttempt[]
 
-  user     User              @relation(fields: [userId], references: [id])
-  userId   String
+  user   User   @relation(fields: [userId], references: [id])
+  userId String
 }
 
 model UserQuestionAttempt {
-  questionAttemptId String      @id @default(cuid())
+  questionAttemptId String          @id @default(cuid())
   wordId            String
   userId            String
   wordMastery       UserWordMastery @relation(fields: [wordId], references: [wordId])
   correct           Boolean
   timeSpent         Int?
-  questionAttempt   DateTime    @default(now())
+  questionAttempt   DateTime        @default(now())
 }
 
 model Quiz {
-  quizId         String @id @default(cuid())
+  quizId         String   @id @default(cuid())
   wordListNumber Int?
   quizType       QuizType @default(MINI)
 
@@ -176,6 +190,9 @@ model UserQuizProgress {
 
   quiz       Quiz   @relation(fields: [quizQuizId], references: [quizId], onDelete: Cascade)
   quizQuizId String
+
+  wordListProgress   UserWordsListProgress @relation(fields: [wordListProgressId], references: [userWordsListProgressId])
+  wordListProgressId String
 
   learnCompleted Boolean @default(false)
   completed      Boolean
@@ -215,7 +232,6 @@ model Answer {
   questionId String
   correct    Boolean
 }
-
 
 // ENUMS - ROLE, GRADE, PART OF SPEECH
 enum Role {
