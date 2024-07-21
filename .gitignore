@@ -8,3 +8,6 @@ backend/target/*
 # google secrets
 sheets_secrets.json
 
+# settings
+.vscode
+
