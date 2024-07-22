@@ -1,7 +1,7 @@
 import WordListPage from "../components/wordListPage";
 
-export default function Page({ params }: { params: { wordListId: string } }) {
-  const wordListString = params.wordListId;
+export default function Page({ params }: { params: { slug: string } }) {
+  const wordListString = params.slug;
 
   return (
     <div>
