@@ -48,7 +48,7 @@ type LearnData = {
   quizID: string;
 }
 
-interface WordListPageProps {
+type WordListPageProps = {
   wordListID: string;
 }
 
@@ -56,15 +56,6 @@ export default async function WordListPage({ wordListID }: WordListPageProps) {
   // Make an example of below code
   const className = "Math 101";
   const classStatus: ClassStatusType = "active";
-  const startDate = new Date("2022-09-01");
-  const endDate = new Date("2022-12-01");
-  const students = [
-    "John Doe",
-    "Jane Smith",
-    "Michael Johnson",
-    "Death Row Records",
-  ];
-  const teacherName = "Mr. Smith";
   const teacherId = "b6f7523b-f1a7-49d8-8543-93551ee30179";
 
   // get userID
@@ -81,8 +72,7 @@ export default async function WordListPage({ wordListID }: WordListPageProps) {
   const userWordListProgressData = getUserWordListProgress(userId, wordListID);
 
   const [wordList, userWordListProgress] = await Promise.all([wordListData, userWordListProgressData]);
-  const userQuizProgresses = userWordListProgress?.userQuizProgresses;
-
+  const userQuizProgresses = userWordListProgress?.userQuizProgresses;  
   const quizData = userQuizProgresses?.map((userQuizProgress, i) => {
     const quizId = userQuizProgress.quizQuizId;
     const status: QuizStatusType = userQuizProgress.learnCompleted ? (userQuizProgress.completed ? "completed" : "open") : "locked";
@@ -226,13 +216,13 @@ function QuizStatus({ status }: { status: QuizStatusType }) {
   } else if (status === "open") {
     return (
       <div className="bg-[#f2f7fe] text-[#3498db] font-medium px-3 py-1 rounded-full text-sm">
-        Ongoing
+        Open
       </div>
     );
   } else {
     return (
       <div className="bg-[#f2f7fe] text-[#3498db] font-medium px-3 py-1 rounded-full text-sm">
-        Upcoming
+        Locked
       </div>
     );
   }
@@ -247,13 +237,13 @@ function LearnStatus({ status }: { status: LearnStatusType }) {
     } else if (status === "open") {
       return (
         <div className="bg-[#f2f7fe] text-[#3498db] font-medium px-3 py-1 rounded-full text-sm">
-          Ongoing
+          Open
         </div>
       );
     } else {
       return (
         <div className="bg-[#f2f7fe] text-[#3498db] font-medium px-3 py-1 rounded-full text-sm">
-          Upcoming
+          Locked
         </div>
       );
     }
