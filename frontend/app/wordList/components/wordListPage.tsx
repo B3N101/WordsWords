@@ -22,6 +22,10 @@ import {
     getWordList,
     getUserWordListProgress,
 } from "@/prisma/queries";
+import {
+    masteryAvailable,
+    createMasterQuiz,
+} from "@/actions/master_quiz";
 import { auth } from "@/auth/auth";
 
 function getInitials(name: string) {
@@ -52,9 +56,14 @@ type WordListPageProps = {
   wordListID: string;
 }
 
+type MasterQuizProps = {
+  available: boolean,
+  quizID: string;
+}
+
 export default async function WordListPage({ wordListID }: WordListPageProps) {
   // Make an example of below code
-  const className = "Math 101";
+  const className = "WordsList " + wordListID;
   const classStatus: ClassStatusType = "active";
   const teacherId = "b6f7523b-f1a7-49d8-8543-93551ee30179";
 
@@ -70,9 +79,17 @@ export default async function WordListPage({ wordListID }: WordListPageProps) {
   // get wordList, userWordListProgress from wordListID
   const wordListData = getWordList(wordListID);
   const userWordListProgressData = getUserWordListProgress(userId, wordListID);
-
   const [wordList, userWordListProgress] = await Promise.all([wordListData, userWordListProgressData]);
+  
+  const masterQuizAvailable = await masteryAvailable(wordList!.listId, userId);
+
+  let masterQuiz;
+  if (masterQuizAvailable){
+    masterQuiz = await createMasterQuiz(wordListID, userId);
+  }
+
   const userQuizProgresses = userWordListProgress?.userQuizProgresses;  
+
   const quizData = userQuizProgresses?.map((userQuizProgress, i) => {
     const quizId = userQuizProgress.quizQuizId;
     const status: QuizStatusType = userQuizProgress.learnCompleted ? (userQuizProgress.completed ? "completed" : "open") : "locked";
@@ -121,6 +138,7 @@ export default async function WordListPage({ wordListID }: WordListPageProps) {
             </div>
             <div className="space-y-4">
               {quizData?.map((quizData) => (
+                quizData.status !== "locked" ?
                 <Link
                   className="flex items-center justify-between border-2 border-[#ff6b6b] rounded-lg p-4"
                   key={quizData.name}
@@ -129,6 +147,14 @@ export default async function WordListPage({ wordListID }: WordListPageProps) {
                   <div>{quizData.name}</div>
                   <QuizStatus status={quizData.status} />
                 </Link>
+                :
+                <div
+                  className="flex items-center justify-between border-2 border-[#ff6b6b] rounded-lg p-4"
+                  key={quizData.name}
+                >
+                  <div>{quizData.name}</div>
+                  <QuizStatus status={quizData.status} />
+                </div>
               ))}
             </div>
           </CardContent>
@@ -140,6 +166,7 @@ export default async function WordListPage({ wordListID }: WordListPageProps) {
             </div>
             <div className="space-y-4">
               {learnData?.map((learnData) => (
+                learnData.status !== "locked" ?
                 <Link
                   className="flex items-center justify-between border-2 border-[#ff6b6b] rounded-lg p-4"
                   key={learnData.name}
@@ -148,62 +175,59 @@ export default async function WordListPage({ wordListID }: WordListPageProps) {
                   <div>{learnData.name}</div>
                   <LearnStatus status={learnData.status} />
                 </Link>
+                :
+                <div
+                  className="flex items-center justify-between border-2 border-[#ff6b6b] rounded-lg p-4"
+                  key={learnData.name}
+                >
+                  <div>{learnData.name}</div>
+                  <LearnStatus status={learnData.status} />
+                </div>
               ))}
             </div>
           </CardContent>
         </Card>
       </div>
-      <Stats />
+      {masterQuizAvailable ? 
+        <MasterQuiz quizID={masterQuiz!.quizId} available={masterQuizAvailable} />
+        :
+        <MasterQuiz quizID={"NULL"} available={masterQuizAvailable} />
+      }
     </div>
   );
 }
 
-function Stats() {
+async function MasterQuiz( { quizID, available }: MasterQuizProps) {
   return (
     <div className="mt-8">
-      <Card className="bg-white rounded-lg shadow-md">
-        <CardContent className="p-6">
-          <div className="flex items-center justify-between mb-4">
-            <h2 className="text-xl font-bold text-[#ff6b6b]">Student Grades</h2>
-          </div>
-          <Table>
-            <TableHeader>
-              <TableRow>
-                <TableHead>Student</TableHead>
-                <TableHead>Quiz 1</TableHead>
-                <TableHead>Quiz 2</TableHead>
-                <TableHead>Quiz 3</TableHead>
-                <TableHead>Average</TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              <TableRow>
-                <TableCell>John Doe</TableCell>
-                <TableCell>90</TableCell>
-                <TableCell>85</TableCell>
-                <TableCell>92</TableCell>
-                <TableCell>89</TableCell>
-              </TableRow>
-              <TableRow>
-                <TableCell>Jane Smith</TableCell>
-                <TableCell>88</TableCell>
-                <TableCell>92</TableCell>
-                <TableCell>87</TableCell>
-                <TableCell>89</TableCell>
-              </TableRow>
-              <TableRow>
-                <TableCell>Michael Johnson</TableCell>
-                <TableCell>82</TableCell>
-                <TableCell>90</TableCell>
-                <TableCell>88</TableCell>
-                <TableCell>87</TableCell>
-              </TableRow>
-            </TableBody>
-          </Table>
-        </CardContent>
-      </Card>
+        <Card className="bg-white rounded-lg shadow-md">
+          <CardContent className="p-6">
+            <div className="flex items-center justify-between mb-4">
+              <h2 className="text-xl font-bold text-[#ff6b6b] p-10">Master Quiz</h2>
+              {
+                available ?
+                <Link
+                  className="flex flex-auto items-center justify-between border-2 border-[#ff6b6b] rounded-lg p-4"
+                  key={quizID}
+                  href={`/quiz/${quizID}`}
+                >
+                  <div>{"Master Quiz"}</div>
+                  <QuizStatus status={"open"} />
+                </Link>
+                :
+                <div
+                  className="flex flex-auto items-center justify-between border-2 border-[#ff6b6b] rounded-lg p-4"
+                  key={quizID}
+                >
+                  <div>{"Master Quiz"}</div>
+                  <LearnStatus status={"locked"} />
+                </div>
+              }
+            </div>
+          </CardContent>
+        </Card>
     </div>
-  );
+  )
 }
 
 function QuizStatus({ status }: { status: QuizStatusType }) {
@@ -221,7 +245,7 @@ function QuizStatus({ status }: { status: QuizStatusType }) {
     );
   } else {
     return (
-      <div className="bg-[#f2f7fe] text-[#3498db] font-medium px-3 py-1 rounded-full text-sm">
+      <div className="bg-[#f2f7fe] text-[#db3434] font-medium px-3 py-1 rounded-full text-sm">
         Locked
       </div>
     );
@@ -242,7 +266,7 @@ function LearnStatus({ status }: { status: LearnStatusType }) {
       );
     } else {
       return (
-        <div className="bg-[#f2f7fe] text-[#3498db] font-medium px-3 py-1 rounded-full text-sm">
+        <div className="bg-[#f2f7fe] text-[#db3434] font-medium px-3 py-1 rounded-full text-sm">
           Locked
         </div>
       );
