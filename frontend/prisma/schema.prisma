@@ -96,13 +96,13 @@ model Word {
   definition           String
   incorrectDefinitions String[]
   listId               String? //TODO: remove optional when seeding is complete
-  WordsList            WordsList?   @relation(fields: [listId], references: [listId])
+  wordsList            WordsList?   @relation(fields: [listId], references: [listId], onDelete: Cascade)
   // TODO: implement wordmastery seeding. Uncomment when complete
   // WordMastery          WordMastery[]
   questions            Question[]
 
   rankWithinList Int?
-  wordList       Int?
+  wordListNumber       Int?
 
   quizzes           Quiz[]
   userWordMasteries UserWordMastery[]
@@ -121,7 +121,7 @@ model UserWordsListProgress {
   user                    User   @relation(fields: [userId], references: [id])
   userId                  String
 
-  wordsList       WordsList @relation(fields: [wordsListListId], references: [listId])
+  wordsList       WordsList @relation(fields: [wordsListListId], references: [listId], onDelete: Cascade)
   wordsListListId String
 
   userQuizProgresses UserQuizProgress[]
@@ -134,7 +134,7 @@ model PublishedList {
   startDate       DateTime
   endDate         DateTime
 
-  list   WordsList @relation(fields: [listId], references: [listId])
+  list   WordsList @relation(fields: [listId], references: [listId], onDelete: Cascade)
   listId String
 
   class   Class?  @relation(fields: [classId], references: [classId])
@@ -149,7 +149,7 @@ model PublishedList {
 
 model UserWordMastery {
   wordId String @id
-  word   Word   @relation(fields: [wordId], references: [wordId])
+  word   Word   @relation(fields: [wordId], references: [wordId], onDelete: Cascade)
 
   masteryScore Float
 
@@ -163,7 +163,7 @@ model UserQuestionAttempt {
   questionAttemptId String          @id @default(cuid())
   wordId            String
   userId            String
-  wordMastery       UserWordMastery @relation(fields: [wordId], references: [wordId])
+  wordMastery       UserWordMastery @relation(fields: [wordId], references: [wordId], onDelete: Cascade)
   correct           Boolean
   timeSpent         Int?
   questionAttempt   DateTime        @default(now())
@@ -178,7 +178,7 @@ model Quiz {
   words            Word[]
   UserQuizProgress UserQuizProgress[]
 
-  WordsList       WordsList? @relation(fields: [wordsListListId], references: [listId])
+  WordsList       WordsList? @relation(fields: [wordsListListId], references: [listId], onDelete: Cascade)
   wordsListListId String?
 }
 
@@ -206,7 +206,7 @@ model Question {
   rank       Int
 
   wordId String
-  word   Word   @relation(fields: [wordId], references: [wordId])
+  word   Word   @relation(fields: [wordId], references: [wordId], onDelete: Cascade)
 
   quiz                 Quiz?                  @relation(fields: [quizQuizId], references: [quizId])
   quizQuizId           String?

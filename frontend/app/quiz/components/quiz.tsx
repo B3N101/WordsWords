@@ -13,6 +13,7 @@ type Props = {
 export default function QuizPage({userQuiz}: Props) {
   const quiz = userQuiz.quiz;
   const questions = quiz.questions;
+  console.log(quiz);
   const userQuestions = questions.map((question) => question.userQuestionProgress).flat(); // flatten from a [[],[],[]] to [, , ,]
   // TODO: shuffle questions here
   const [completed, setCompleted] = useState<boolean>(userQuiz.completed);

@@ -49,7 +49,7 @@ async function seedWords() {
       exampleSentence: row[4] ? row[4] : "",
       incorrectDefinitions: row.slice(5, 10) ? row.slice(5, 10) : [""],
       gradeLevel: getGrade(row[10]),
-      wordList: row[14] ? parseInt(row[14]) : -1,
+      wordListNumber: row[14] ? parseInt(row[14]) : -1,
       rankWithinList: row[15] ? parseInt(row[15]) : -1,
     }));
     console.log(wordData);
@@ -73,19 +73,19 @@ async function seedWordLists(userID: string) {
   console.log("WordLists deleted");
   const words = await prisma.word.findMany({
     where: {
-      wordList: {
+      wordListNumber: {
         not: -1,
       },
     },
     orderBy: {
-      wordList: "asc",
+      wordListNumber: "asc",
     },
   });
   console.log(words);
-  let prevWordListID = words[0].wordList!;
+  let prevWordListID = words[0].wordListNumber!;
   let currWords = [];
   for (const word of words!) {
-    const wordListID = word.wordList!;
+    const wordListID = word.wordListNumber!;
     if (wordListID === prevWordListID) {
       currWords.push(word);
     }
@@ -118,7 +118,7 @@ async function seedQuestions(userID: string) {
   console.log("Questions deleted");
   const words = await prisma.word.findMany({
     where: {
-      wordList: {
+      wordListNumber: {
         not: -1,
       },
     },
@@ -127,7 +127,7 @@ async function seedQuestions(userID: string) {
   for (const word of words!) {
     await prisma.question.create({
       data: {
-        question: "What is the definition of " + word.word,
+        question: "What is the definition of " + word.word +"?",
         wordId: word.wordId,
         rank: word.rankWithinList!,
         answers: {
@@ -173,16 +173,17 @@ async function seedQuizzes(userID: string) {
     orderBy: [
       {
         word: {
-          wordList: "asc",
+          wordListNumber: "asc",
         },
       },
     ],
   });
   // console.log(questions);
   let currQuizQuestions = [];
-  let prevWordListID = questions[0].word.wordList!;
+  let prevWordListNumberID = questions[0].word.wordListNumber!;
+  let count = 0;
   for (const question of questions!) {
-    const wordListNumberID = question.word.wordList!;
+    const wordListNumberID = question.word.wordListNumber!;
     const wordListID = question.word.listId;
     if (!wordListID) {
       // getting to words that don't yet belong to a list (#TODO: fix in google sheets by adding numbers to all words)
@@ -196,7 +197,7 @@ async function seedQuizzes(userID: string) {
       }
     });
     // console.log(wordListID, question.word.rankWithinList);
-    if (wordListNumberID === prevWordListID) {
+    if (wordListNumberID === prevWordListNumberID && count < 5) {
       currQuizQuestions.push(question);
     }
     // time to create a new quiz out of the question bank
@@ -237,13 +238,23 @@ async function seedQuizzes(userID: string) {
       });
       currQuizQuestions = [];
       currQuizQuestions.push(question); // include the first word of the new set
+      count = 0;
     }
-    prevWordListID = wordListNumberID;
+    prevWordListNumberID = wordListNumberID;
+    count += 1;
   }
 }
 
+async function seedAll(userID: string) {
+  await seedWords();
+  await seedWordLists(userID);
+  await seedQuestions(userID);
+  await seedQuizzes(userID);
+}
 
-
+// seedAll("6aaad536-297b-4a47-b9c6-b9b90628ac01").then(async () => {
+//   await prisma.$disconnect();
+// });
 // seedWords().then(async () => {
 //         await prisma.$disconnect();
 //       })
