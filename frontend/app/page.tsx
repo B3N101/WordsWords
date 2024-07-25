@@ -1,7 +1,7 @@
 import { auth } from "@/auth/auth";
 import { redirect } from "next/navigation";
 import Profile from "@/components/profile";
-import ClassDashboard from "@/components/classBoard";
+import ClassDashboard from "@/app/class/components/classBoard";
 import { getTeacherNameFromUserId, getClassEndDate, getClassStartDate, getUserClassNamesFromId } from "@/lib/userSettings";
 import { getUserClassIdsFromId } from "@/lib/userSettings";
 

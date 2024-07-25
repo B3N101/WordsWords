@@ -15,15 +15,17 @@ import {
   TableFooter,
   TableCaption,
   TableHeader,
-} from "./ui/table";
+} from "../../../components/ui/table";
 import { Card, CardContent } from "@/components/ui/card";
+
 import {
-  getClassStartDate,
-  getClassEndDate,
-  getClassStudents,
-  getClassNameFromClassId,
-  getTeacherNameFromClassId,
-} from "@/lib/userSettings";
+    getWordList,
+    getUserWordListProgress,
+} from "@/prisma/queries";
+import {
+    masteryAvailable,
+    createMasterQuiz,
+} from "@/actions/master_quiz";
 import { auth } from "@/auth/auth";
 
 function getInitials(name: string) {
@@ -34,7 +36,9 @@ function getInitials(name: string) {
 }
 
 type ClassStatusType = "active" | "upcoming" | "completed";
-type QuizStatusType = "completed" | "upcoming" | "ongoing";
+type QuizStatusType = "completed" | "open" | "locked";
+type LearnStatusType = "completed" | "open" | "locked";
+
 type QuizData = {
   name: string;
   status: QuizStatusType;
@@ -42,45 +46,26 @@ type QuizData = {
   quizID: string;
 };
 
-interface ClassPageProps {
-  classID: string;
+type LearnData = {
+  name: string;
+  status: LearnStatusType;
+  quizID: string;
 }
 
-export default async function ClassPage({ classID }: ClassPageProps) {
-  // Make an example of below code
-  const className = "Math 101";
-  const classStatus: ClassStatusType = "active";
-  const startDate = new Date("2022-09-01");
-  const endDate = new Date("2022-12-01");
-  const students = [
-    "John Doe",
-    "Jane Smith",
-    "Michael Johnson",
-    "Death Row Records",
-  ];
-  const teacherName = "Mr. Smith";
-  const teacherId = "b6f7523b-f1a7-49d8-8543-93551ee30179";
+type WordListPageProps = {
+  wordListID: string;
+}
 
-  const quizDataList: QuizData[] = [
-    {
-      name: "Quiz 1",
-      status: "completed",
-      dueDate: new Date("2022-09-15"),
-      quizID: "1234",
-    },
-    {
-      name: "Quiz 2",
-      status: "upcoming",
-      dueDate: new Date("2022-09-30"),
-      quizID: "5678",
-    },
-    {
-      name: "Quiz 3",
-      status: "ongoing",
-      dueDate: new Date("2022-10-15"),
-      quizID: "91011",
-    },
-  ];
+type MasterQuizProps = {
+  available: boolean,
+  quizID: string;
+}
+
+export default async function WordListPage({ wordListID }: WordListPageProps) {
+  // Make an example of below code
+  const className = "WordsList " + wordListID;
+  const classStatus: ClassStatusType = "active";
+  const teacherId = "b6f7523b-f1a7-49d8-8543-93551ee30179";
 
   // get userID
   const session = await auth();
@@ -90,7 +75,46 @@ export default async function ClassPage({ classID }: ClassPageProps) {
   if (userId == teacherId) {
     isTeacher = true;
   }
+  
+  // get wordList, userWordListProgress from wordListID
+  const wordListData = getWordList(wordListID);
+  const userWordListProgressData = getUserWordListProgress(userId, wordListID);
+  const [wordList, userWordListProgress] = await Promise.all([wordListData, userWordListProgressData]);
+  
+  const masterQuizAvailable = await masteryAvailable(wordList!.listId, userId);
 
+  let masterQuiz;
+  if (masterQuizAvailable){
+    masterQuiz = await createMasterQuiz(wordListID, userId);
+  }
+
+  const userQuizProgresses = userWordListProgress?.userQuizProgresses;  
+
+  const quizData = userQuizProgresses?.map((userQuizProgress, i) => {
+    const quizId = userQuizProgress.quizQuizId;
+    const status: QuizStatusType = userQuizProgress.learnCompleted ? (userQuizProgress.completed ? "completed" : "open") : "locked";
+    return {
+      name: "Quiz " + (i + 1),
+      status: status,
+      quizID: quizId,
+      dueDate: new Date("2022-09-15"),
+    };
+  });
+  const learnData = userQuizProgresses?.map((userQuizProgress, i) => {
+    const quizId = userQuizProgress.quizQuizId;
+    let learnStatus: LearnStatusType;
+    if (i == 0){
+        learnStatus = userQuizProgress.learnCompleted ? "completed" : "open";
+    }
+    else{
+        learnStatus = userQuizProgress.learnCompleted ? "completed" : (userQuizProgresses[i - 1]?.completed ? "open" : "locked");
+    }
+    return {
+      name: "Learn " + (i + 1),
+      status: learnStatus,
+      quizID: quizId,
+    };
+  });
   // get className, teacherName, startDate, endDate from classID
   // const className = await getClassNameFromClassId(classID);
   // const startDate = await getClassStartDate(classID);
@@ -106,14 +130,15 @@ export default async function ClassPage({ classID }: ClassPageProps) {
         <h1 className="text-2xl font-bold text-[#ff6b6b]">{className}</h1>
         <ClassStatus status={classStatus} />
       </div>
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-6">
         <Card className="bg-white rounded-lg shadow-md">
           <CardContent className="p-6">
             <div className="flex items-center justify-between mb-4">
               <h2 className="text-xl font-bold text-[#ff6b6b]">Quizzes</h2>
             </div>
             <div className="space-y-4">
-              {quizDataList.map((quizData) => (
+              {quizData?.map((quizData) => (
+                quizData.status !== "locked" ?
                 <Link
                   className="flex items-center justify-between border-2 border-[#ff6b6b] rounded-lg p-4"
                   key={quizData.name}
@@ -122,23 +147,13 @@ export default async function ClassPage({ classID }: ClassPageProps) {
                   <div>{quizData.name}</div>
                   <QuizStatus status={quizData.status} />
                 </Link>
-              ))}
-            </div>
-          </CardContent>
-        </Card>
-        <Card className="bg-white rounded-lg shadow-md">
-          <CardContent className="p-6">
-            <div className="flex items-center justify-between mb-4">
-              <h2 className="text-xl font-bold text-[#ff6b6b]">Students</h2>
-            </div>
-            <div className="space-y-4">
-              {students.map((student) => (
-                <div key={student} className="flex items-center gap-4">
-                  <Avatar className="border-2 border-[#ff6b6b]">
-                    <AvatarImage src="/placeholder-user.jpg" />
-                    <AvatarFallback>{getInitials(student)}</AvatarFallback>
-                  </Avatar>
-                  <div>{student}</div>
+                :
+                <div
+                  className="flex items-center justify-between border-2 border-[#ff6b6b] rounded-lg p-4"
+                  key={quizData.name}
+                >
+                  <div>{quizData.name}</div>
+                  <QuizStatus status={quizData.status} />
                 </div>
               ))}
             </div>
@@ -147,69 +162,72 @@ export default async function ClassPage({ classID }: ClassPageProps) {
         <Card className="bg-white rounded-lg shadow-md">
           <CardContent className="p-6">
             <div className="flex items-center justify-between mb-4">
-              <h2 className="text-xl font-bold text-[#ff6b6b]">Teacher</h2>
+              <h2 className="text-xl font-bold text-[#ff6b6b]">Learning</h2>
             </div>
-            <div className="flex items-center gap-4">
-              <Avatar className="border-2 border-[#ff6b6b]">
-                <AvatarImage src="/placeholder-user.jpg" />
-                <AvatarFallback>{getInitials(teacherName)}</AvatarFallback>
-              </Avatar>
-              <div>{teacherName}</div>
+            <div className="space-y-4">
+              {learnData?.map((learnData) => (
+                learnData.status !== "locked" ?
+                <Link
+                  className="flex items-center justify-between border-2 border-[#ff6b6b] rounded-lg p-4"
+                  key={learnData.name}
+                  href={`/quiz/${learnData.quizID}`}
+                >
+                  <div>{learnData.name}</div>
+                  <LearnStatus status={learnData.status} />
+                </Link>
+                :
+                <div
+                  className="flex items-center justify-between border-2 border-[#ff6b6b] rounded-lg p-4"
+                  key={learnData.name}
+                >
+                  <div>{learnData.name}</div>
+                  <LearnStatus status={learnData.status} />
+                </div>
+              ))}
             </div>
           </CardContent>
         </Card>
       </div>
-      <Stats />
+      {masterQuizAvailable ? 
+        <MasterQuiz quizID={masterQuiz!.quizId} available={masterQuizAvailable} />
+        :
+        <MasterQuiz quizID={"NULL"} available={masterQuizAvailable} />
+      }
     </div>
   );
 }
 
-function Stats() {
+async function MasterQuiz( { quizID, available }: MasterQuizProps) {
   return (
     <div className="mt-8">
-      <Card className="bg-white rounded-lg shadow-md">
-        <CardContent className="p-6">
-          <div className="flex items-center justify-between mb-4">
-            <h2 className="text-xl font-bold text-[#ff6b6b]">Student Grades</h2>
-          </div>
-          <Table>
-            <TableHeader>
-              <TableRow>
-                <TableHead>Student</TableHead>
-                <TableHead>Quiz 1</TableHead>
-                <TableHead>Quiz 2</TableHead>
-                <TableHead>Quiz 3</TableHead>
-                <TableHead>Average</TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              <TableRow>
-                <TableCell>John Doe</TableCell>
-                <TableCell>90</TableCell>
-                <TableCell>85</TableCell>
-                <TableCell>92</TableCell>
-                <TableCell>89</TableCell>
-              </TableRow>
-              <TableRow>
-                <TableCell>Jane Smith</TableCell>
-                <TableCell>88</TableCell>
-                <TableCell>92</TableCell>
-                <TableCell>87</TableCell>
-                <TableCell>89</TableCell>
-              </TableRow>
-              <TableRow>
-                <TableCell>Michael Johnson</TableCell>
-                <TableCell>82</TableCell>
-                <TableCell>90</TableCell>
-                <TableCell>88</TableCell>
-                <TableCell>87</TableCell>
-              </TableRow>
-            </TableBody>
-          </Table>
-        </CardContent>
-      </Card>
+        <Card className="bg-white rounded-lg shadow-md">
+          <CardContent className="p-6">
+            <div className="flex items-center justify-between mb-4">
+              <h2 className="text-xl font-bold text-[#ff6b6b] p-10">Master Quiz</h2>
+              {
+                available ?
+                <Link
+                  className="flex flex-auto items-center justify-between border-2 border-[#ff6b6b] rounded-lg p-4"
+                  key={quizID}
+                  href={`/quiz/${quizID}`}
+                >
+                  <div>{"Master Quiz"}</div>
+                  <QuizStatus status={"open"} />
+                </Link>
+                :
+                <div
+                  className="flex flex-auto items-center justify-between border-2 border-[#ff6b6b] rounded-lg p-4"
+                  key={quizID}
+                >
+                  <div>{"Master Quiz"}</div>
+                  <LearnStatus status={"locked"} />
+                </div>
+              }
+            </div>
+          </CardContent>
+        </Card>
     </div>
-  );
+  )
 }
 
 function QuizStatus({ status }: { status: QuizStatusType }) {
@@ -219,20 +237,41 @@ function QuizStatus({ status }: { status: QuizStatusType }) {
         Completed
       </div>
     );
-  } else if (status === "ongoing") {
+  } else if (status === "open") {
     return (
       <div className="bg-[#f2f7fe] text-[#3498db] font-medium px-3 py-1 rounded-full text-sm">
-        Ongoing
+        Open
       </div>
     );
   } else {
     return (
-      <div className="bg-[#f2f7fe] text-[#3498db] font-medium px-3 py-1 rounded-full text-sm">
-        Upcoming
+      <div className="bg-[#f2f7fe] text-[#db3434] font-medium px-3 py-1 rounded-full text-sm">
+        Locked
       </div>
     );
   }
 }
+function LearnStatus({ status }: { status: LearnStatusType }) {
+    if (status === "completed") {
+      return (
+        <div className="bg-[#e6f7f2] text-[#1abc9c] font-medium px-3 py-1 rounded-full text-sm">
+          Completed
+        </div>
+      );
+    } else if (status === "open") {
+      return (
+        <div className="bg-[#f2f7fe] text-[#3498db] font-medium px-3 py-1 rounded-full text-sm">
+          Open
+        </div>
+      );
+    } else {
+      return (
+        <div className="bg-[#f2f7fe] text-[#db3434] font-medium px-3 py-1 rounded-full text-sm">
+          Locked
+        </div>
+      );
+    }
+  }
 
 function ClassStatus({ status }: { status: ClassStatusType }) {
   if (status === "active") {

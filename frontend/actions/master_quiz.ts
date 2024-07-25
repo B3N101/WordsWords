@@ -41,21 +41,28 @@ export const masteryAvailable = async(wordListId: string, userId: string) => {
     return true;
 }
 export const createMasterQuiz = async(wordListId: string, userId: string) => {
-    const wordList = await prisma.wordsList.findFirst({
+    const userWordListProgress = await prisma.userWordsListProgress.findFirst({
         where: {
-            listId: wordListId
+          userId: userId,
+          wordsListListId: wordListId
         },
         include:{
-            words:{
+            wordsList: {
                 include:{
-                    questions: true
+                    words:{
+                        include:{
+                            questions: true
+                        }
+                    }
                 }
             }
         }
-    });
-    if(!wordList){
-        throw new Error("Word list not found");
+      });
+    if(!userWordListProgress){
+        throw new Error("User word list progress not found");
     }
+    const wordList = userWordListProgress.wordsList;
+    
     const words = wordList.words;
     // retrieve the 5 words with the lowest mastery score from other lists
     const oldWords = await prisma.userWordMastery.findMany({
@@ -127,12 +134,18 @@ export const createMasterQuiz = async(wordListId: string, userId: string) => {
           words: {
             connect: questions.map((question) => ({ wordId: question.wordId }))
           },
+          WordsList:{
+            connect:{
+                listId: wordListId
+            }
+          },
           UserQuizProgress:{
             create:[{
               userId: userId,
               completed: false,
               score: 0,
-              randomSeed: Math.floor(Math.random() * 1000)
+              randomSeed: Math.floor(Math.random() * 1000),
+              wordListProgressId: userWordListProgress.userWordsListProgressId,
             }]
           }
         }
