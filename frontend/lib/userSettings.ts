@@ -231,7 +231,7 @@ export async function getUserTeacherIDFromId(
 // get teacher name
 export async function getTeacherNameFromUserId(
   userId: string,
-): Promise<(string)[]> {
+): Promise<string[]> {
   const teacherId = await getUserTeacherIDFromId(userId);
 
   if (!teacherId) {
@@ -298,7 +298,9 @@ export async function getClassEndDate(classId: string): Promise<Date> {
 }
 
 // Get Class Name from classID
-export async function getClassNameFromClassId(classId: string): Promise<string> {
+export async function getClassNameFromClassId(
+  classId: string,
+): Promise<string> {
   const classInfo = await prisma.class.findUnique({
     where: { classId: classId },
     select: { className: true },
@@ -312,7 +314,9 @@ export async function getClassNameFromClassId(classId: string): Promise<string> 
 }
 
 // Get Class teacher name from classID
-export async function getTeacherNameFromClassId(classId: string): Promise<string> {
+export async function getTeacherNameFromClassId(
+  classId: string,
+): Promise<string> {
   const teacherId = await getClassTeacherId(classId);
 
   const teacher = await prisma.user.findUnique({

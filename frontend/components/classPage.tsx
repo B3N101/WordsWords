@@ -15,7 +15,7 @@ import {
   TableFooter,
   TableCaption,
   TableHeader,
-} from "../../../components/ui/table";
+} from "./ui/table";
 import { Card, CardContent } from "@/components/ui/card";
 import {
   getClassStartDate,
@@ -106,26 +106,7 @@ export default async function ClassPage({ classID }: ClassPageProps) {
         <h1 className="text-2xl font-bold text-[#ff6b6b]">{className}</h1>
         <ClassStatus status={classStatus} />
       </div>
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-        <Card className="bg-white rounded-lg shadow-md">
-          <CardContent className="p-6">
-            <div className="flex items-center justify-between mb-4">
-              <h2 className="text-xl font-bold text-[#ff6b6b]">Quizzes</h2>
-            </div>
-            <div className="space-y-4">
-              {quizDataList.map((quizData) => (
-                <Link
-                  className="flex items-center justify-between border-2 border-[#ff6b6b] rounded-lg p-4"
-                  key={quizData.name}
-                  href={`/quiz/${quizData.quizID}`}
-                >
-                  <div>{quizData.name}</div>
-                  <QuizStatus status={quizData.status} />
-                </Link>
-              ))}
-            </div>
-          </CardContent>
-        </Card>
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         <Card className="bg-white rounded-lg shadow-md">
           <CardContent className="p-6">
             <div className="flex items-center justify-between mb-4">

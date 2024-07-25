@@ -3,8 +3,8 @@
  * @see https://v0.dev/t/QKsJgJZnfim
  * Documentation: https://v0.dev/docs#integrating-generated-code-into-your-nextjs-app
  */
-import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card"
-import Link from "next/link"
+import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
+import Link from "next/link";
 
 export interface ClassCardProps {
   title: string;
@@ -28,5 +28,5 @@ export default function ClassCard({ title, description }: ClassCardProps) {
         </Link>
       </CardContent>
     </Card>
-  )
+  );
 }

@@ -1,4 +1,4 @@
-import WordListPage from "../components/wordListPage";
+import WordListPage from "@/components/wordList/wordListPage";
 
 export default function Page({ params }: { params: { slug: string } }) {
   const wordListString = params.slug;
@@ -7,7 +7,7 @@ export default function Page({ params }: { params: { slug: string } }) {
     <div>
       <h1>WordList page for {wordListString}</h1>
       {/* Add your class page content here */}
-        <WordListPage wordListID={wordListString} />
+      <WordListPage wordListID={wordListString} />
     </div>
   );
 }

@@ -104,7 +104,6 @@ async function seedWordLists(userID: string) {
             ],
           },
         },
-        
       });
       currWords = [];
       currWords.push(word); // include the first word of the new set
@@ -127,7 +126,7 @@ async function seedQuestions(userID: string) {
   for (const word of words!) {
     await prisma.question.create({
       data: {
-        question: "What is the definition of " + word.word +"?",
+        question: "What is the definition of " + word.word + "?",
         wordId: word.wordId,
         rank: word.rankWithinList!,
         answers: {
@@ -193,8 +192,8 @@ async function seedQuizzes(userID: string) {
     const userWordListProgress = await prisma.userWordsListProgress.findFirst({
       where: {
         userId: userID,
-        wordsListListId: wordListID
-      }
+        wordsListListId: wordListID,
+      },
     });
     // console.log(wordListID, question.word.rankWithinList);
     if (wordListNumberID === prevWordListNumberID && count < 5) {
@@ -229,11 +228,11 @@ async function seedQuizzes(userID: string) {
                 completed: false,
                 score: 0,
                 randomSeed: Math.floor(Math.random() * 1000),
-                wordListProgressId: userWordListProgress!.userWordsListProgressId,
+                wordListProgressId:
+                  userWordListProgress!.userWordsListProgressId,
               },
             ],
           },
-          
         },
       });
       currQuizQuestions = [];

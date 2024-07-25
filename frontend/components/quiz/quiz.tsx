@@ -3,18 +3,23 @@
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import ProgressBar from "@/components/progressBar";
-import { upsertQuestionCompleted, upsertQuizCompleted } from "@/actions/quiz_progress";
+import {
+  upsertQuestionCompleted,
+  upsertQuizCompleted,
+} from "@/actions/quiz_progress";
 import { upsertWordMastery } from "@/actions/word_progress";
-import { type Answer, type UserQuizProgressWithQuiz} from "@/prisma/types";
+import { type Answer, type UserQuizProgressWithQuiz } from "@/prisma/types";
 type Props = {
-  userQuiz: UserQuizProgressWithQuiz
-}
+  userQuiz: UserQuizProgressWithQuiz;
+};
 
-export default function QuizPage({userQuiz}: Props) {
+export default function QuizPage({ userQuiz }: Props) {
   const quiz = userQuiz.quiz;
   const questions = quiz.questions;
   console.log(quiz);
-  const userQuestions = questions.map((question) => question.userQuestionProgress).flat(); // flatten from a [[],[],[]] to [, , ,]
+  const userQuestions = questions
+    .map((question) => question.userQuestionProgress)
+    .flat(); // flatten from a [[],[],[]] to [, , ,]
   // TODO: shuffle questions here
   const [completed, setCompleted] = useState<boolean>(userQuiz.completed);
 
@@ -23,12 +28,16 @@ export default function QuizPage({userQuiz}: Props) {
   });
   // return the first uncompleted question
   const [currentIndex, setCurrentIndex] = useState<number>(() => {
-    const uncompletedIndex = userQuestions.findIndex((question) => !question.completed);
+    const uncompletedIndex = userQuestions.findIndex(
+      (question) => !question.completed,
+    );
     return uncompletedIndex === -1 ? 0 : uncompletedIndex;
   });
   console.log(questions, currentIndex);
   const [score, setScore] = useState<number>(0);
-  const [isCurrentCorrect, setIsCurrentCorrect] = useState<boolean | null>(null);
+  const [isCurrentCorrect, setIsCurrentCorrect] = useState<boolean | null>(
+    null,
+  );
 
   const question = questions[currentIndex];
   const options = question.answers;
@@ -48,14 +57,15 @@ export default function QuizPage({userQuiz}: Props) {
     if (currentIndex + 1 < questions.length) {
       setCurrentIndex(currentIndex + 1);
       if (isCurrentCorrect !== null) {
-        upsertQuestionCompleted(userQuestions[currentIndex].userQuestionProgressId, true);
+        upsertQuestionCompleted(
+          userQuestions[currentIndex].userQuestionProgressId,
+          true,
+        );
         upsertWordMastery(question.wordId, isCurrentCorrect);
+      } else {
+        throw Error("No answer selected");
       }
-      else{
-        throw Error("No answer selected")
-      }
-    } 
-    else {
+    } else {
       upsertQuizCompleted(userQuiz.userQuizProgressId, true);
       setCompleted(true);
       return;
@@ -76,9 +86,7 @@ export default function QuizPage({userQuiz}: Props) {
               <h1 className="text-3xl font-bol">Quiz {quiz.quizId}</h1>
             ) : (
               <div>
-                <h2 className="text-2xl font-bold">
-                  {question.question}
-                </h2>
+                <h2 className="text-2xl font-bold">{question.question}</h2>
                 <div className="grid grid-cols1 gap-6 m-12">
                   {options.map((answer) => (
                     <Button
@@ -113,19 +121,27 @@ export default function QuizPage({userQuiz}: Props) {
             You scored {score} out of {questions.length}
           </p>
           <div>
-            <Button onClick={async () => {
-              await upsertQuizCompleted(userQuiz.userQuizProgressId, false);
+            <Button
+              onClick={async () => {
+                await upsertQuizCompleted(userQuiz.userQuizProgressId, false);
 
-              // TODO: switch to updating react states, remove async
-              window.location.reload();
-            }}> Retake Quiz
+                // TODO: switch to updating react states, remove async
+                window.location.reload();
+              }}
+            >
+              {" "}
+              Retake Quiz
             </Button>
           </div>
           <div>
-          <Button onClick={async () => {
-              await upsertQuizCompleted(userQuiz.userQuizProgressId, false);
-              window.location.href = "/quiz";
-            }}> Reset Quiz and Back to Dashboard
+            <Button
+              onClick={async () => {
+                await upsertQuizCompleted(userQuiz.userQuizProgressId, false);
+                window.location.href = "/quiz";
+              }}
+            >
+              {" "}
+              Reset Quiz and Back to Dashboard
             </Button>
           </div>
         </div>

@@ -1,6 +1,10 @@
 import { auth } from "@/auth/auth";
-import {getUserQuizProgress, getUserQuizzes, getWords} from "@/prisma/queries";
-import Dashboard  from "@/app/quiz/components/dashboard";
+import {
+  getUserQuizProgress,
+  getUserQuizzes,
+  getWords,
+} from "@/prisma/queries";
+import Dashboard from "@/components/quiz/dashboard";
 import ContextPage from "@/app/learn/context";
 const page = async () => {
   const session = await auth();
