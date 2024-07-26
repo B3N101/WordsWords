@@ -7,6 +7,7 @@ import {
   getClassEndDate,
   getClassStartDate,
   getUserClassNamesFromId,
+  getUserRoleFromId,
 } from "@/lib/userSettings";
 import { getUserClassIdsFromId } from "@/lib/userSettings";
 
@@ -70,9 +71,19 @@ export default async function Home() {
     classID: "1234",
   });
 
+  const role = await getUserRoleFromId(userId);
+
   return (
     <div>
       <ClassDashboard data={classData} />
+
+      {/* {If Role is teacher or admin then add teacherDashboard where a teacher can add students} */}
+      {( role == "TEACHER" || role == "ADMIN") ? (
+        <p>Is A Teacher</p>
+      ) : (
+        <p>Is Not A Teacher</p>
+      )
+    }
       <footer>
         {/* horizontal line*/}
         <hr />
