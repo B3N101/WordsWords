@@ -31,18 +31,33 @@ export const upsertWordMastery = async (wordId: string, isCorrect: boolean) => {
       masteryScore = Math.max(0, currWordMastery.masteryScore - 0.25);
     }
   }
-  await prisma.userWordMastery.create({
-    data: {
-      wordId: wordId,
-      userId: userId,
-      attempts: {
-        create: {
-          userId: userId,
-          correct: isCorrect,
+  await prisma.userWordMastery.upsert(
+    {
+      where: {
+        userId: userId,
+        wordId: wordId,
+      },
+      update: {
+        masteryScore: masteryScore,
+        attempts: {
+          create: {
+            userId: userId,
+            correct: isCorrect,
+          },
         },
       },
-      masteryScore: masteryScore,
+      create: {
+        wordId: wordId,
+        userId: userId,
+        masteryScore: masteryScore,
+        attempts: {
+          create: {
+            userId: userId,
+            correct: isCorrect,
+          },
+        },
+      },
     },
-  });
+  );
   return;
 };
