@@ -16,41 +16,40 @@ const handleQuizSelection = (quizID: string, router: AppRouterInstance) => {
 const handleLearnSelection = (quizID: string, router: AppRouterInstance) => {
   router.push(`/learn/${quizID}`);
 };
-export default function Dashboard({ quizzes, masterQuizzes}: Props) {
+export default function Dashboard({ quizzes, masterQuizzes }: Props) {
   const router = useRouter();
   return (
     <div>
       <h1>Dashboard</h1>
       <div className="grid grid-cols-2 gap-6 m-12">
-        {quizzes.map((quiz, i) => (quiz.learnCompleted ? 
-        (<div>
-          <Button
-            key={i}
-            variant="answer_choice"
-            onClick={() => handleQuizSelection(quiz.quizQuizId, router)}
-          >
-            Quiz {i + 1}
-          </Button>
-          <Button
-            key={2*i}
-            variant="answer_choice"
-            onClick={() => handleLearnSelection(quiz.quizQuizId, router)}
-            >
-              Learn {i + 1}
-          </Button>
-          </div>)
-          :
-          (<div>
-            <Button
-              key={i}
-              variant="answer_choice"
-              onClick={() => handleLearnSelection(quiz.quizQuizId, router)}
+        {quizzes.map((quiz, i) =>
+          quiz.learnCompleted ? (
+            <div key={i}>
+              <Button
+                variant="answer_choice"
+                onClick={() => handleQuizSelection(quiz.quizQuizId, router)}
+              >
+                Quiz {i + 1}
+              </Button>
+              <Button
+                key={2 * i}
+                variant="answer_choice"
+                onClick={() => handleLearnSelection(quiz.quizQuizId, router)}
               >
                 Learn {i + 1}
-            </Button>
-          </div>))
-        )
-        }
+              </Button>
+            </div>
+          ) : (
+            <div key={i}>
+              <Button
+                variant="answer_choice"
+                onClick={() => handleLearnSelection(quiz.quizQuizId, router)}
+              >
+                Learn {i + 1}
+              </Button>
+            </div>
+          ),
+        )}
       </div>
       <div>
         <h1>Master Quizzes</h1>

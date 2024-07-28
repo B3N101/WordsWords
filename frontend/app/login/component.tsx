@@ -57,38 +57,37 @@ export default function Component() {
           </Button>
         </form>
 
-     
-          <form
-            action={async () => {
-              "use server";
-              try {
-                await signIn("google", { redirectTo: "/" });
-              } catch (error) {
-                // Signin can fail for a number of reasons, such as the user
-                // not existing, or the user not having the correct role.
-                // In some cases, you may want to redirect to a custom error
-                if (error instanceof AuthError) {
-                  return redirect(`${SIGNIN_ERROR_URL}?error=${error.type}`);
-                }
-
-                // Otherwise if a redirects happens NextJS can handle it
-                // so you can just re-thrown the error and let NextJS handle it.
-                // Docs:
-                // https://nextjs.org/docs/app/api-reference/functions/redirect#server-component
-                throw error;
+        <form
+          action={async () => {
+            "use server";
+            try {
+              await signIn("google", { redirectTo: "/" });
+            } catch (error) {
+              // Signin can fail for a number of reasons, such as the user
+              // not existing, or the user not having the correct role.
+              // In some cases, you may want to redirect to a custom error
+              if (error instanceof AuthError) {
+                return redirect(`${SIGNIN_ERROR_URL}?error=${error.type}`);
               }
-            }}
-          >
-            <Button
-              variant="outline"
-              className="w-full rounded-md bg-[#00B894] text-white hover:bg-[#00D1B2] focus:ring-[#00D1B2]"
-              type="submit"
-            >
-              <ChromeIcon className="mr-2 h-5 w-5" />
 
-              <span>Sign in with Google</span>
-            </Button>
-          </form>
+              // Otherwise if a redirects happens NextJS can handle it
+              // so you can just re-thrown the error and let NextJS handle it.
+              // Docs:
+              // https://nextjs.org/docs/app/api-reference/functions/redirect#server-component
+              throw error;
+            }
+          }}
+        >
+          <Button
+            variant="outline"
+            className="w-full rounded-md bg-[#00B894] text-white hover:bg-[#00D1B2] focus:ring-[#00D1B2]"
+            type="submit"
+          >
+            <ChromeIcon className="mr-2 h-5 w-5" />
+
+            <span>Sign in with Google</span>
+          </Button>
+        </form>
       </div>
     </div>
   );
