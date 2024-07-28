@@ -15,7 +15,10 @@ type Props = {
 };
 
 export default function QuizPage({ userQuiz }: Props) {
-  if (!userQuiz.learnCompleted){
+  const quiz = userQuiz.quiz;
+  const questions = quiz.questions;
+  const wordsListId = quiz.wordsListListId;
+  if (!userQuiz.learnCompleted && quiz.quizType === "MINI"){
     return (
       <div>
         <div>      
@@ -30,9 +33,6 @@ export default function QuizPage({ userQuiz }: Props) {
         </Link>
       </div>)
   }
-  const quiz = userQuiz.quiz;
-  const questions = quiz.questions;
-  const wordsListId = quiz.wordsListListId;
   console.log(quiz);
   const userQuestions = questions
     .map((question) => question.userQuestionProgress)
@@ -159,6 +159,18 @@ export default function QuizPage({ userQuiz }: Props) {
             >
               {" "}
               Reset Quiz and Back to Dashboard
+            </Button>
+          </div>
+          <div>
+          {/* TODO: Fix the back to dashboard */}
+          <Button
+              onClick={async () => {
+                await upsertQuizCompleted(userQuiz.userQuizProgressId, true); // shouldn't be necessary
+                window.location.href = "/wordList/" + wordsListId;
+              }}
+            >
+              {" "}
+              Back to Dashboard Without Resetting Progress
             </Button>
           </div>
         </div>
