@@ -77,9 +77,7 @@ export default async function WordListPage({ wordListID }: WordListPageProps) {
     wordListData,
     userWordListProgressData,
   ]);
-
   const masterQuizAvailable = await masteryAvailable(wordList!.listId, userId);
-
   let masterQuiz;
   if (masterQuizAvailable) {
     masterQuiz = await createMasterQuiz(wordListID, userId);
@@ -175,7 +173,7 @@ export default async function WordListPage({ wordListID }: WordListPageProps) {
                   <Link
                     className="flex items-center justify-between border-2 border-[#ff6b6b] rounded-lg p-4"
                     key={learnData.name}
-                    href={`/quiz/${learnData.quizID}`}
+                    href={`/learn/${learnData.quizID}`}
                   >
                     <div>{learnData.name}</div>
                     <LearnStatus status={learnData.status} />

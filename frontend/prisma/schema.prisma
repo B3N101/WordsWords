@@ -191,7 +191,7 @@ model UserQuizProgress {
   quiz       Quiz   @relation(fields: [quizQuizId], references: [quizId], onDelete: Cascade)
   quizQuizId String
 
-  wordListProgress   UserWordsListProgress @relation(fields: [wordListProgressId], references: [userWordsListProgressId])
+  wordListProgress   UserWordsListProgress @relation(fields: [wordListProgressId], references: [userWordsListProgressId], onDelete: Cascade)
   wordListProgressId String
 
   learnCompleted Boolean @default(false)

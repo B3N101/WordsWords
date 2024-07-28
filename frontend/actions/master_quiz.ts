@@ -32,7 +32,7 @@ export const masteryAvailable = async (wordListId: string, userId: string) => {
       },
     });
     if (!userQuiz) {
-      throw new Error("User quiz not found");
+      throw new Error("User quiz not found, quizId: " + miniQuiz.quizId);
     }
     if (!userQuiz.completed) {
       return false;

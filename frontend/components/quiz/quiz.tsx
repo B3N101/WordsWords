@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import ProgressBar from "@/components/progressBar";
@@ -14,8 +15,24 @@ type Props = {
 };
 
 export default function QuizPage({ userQuiz }: Props) {
+  if (!userQuiz.learnCompleted){
+    return (
+      <div>
+        <div>      
+          Learn Mode not Completed Yet!
+        </div>
+        <Link
+          className="flex items-center justify-between border-2 border-[#ff6b6b] rounded-lg p-4"
+          key={0}
+          href={`/learn/${userQuiz.quizQuizId}`}
+        >
+          <div>Go to Learn</div>
+        </Link>
+      </div>)
+  }
   const quiz = userQuiz.quiz;
   const questions = quiz.questions;
+  const wordsListId = quiz.wordsListListId;
   console.log(quiz);
   const userQuestions = questions
     .map((question) => question.userQuestionProgress)
@@ -137,7 +154,7 @@ export default function QuizPage({ userQuiz }: Props) {
             <Button
               onClick={async () => {
                 await upsertQuizCompleted(userQuiz.userQuizProgressId, false);
-                window.location.href = "/quiz";
+                window.location.href = "/wordList/" + wordsListId;
               }}
             >
               {" "}
