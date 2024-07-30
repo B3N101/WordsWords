@@ -63,7 +63,7 @@ export default function QuizPage({ userQuiz }: Props) {
     setIsCurrentCorrect(answer.correct);
   };
 
-  const handleNext = () => {
+  const handleNext = async () => {
     if (!started) {
       setStarted(true);
       return;
@@ -83,7 +83,7 @@ export default function QuizPage({ userQuiz }: Props) {
         throw Error("No answer selected");
       }
     } else {
-      upsertQuizCompleted(userQuiz.userQuizProgressId, true);
+      await upsertQuizCompleted(userQuiz.userQuizProgressId, true);
       setCompleted(true);
       return;
     }
@@ -165,12 +165,11 @@ export default function QuizPage({ userQuiz }: Props) {
           {/* TODO: Fix the back to dashboard */}
           <Button
               onClick={async () => {
-                await upsertQuizCompleted(userQuiz.userQuizProgressId, true); // shouldn't be necessary
                 window.location.href = "/wordList/" + wordsListId;
               }}
             >
               {" "}
-              Back to Dashboard Without Resetting Progress
+              Back to Dashboard
             </Button>
           </div>
         </div>

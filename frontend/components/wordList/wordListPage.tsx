@@ -18,8 +18,8 @@ import {
 } from "@/components/ui/table";
 import { Card, CardContent } from "@/components/ui/card";
 
-import { getWordList, getUserWordListProgress } from "@/prisma/queries";
-import { masteryAvailable, createMasterQuiz } from "@/actions/master_quiz";
+import { getWordList, getUserWordListProgress, getUserQuizProgress } from "@/prisma/queries";
+import { masteryAvailable, createOrGetMasterQuiz } from "@/actions/master_quiz";
 import { auth } from "@/auth/auth";
 
 function getInitials(name: string) {
@@ -53,6 +53,7 @@ type WordListPageProps = {
 type MasterQuizProps = {
   available: boolean;
   quizID: string;
+  completed: boolean;
 };
 
 export default async function WordListPage({ wordListID }: WordListPageProps) {
@@ -79,13 +80,16 @@ export default async function WordListPage({ wordListID }: WordListPageProps) {
   ]);
   const masterQuizAvailable = await masteryAvailable(wordList!.listId, userId);
   let masterQuiz;
+  let userMasterQuiz;
   if (masterQuizAvailable) {
-    masterQuiz = await createMasterQuiz(wordListID, userId);
+    masterQuiz = await createOrGetMasterQuiz(wordListID, userId);
+    userMasterQuiz = await getUserQuizProgress(userId, masterQuiz.quizId);
   }
 
   const userQuizProgresses = userWordListProgress?.userQuizProgresses;
-
-  const quizData = userQuizProgresses?.map((userQuizProgress, i) => {
+  const userMiniQuizzes = userQuizProgresses?.filter(userQuizProgress => userQuizProgress.quiz.quizType === "MINI");
+  // filter only mini quizzes
+  const quizData = userMiniQuizzes?.map((userQuizProgress, i) => {
     const quizId = userQuizProgress.quizQuizId;
     const status: QuizStatusType = userQuizProgress.learnCompleted
       ? userQuizProgress.completed
@@ -99,7 +103,7 @@ export default async function WordListPage({ wordListID }: WordListPageProps) {
       dueDate: new Date("2022-09-15"),
     };
   });
-  const learnData = userQuizProgresses?.map((userQuizProgress, i) => {
+  const learnData = userMiniQuizzes?.map((userQuizProgress, i) => {
     const quizId = userQuizProgress.quizQuizId;
     let learnStatus: LearnStatusType;
     if (i == 0) {
@@ -107,7 +111,7 @@ export default async function WordListPage({ wordListID }: WordListPageProps) {
     } else {
       learnStatus = userQuizProgress.learnCompleted
         ? "completed"
-        : userQuizProgresses[i - 1]?.completed
+        : userMiniQuizzes[i - 1]?.completed
           ? "open"
           : "locked";
     }
@@ -196,15 +200,16 @@ export default async function WordListPage({ wordListID }: WordListPageProps) {
         <MasterQuiz
           quizID={masterQuiz!.quizId}
           available={masterQuizAvailable}
+          completed={userMasterQuiz!.completed}
         />
       ) : (
-        <MasterQuiz quizID={"NULL"} available={masterQuizAvailable} />
+        <MasterQuiz quizID={"NULL"} available={masterQuizAvailable} completed={false} />
       )}
     </div>
   );
 }
 
-async function MasterQuiz({ quizID, available }: MasterQuizProps) {
+async function MasterQuiz({ quizID, available, completed }: MasterQuizProps) {
   return (
     <div className="mt-8">
       <Card className="bg-white rounded-lg shadow-md">
@@ -214,14 +219,14 @@ async function MasterQuiz({ quizID, available }: MasterQuizProps) {
               Master Quiz
             </h2>
             {available ? (
-              <Link
+              (<Link
                 className="flex flex-auto items-center justify-between border-2 border-[#ff6b6b] rounded-lg p-4"
                 key={quizID}
                 href={`/quiz/${quizID}`}
               >
                 <div>{"Master Quiz"}</div>
-                <QuizStatus status={"open"} />
-              </Link>
+                <QuizStatus status={completed ? "completed": "open"} />
+              </Link>)
             ) : (
               <div
                 className="flex flex-auto items-center justify-between border-2 border-[#ff6b6b] rounded-lg p-4"

@@ -24,9 +24,12 @@ export const getUserWordListProgress = cache(
   async (userID: string, wordListID: string) => {
     const data = await prisma.userWordsListProgress.findFirst({
       where: { userId: userID, wordsListListId: wordListID },
-      include: { userQuizProgresses: {
-        orderBy: { quizQuizId: 'asc'},
-      } },
+      include: { userQuizProgresses: 
+        {
+          orderBy: { quizQuizId: 'asc'},
+          include: { quiz: true}
+        },
+      },
     });
     return data;
   },
