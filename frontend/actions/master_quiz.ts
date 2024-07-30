@@ -5,7 +5,10 @@ import { updateQuestionCompleted } from "./quiz_progress";
 // import { Ruge_Boogie } from "next/font/google";
 const prisma = new PrismaClient();
 
-export async function masteryAvailable(wordListId: string, userId: string) : Promise<boolean> {
+export async function masteryAvailable(
+  wordListId: string,
+  userId: string,
+): Promise<boolean> {
   const wordList = await prisma.wordsList.findFirst({
     where: {
       listId: wordListId,
@@ -39,8 +42,11 @@ export async function masteryAvailable(wordListId: string, userId: string) : Pro
     }
   }
   return true;
-};
-export async function createMasterQuiz (wordListId: string, userId: string) : Promise<Quiz>{
+}
+export async function createMasterQuiz(
+  wordListId: string,
+  userId: string,
+): Promise<Quiz> {
   const userWordListProgress = await prisma.userWordsListProgress.findFirst({
     where: {
       userId: userId,
@@ -155,4 +161,4 @@ export async function createMasterQuiz (wordListId: string, userId: string) : Pr
     },
   });
   return masterQuiz;
-};
+}

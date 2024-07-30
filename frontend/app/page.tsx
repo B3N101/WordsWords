@@ -10,6 +10,8 @@ import {
   getUserRoleFromId,
 } from "@/lib/userSettings";
 import { getUserClassIdsFromId } from "@/lib/userSettings";
+import CreateClassCard from "@/components/createClass";
+import JoinClassCard from "@/components/joinClass";
 
 // type classData to be used to get custom classDashboard
 type classData = {
@@ -77,18 +79,19 @@ export default async function Home() {
     <div>
       <ClassDashboard data={classData} />
 
-      {/* {If Role is teacher or admin then add teacherDashboard where a teacher can add students} */}
-      {role == "TEACHER" || role == "ADMIN" ? (
-        <p>Is A Teacher</p>
-      ) : (
-        <p>Is Not A Teacher</p>
-      )}
+      <CreateClassCard />
+      <JoinClassCard />
+
       <footer>
-        {/* horizontal line*/}
         <hr />
         <p className="text-green-600 font-extrabold text-xl">Home</p>
         <Profile user={User} />
         <pre>{JSON.stringify(session, null, 2)}</pre>
+        {role == "TEACHER" || role == "ADMIN" ? (
+          <p>Is A Teacher</p>
+        ) : (
+          <p>Is Not A Teacher</p>
+        )}
       </footer>
     </div>
   );
