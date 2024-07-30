@@ -4,7 +4,7 @@ import { PrismaClient } from "@prisma/client";
 
 const prisma = new PrismaClient();
 
-export const upsertWordMastery = async (wordId: string, isCorrect: boolean) => {
+export const updateWordMastery = async (wordId: string, isCorrect: boolean) => {
   const session = await auth();
   const userId = session?.user?.id;
 

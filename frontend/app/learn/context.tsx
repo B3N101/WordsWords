@@ -3,7 +3,7 @@
 import { type Word } from "@prisma/client";
 import { Button } from "@/components/ui/button";
 import { useState } from "react";
-import { upsertLearnCompleted } from "@/actions/quiz_progress";
+import { updateLearnCompleted } from "@/actions/quiz_progress";
 type Props = {
   words: Word[];
   quizId: string;
@@ -76,7 +76,7 @@ export default function ContextPage({ words, quizId }: Props) {
             <div className="float-right flex flex-col">
               <Button
                 onClick={async () => {
-                  await upsertLearnCompleted(quizId, true);
+                  await updateLearnCompleted(quizId, true);
                   window.location.href = `/quiz/${quizId}`;
                 }}
               >
@@ -86,7 +86,7 @@ export default function ContextPage({ words, quizId }: Props) {
             <div className="float-left flex flex-col">
               <Button
                 onClick={async () => {
-                  await upsertLearnCompleted(quizId, true);
+                  await updateLearnCompleted(quizId, true);
                   window.location.href = `/quiz`;
                 }}
               >

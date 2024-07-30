@@ -78,12 +78,11 @@ export default async function Home() {
       <ClassDashboard data={classData} />
 
       {/* {If Role is teacher or admin then add teacherDashboard where a teacher can add students} */}
-      {( role == "TEACHER" || role == "ADMIN") ? (
+      {role == "TEACHER" || role == "ADMIN" ? (
         <p>Is A Teacher</p>
       ) : (
         <p>Is Not A Teacher</p>
-      )
-    }
+      )}
       <footer>
         {/* horizontal line*/}
         <hr />

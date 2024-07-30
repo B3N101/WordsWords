@@ -1,7 +1,10 @@
-import { getWords } from "@/app/words/getWords";
+import { getWordsByListId } from "@/app/words/getWords";
 
-export default async function Page() {
-  let words = await getWords();
+export default async function Page({ params }: { params: { slug: string } }) {
+  let words = await getWordsByListId(params.slug);
+
+  if (words.length === 0) throw new Error("Word list not found");
+
   return (
     <div className="flex min-h-[100dvh] items-center justify-center bg-[#F0FFF4] dark:bg-[#00B894]">
       <div className="mx-auto max-w-md space-y-6 rounded-lg bg-white p-6 shadow-lg dark:bg-[#00D1B2]">

@@ -251,6 +251,8 @@ async function seedAll(userID: string) {
   await seedQuizzes(userID);
 }
 
+seedAll("96c6654a-8f9b-4457-8e9f-8034aac25740");
+
 // seedAll("6aaad536-297b-4a47-b9c6-b9b90628ac01").then(async () => {
 //   await prisma.$disconnect();
 // });
@@ -279,12 +281,12 @@ async function seedAll(userID: string) {
 //   process.exit(1);
 // });
 
-seedQuizzes("6aaad536-297b-4a47-b9c6-b9b90628ac01")
-  .then(async () => {
-    await prisma.$disconnect();
-  })
-  .catch(async (e) => {
-    console.error(e);
-    await prisma.$disconnect();
-    process.exit(1);
-  });
+// seedQuizzes("6aaad536-297b-4a47-b9c6-b9b90628ac01")
+//   .then(async () => {
+//     await prisma.$disconnect();
+//   })
+//   .catch(async (e) => {
+//     console.error(e);
+//     await prisma.$disconnect();
+//     process.exit(1);
+//   });

@@ -4,10 +4,10 @@ import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import ProgressBar from "@/components/progressBar";
 import {
-  upsertQuestionCompleted,
-  upsertQuizCompleted,
+  updateQuestionCompleted,
+  updateQuizCompleted,
 } from "@/actions/quiz_progress";
-import { upsertWordMastery } from "@/actions/word_progress";
+import { updateWordMastery } from "@/actions/word_progress";
 import { type Answer, type UserQuizProgressWithQuiz } from "@/prisma/types";
 type Props = {
   userQuiz: UserQuizProgressWithQuiz;
@@ -57,16 +57,16 @@ export default function QuizPage({ userQuiz }: Props) {
     if (currentIndex + 1 < questions.length) {
       setCurrentIndex(currentIndex + 1);
       if (isCurrentCorrect !== null) {
-        upsertQuestionCompleted(
+        updateQuestionCompleted(
           userQuestions[currentIndex].userQuestionProgressId,
           true,
         );
-        upsertWordMastery(question.wordId, isCurrentCorrect);
+        updateWordMastery(question.wordId, isCurrentCorrect);
       } else {
         throw Error("No answer selected");
       }
     } else {
-      upsertQuizCompleted(userQuiz.userQuizProgressId, true);
+      updateQuizCompleted(userQuiz.userQuizProgressId, true);
       setCompleted(true);
       return;
     }
@@ -123,7 +123,7 @@ export default function QuizPage({ userQuiz }: Props) {
           <div>
             <Button
               onClick={async () => {
-                await upsertQuizCompleted(userQuiz.userQuizProgressId, false);
+                await updateQuizCompleted(userQuiz.userQuizProgressId, false);
 
                 // TODO: switch to updating react states, remove async
                 window.location.reload();
@@ -136,7 +136,7 @@ export default function QuizPage({ userQuiz }: Props) {
           <div>
             <Button
               onClick={async () => {
-                await upsertQuizCompleted(userQuiz.userQuizProgressId, false);
+                await updateQuizCompleted(userQuiz.userQuizProgressId, false);
                 window.location.href = "/quiz";
               }}
             >

@@ -1,11 +1,11 @@
 "use server";
 import { auth } from "@/auth/auth";
-import { PrismaClient, QuizType } from "@prisma/client";
-import { upsertQuestionCompleted } from "./quiz_progress";
-import { Ruge_Boogie } from "next/font/google";
+import { PrismaClient, Quiz, QuizType } from "@prisma/client";
+import { updateQuestionCompleted } from "./quiz_progress";
+// import { Ruge_Boogie } from "next/font/google";
 const prisma = new PrismaClient();
 
-export const masteryAvailable = async (wordListId: string, userId: string) => {
+export async function masteryAvailable(wordListId: string, userId: string) : Promise<boolean> {
   const wordList = await prisma.wordsList.findFirst({
     where: {
       listId: wordListId,
@@ -40,7 +40,7 @@ export const masteryAvailable = async (wordListId: string, userId: string) => {
   }
   return true;
 };
-export const createMasterQuiz = async (wordListId: string, userId: string) => {
+export async function createMasterQuiz (wordListId: string, userId: string) : Promise<Quiz>{
   const userWordListProgress = await prisma.userWordsListProgress.findFirst({
     where: {
       userId: userId,
@@ -101,7 +101,7 @@ export const createMasterQuiz = async (wordListId: string, userId: string) => {
     if (!userQuestion) {
       throw new Error("User question not found");
     }
-    upsertQuestionCompleted(userQuestion.userQuestionProgressId, false);
+    updateQuestionCompleted(userQuestion.userQuestionProgressId, false);
 
     questions.push(question);
   }
@@ -119,7 +119,7 @@ export const createMasterQuiz = async (wordListId: string, userId: string) => {
     if (!userQuestion) {
       throw new Error("User question not found");
     }
-    upsertQuestionCompleted(userQuestion.userQuestionProgressId, false);
+    updateQuestionCompleted(userQuestion.userQuestionProgressId, false);
 
     questions.push(question);
   }

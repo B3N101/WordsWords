@@ -3,10 +3,8 @@ import { auth } from "@/auth/auth";
 import { PrismaClient } from "@prisma/client";
 // import { getUserQuizProgress } from "@/prisma/queries";
 const prisma = new PrismaClient();
-export const upsertLearnCompleted = async (
-  quizId: string,
-  completed: boolean,
-) => {
+
+export async function updateLearnCompleted(quizId: string, completed: boolean) {
   const session = await auth();
   const userId = session?.user?.id;
   if (!userId) {
@@ -31,11 +29,12 @@ export const upsertLearnCompleted = async (
     },
   });
   return;
-};
-export const upsertQuestionCompleted = async (
+}
+
+export async function updateQuestionCompleted(
   userQuestionId: string,
   completed: boolean,
-) => {
+) {
   const session = await auth();
   const userId = session?.user?.id;
   console.log();
@@ -45,13 +44,10 @@ export const upsertQuestionCompleted = async (
       userId: userId,
     },
   });
-  if (!quizQuestion) {
-    throw new Error("Question not found");
-  }
-  if (quizQuestion.completed === completed) {
+  if (!quizQuestion) throw new Error("Question not found");
+  if (quizQuestion.completed === completed)
     throw new Error("Trying to update question with the same completed value");
-  }
-  await prisma.userQuestionProgress.update({
+  return await prisma.userQuestionProgress.update({
     where: {
       userQuestionProgressId: userQuestionId,
       userId: userId,
@@ -60,13 +56,12 @@ export const upsertQuestionCompleted = async (
       completed: completed,
     },
   });
-  return;
-};
+}
 
-export const upsertQuizCompleted = async (
+export async function updateQuizCompleted(
   userQuizId: string,
   completed: boolean,
-) => {
+) {
   const session = await auth();
   const userId = session?.user?.id;
 
@@ -122,7 +117,7 @@ export const upsertQuizCompleted = async (
   }
   // TODO: update quiz random seed
 
-  await prisma.userQuizProgress.update({
+  return await prisma.userQuizProgress.update({
     where: {
       userQuizProgressId: userQuizId,
       userId: userId,
@@ -131,5 +126,4 @@ export const upsertQuizCompleted = async (
       completed: completed,
     },
   });
-  return;
-};
+}

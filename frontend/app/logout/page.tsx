@@ -6,7 +6,6 @@
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
 import { signOut } from "@/auth/auth";
-import { redirect } from "next/dist/server/api-utils";
 
 export default function Component() {
   return (
@@ -20,7 +19,7 @@ export default function Component() {
         </div>
         <div className="space-y-4">
           <form
-            action={async (formData) => {
+            action={async () => {
               "use server";
               await signOut({ redirectTo: "/login" });
             }}
