@@ -208,8 +208,7 @@ model Question {
   wordId String
   word   Word   @relation(fields: [wordId], references: [wordId], onDelete: Cascade)
 
-  quiz                 Quiz?                  @relation(fields: [quizQuizId], references: [quizId])
-  quizQuizId           String?
+  quizzes              Quiz[]                  
   answers              Answer[]
   userQuestionProgress UserQuestionProgress[]
 }
