@@ -18,21 +18,7 @@ export default function QuizPage({ userQuiz }: Props) {
   const quiz = userQuiz.quiz;
   const questions = quiz.questions;
   const wordsListId = quiz.wordsListListId;
-  if (!userQuiz.learnCompleted && quiz.quizType === "MINI"){
-    return (
-      <div>
-        key={0}
-        <div>      
-          Learn Mode not Completed Yet!
-        </div>
-        <Link
-          className="flex items-center justify-between border-2 border-[#ff6b6b] rounded-lg p-4"
-          href={`/learn/${userQuiz.quizQuizId}`}
-        >
-          <div>Go to Learn</div>
-        </Link>
-      </div>)
-  }
+
   console.log(quiz);
   const userQuestions = questions
     .map((question) => question.userQuestionProgress)
@@ -56,6 +42,21 @@ export default function QuizPage({ userQuiz }: Props) {
     null,
   );
 
+  if (!userQuiz.learnCompleted && quiz.quizType === "MINI"){
+    return (
+      <div>
+        key={0}
+        <div>      
+          Learn Mode not Completed Yet!
+        </div>
+        <Link
+          className="flex items-center justify-between border-2 border-[#ff6b6b] rounded-lg p-4"
+          href={`/learn/${userQuiz.quizQuizId}`}
+        >
+          <div>Go to Learn</div>
+        </Link>
+      </div>)
+  }
   const question = questions[currentIndex];
   const options = question.answers;
   /*TODO: Track user progress so that refresh sends them to the current answer*/
