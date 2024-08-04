@@ -20,8 +20,8 @@ export async function SideBar(){
         <div className={cn(
           "flex h-full lg:w-[256px] lg:fixed left-0 top-0 px-4 border-r-2 flex-col",
         )}>
-          {wordLists.map((wordlist) => (
-            <div>
+          {wordLists.map((wordlist, index) => (
+            <div key={index}>
             <SidebarItem label={wordlist.wordsListListId} href={"/wordList/" + wordlist.wordsListListId}></SidebarItem>
             </div>
           ))}

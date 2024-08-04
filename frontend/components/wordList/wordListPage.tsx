@@ -78,6 +78,7 @@ export default async function WordListPage({ wordListID }: WordListPageProps) {
     wordListData,
     userWordListProgressData,
   ]);
+  // could consider not awaiting, render a skeleton
   const masterQuizAvailable = await masteryAvailable(wordList!.listId, userId);
   let masterQuiz;
   let userMasterQuiz;

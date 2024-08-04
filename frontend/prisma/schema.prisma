@@ -108,6 +108,7 @@ model Word {
   userWordMasteries UserWordMastery[]
 }
 
+// TODO: static piece. woulnd't have to keep track of quizzes
 model WordsList {
   listId                String                  @id @default(cuid())
   words                 Word[]
@@ -200,18 +201,22 @@ model UserQuizProgress {
   randomSeed     Int
 }
 
+// this can be the dynamic piece (word is static). only link to one quiz. this could 
+// include everything userQuestionProgress
 model Question {
   questionId String @id @default(cuid())
-  question   String
+  question   String 
   rank       Int
 
   wordId String
   word   Word   @relation(fields: [wordId], references: [wordId], onDelete: Cascade)
 
-  quizzes              Quiz[]                  
-  answers              Answer[]
+  quizzes              Quiz[] // TODO: change this to one to one relation                  
+  answers              Answer[] // TODO: change to list of strings
+  // add a field for the index of the correct answer
   userQuestionProgress UserQuestionProgress[]
 }
+
 
 model UserQuestionProgress {
   userQuestionProgressId String @id @default(cuid())
