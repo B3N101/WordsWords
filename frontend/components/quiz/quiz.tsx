@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import ProgressBar from "@/components/progressBar";
@@ -16,6 +17,8 @@ type Props = {
 export default function QuizPage({ userQuiz }: Props) {
   const quiz = userQuiz.quiz;
   const questions = quiz.questions;
+  const wordsListId = quiz.wordsListListId;
+
   console.log(quiz);
   const userQuestions = questions
     .map((question) => question.userQuestionProgress)
@@ -39,6 +42,21 @@ export default function QuizPage({ userQuiz }: Props) {
     null,
   );
 
+  if (!userQuiz.learnCompleted && quiz.quizType === "MINI"){
+    return (
+      <div>
+        key={0}
+        <div>      
+          Learn Mode not Completed Yet!
+        </div>
+        <Link
+          className="flex items-center justify-between border-2 border-[#ff6b6b] rounded-lg p-4"
+          href={`/learn/${userQuiz.quizQuizId}`}
+        >
+          <div>Go to Learn</div>
+        </Link>
+      </div>)
+  }
   const question = questions[currentIndex];
   const options = question.answers;
   /*TODO: Track user progress so that refresh sends them to the current answer*/
@@ -46,7 +64,7 @@ export default function QuizPage({ userQuiz }: Props) {
     setIsCurrentCorrect(answer.correct);
   };
 
-  const handleNext = () => {
+  const handleNext = async () => {
     if (!started) {
       setStarted(true);
       return;
@@ -66,7 +84,7 @@ export default function QuizPage({ userQuiz }: Props) {
         throw Error("No answer selected");
       }
     } else {
-      upsertQuizCompleted(userQuiz.userQuizProgressId, true);
+      await upsertQuizCompleted(userQuiz.userQuizProgressId, true);
       setCompleted(true);
       return;
     }
@@ -137,11 +155,22 @@ export default function QuizPage({ userQuiz }: Props) {
             <Button
               onClick={async () => {
                 await upsertQuizCompleted(userQuiz.userQuizProgressId, false);
-                window.location.href = "/quiz";
+                window.location.href = "/wordList/" + wordsListId;
               }}
             >
               {" "}
               Reset Quiz and Back to Dashboard
+            </Button>
+          </div>
+          <div>
+          {/* TODO: Fix the back to dashboard */}
+          <Button
+              onClick={async () => {
+                window.location.href = "/wordList/" + wordsListId;
+              }}
+            >
+              {" "}
+              Back to Dashboard
             </Button>
           </div>
         </div>

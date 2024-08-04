@@ -48,9 +48,9 @@ export const upsertQuestionCompleted = async (
   if (!quizQuestion) {
     throw new Error("Question not found");
   }
-  if (quizQuestion.completed === completed) {
-    throw new Error("Trying to update question with the same completed value");
-  }
+  // if (quizQuestion.completed === completed) {
+  //   throw new Error("Trying to update question with the same completed value");
+  // }
   await prisma.userQuestionProgress.update({
     where: {
       userQuestionProgressId: userQuestionId,
@@ -99,9 +99,9 @@ export const upsertQuizCompleted = async (
   if (!userQuiz) {
     throw new Error("Quiz not found");
   }
-  if (userQuiz.completed === completed) {
-    throw new Error("Trying to update quiz with the same completed value");
-  }
+  // if (userQuiz.completed === completed) {
+  //   throw new Error("Trying to update quiz with the same completed value");
+  // }
 
   // reset all userQuestionProgress to the same as the quiz
   const questions = userQuiz.quiz.questions;

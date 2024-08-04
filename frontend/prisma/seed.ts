@@ -57,7 +57,7 @@ async function seedWords() {
       data: wordData,
     });
     // console.log(word)
-    console.log("Database seeded");
+    console.log("Words seeded");
   } catch (error) {
     // Handle any errors that occur during the API request
     console.error("Error retrieving data from spreadsheet:", error);
@@ -251,40 +251,40 @@ async function seedAll(userID: string) {
   await seedQuizzes(userID);
 }
 
-// seedAll("6aaad536-297b-4a47-b9c6-b9b90628ac01").then(async () => {
-//   await prisma.$disconnect();
-// });
-// seedWords().then(async () => {
-//         await prisma.$disconnect();
-//       })
+seedAll("6aaad536-297b-4a47-b9c6-b9b90628ac01").then(async () => {
+  await prisma.$disconnect();
+});
+// // seedWords().then(async () => {
+// //         await prisma.$disconnect();
+// //       })
+// //   .catch(async (e) => {
+// //     console.error(e);
+// //     await prisma.$disconnect();
+// //     process.exit(1);
+// //   });
+// // seedWordLists("6aaad536-297b-4a47-b9c6-b9b90628ac01").then(async () => {
+// //       await prisma.$disconnect();
+// //     })
+// //     .catch(async (e) => {
+// //       console.error(e);
+// //       await prisma.$disconnect();
+// //       process.exit(1);
+// //     });
+// // seedQuestions("6aaad536-297b-4a47-b9c6-b9b90628ac01").then(async () => {
+// //   await prisma.$disconnect();
+// // })
+// // .catch(async (e) => {
+// //   console.error(e);
+// //   await prisma.$disconnect();
+// //   process.exit(1);
+// // });
+
+// seedQuizzes("6aaad536-297b-4a47-b9c6-b9b90628ac01")
+//   .then(async () => {
+//     await prisma.$disconnect();
+//   })
 //   .catch(async (e) => {
 //     console.error(e);
 //     await prisma.$disconnect();
 //     process.exit(1);
 //   });
-// seedWordLists("6aaad536-297b-4a47-b9c6-b9b90628ac01").then(async () => {
-//       await prisma.$disconnect();
-//     })
-//     .catch(async (e) => {
-//       console.error(e);
-//       await prisma.$disconnect();
-//       process.exit(1);
-//     });
-// seedQuestions("6aaad536-297b-4a47-b9c6-b9b90628ac01").then(async () => {
-//   await prisma.$disconnect();
-// })
-// .catch(async (e) => {
-//   console.error(e);
-//   await prisma.$disconnect();
-//   process.exit(1);
-// });
-
-seedQuizzes("6aaad536-297b-4a47-b9c6-b9b90628ac01")
-  .then(async () => {
-    await prisma.$disconnect();
-  })
-  .catch(async (e) => {
-    console.error(e);
-    await prisma.$disconnect();
-    process.exit(1);
-  });

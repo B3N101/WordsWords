@@ -68,11 +68,10 @@ model User {
   // _____________ UPDATE _______________
   // Changed relationship to many to many
   Classes       Class[]           @relation("UserClasses")
-  PublishedList PublishedList[]
   wordMasteries UserWordMastery[]
 
-  QuizProgress          UserQuizProgress[]
-  QuestionProgress      UserQuestionProgress[]
+  quizzes       Quiz[]
+
   UserWordsListProgress UserWordsListProgress[]
 }
 
@@ -81,7 +80,8 @@ model Class {
   className           String
   teacherId           String
   students            User[]          @relation("UserClasses")
-  publishedWordsLists PublishedList[]
+
+  userWordsListProgresses UserWordsListProgress[]
   SemesterStart       DateTime
   SemesterEnd         DateTime
 }
@@ -104,14 +104,14 @@ model Word {
   rankWithinList Int?
   wordListNumber       Int?
 
-  quizzes           Quiz[]
   userWordMasteries UserWordMastery[]
 }
 
+// TODO: static piece. woulnd't have to keep track of quizzes
 model WordsList {
   listId                String                  @id @default(cuid())
+  name                  String
   words                 Word[]
-  PublishedList         PublishedList[]
   quizzes               Quiz[]
   UserWordsListProgress UserWordsListProgress[]
 }
@@ -121,31 +121,35 @@ model UserWordsListProgress {
   user                    User   @relation(fields: [userId], references: [id])
   userId                  String
 
+  class                   Class @relation(fields: [classId], references: [classId])
+  classId                 String
+
   wordsList       WordsList @relation(fields: [wordsListListId], references: [listId], onDelete: Cascade)
   wordsListListId String
 
-  userQuizProgresses UserQuizProgress[]
+  quizzes         Quiz[]
+  completed       Boolean @default(false)
 }
 
-model PublishedList {
-  publishedListId String   @id @default(cuid())
-  userId          String
-  user            User     @relation(fields: [userId], references: [id])
-  startDate       DateTime
-  endDate         DateTime
+// model PublishedList {
+//   publishedListId String   @id @default(cuid())
+//   userId          String
+//   user            User     @relation(fields: [userId], references: [id])
+//   startDate       DateTime
+//   endDate         DateTime
 
-  list   WordsList @relation(fields: [listId], references: [listId], onDelete: Cascade)
-  listId String
+//   list   WordsList @relation(fields: [listId], references: [listId], onDelete: Cascade)
+//   listId String
 
-  class   Class?  @relation(fields: [classId], references: [classId])
-  classId String?
+//   class   Class?  @relation(fields: [classId], references: [classId])
+//   classId String?
 
-  timeGoal    Int?
-  masteryGoal Int?
-  timeSpent   Int?
-  isDone      Boolean @default(false)
-  Score       Float?
-}
+//   timeGoal    Int?
+//   masteryGoal Int?
+//   timeSpent   Int?
+//   isDone      Boolean @default(false)
+//   Score       Float?
+// }
 
 model UserWordMastery {
   wordId String @id
@@ -171,66 +175,40 @@ model UserQuestionAttempt {
 
 model Quiz {
   quizId         String   @id @default(cuid())
-  wordListNumber Int?
   quizType       QuizType @default(MINI)
 
-  questions        Question[]
-  words            Word[]
-  UserQuizProgress UserQuizProgress[]
+  user           User   @relation(fields: [userId], references: [id])
+  userId         String
 
-  WordsList       WordsList? @relation(fields: [wordsListListId], references: [listId], onDelete: Cascade)
-  wordsListListId String?
+  wordsList       WordsList @relation(fields: [wordsListId], references: [listId])
+  wordsListId     String
+
+  questions       Question[]
+  completed       Boolean @default(false)
+
+  score           Float @default(0)
+  dueDate         DateTime
+
+  learnCompleted  Boolean @default(false)
+
+  userWordsListProgress UserWordsListProgress @relation(fields: [userWordsListProgressId], references: [userWordsListProgressId])
+  userWordsListProgressId String
 }
 
-model UserQuizProgress {
-  userQuizProgressId String @id @default(cuid())
-
-  user   User   @relation(fields: [userId], references: [id])
-  userId String
-
-  quiz       Quiz   @relation(fields: [quizQuizId], references: [quizId], onDelete: Cascade)
-  quizQuizId String
-
-  wordListProgress   UserWordsListProgress @relation(fields: [wordListProgressId], references: [userWordsListProgressId])
-  wordListProgressId String
-
-  learnCompleted Boolean @default(false)
-  completed      Boolean
-  score          Float
-  randomSeed     Int
-}
-
+// this can be the dynamic piece (word is static). only link to one quiz. this could 
+// include everything userQuestionProgress
 model Question {
   questionId String @id @default(cuid())
-  question   String
+  question   String 
   rank       Int
 
   wordId String
   word   Word   @relation(fields: [wordId], references: [wordId], onDelete: Cascade)
 
-  quiz                 Quiz?                  @relation(fields: [quizQuizId], references: [quizId])
-  quizQuizId           String?
-  answers              Answer[]
-  userQuestionProgress UserQuestionProgress[]
-}
-
-model UserQuestionProgress {
-  userQuestionProgressId String @id @default(cuid())
-  user                   User   @relation(fields: [userId], references: [id])
-  userId                 String
-
-  question           Question @relation(fields: [questionQuestionId], references: [questionId], onDelete: Cascade)
-  questionQuestionId String
-
-  completed Boolean
-}
-
-model Answer {
-  answerId   String   @id @default(cuid())
-  answerText String
-  question   Question @relation(fields: [questionId], references: [questionId], onDelete: Cascade)
-  questionId String
-  correct    Boolean
+  quiz              Quiz  @relation(fields: [quizId], references: [quizId])
+  quizId            String
+  answers           String[] // TODO: change to list of strings
+  completed         Boolean
 }
 
 // ENUMS - ROLE, GRADE, PART OF SPEECH

@@ -32,7 +32,7 @@ export const masteryAvailable = async (wordListId: string, userId: string) => {
       },
     });
     if (!userQuiz) {
-      throw new Error("User quiz not found");
+      throw new Error("User quiz not found, quizId: " + miniQuiz.quizId);
     }
     if (!userQuiz.completed) {
       return false;
@@ -40,7 +40,36 @@ export const masteryAvailable = async (wordListId: string, userId: string) => {
   }
   return true;
 };
-export const createMasterQuiz = async (wordListId: string, userId: string) => {
+
+export const createOrGetMasterQuiz = async (wordListId: string, userId: string) => {
+  const currMasterQuiz = await prisma.quiz.findFirst({
+    where:{
+      quizType: QuizType.MASTERY,
+      wordsListListId: wordListId,
+    },
+    select:{
+      UserQuizProgress:{
+        where:{
+          userId: userId,
+        },
+      },
+      quizId: true,
+    },
+  });
+  // if an uncompleted master quiz exists already, return that
+  if (currMasterQuiz && !currMasterQuiz.UserQuizProgress[0].completed){
+    console.log("existing quiz found")
+    return currMasterQuiz;
+  }
+  // otherwise, it's either been created or completed, in which case we create a new quiz
+  // DELETING THIS QUIZ IS DELETING ALL THE QUESTIONS, WHICH WE DO NOT WANT
+  else if(currMasterQuiz){
+    await prisma.quiz.delete({
+      where:{
+        quizId: currMasterQuiz.quizId,
+      }
+    });
+  }
   const userWordListProgress = await prisma.userWordsListProgress.findFirst({
     where: {
       userId: userId,
@@ -120,10 +149,8 @@ export const createMasterQuiz = async (wordListId: string, userId: string) => {
       throw new Error("User question not found");
     }
     upsertQuestionCompleted(userQuestion.userQuestionProgressId, false);
-
     questions.push(question);
   }
-
   // create quiz
   const masterQuiz = await prisma.quiz.create({
     data: {
@@ -154,5 +181,6 @@ export const createMasterQuiz = async (wordListId: string, userId: string) => {
       },
     },
   });
+  console.log("New quiz created")
   return masterQuiz;
 };
