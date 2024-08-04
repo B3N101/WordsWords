@@ -12,6 +12,7 @@ import {
 import { getUserClassIdsFromId } from "@/lib/userSettings";
 import CreateClassCard from "@/components/createClass";
 import JoinClassCard from "@/components/joinClass";
+import { DatePickerWithRange } from "@/components/dateRangePicker";
 
 // type classData to be used to get custom classDashboard
 type classData = {
@@ -93,6 +94,7 @@ export default async function Home() {
           <p>Is Not A Teacher</p>
         )}
       </footer>
+      <DatePickerWithRange daysAdded={150} />
     </div>
   );
 }
