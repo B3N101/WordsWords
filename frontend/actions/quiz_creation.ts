@@ -197,7 +197,6 @@ export const fetchQuizzes = async (wordListId: string, userId: string) => {
             wordsListId: wordListId,
             userId: userId,
             quizType: QuizType.MASTERY,
-            completed: false,
         },
     });
     if (!masterQuiz){
