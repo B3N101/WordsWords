@@ -2,16 +2,16 @@
 
 import Link from "next/link";
 import { useState } from "react";
-import { Button } from "@/components/ui/button";
-import ProgressBar from "@/components/progressBar";
-import {
-  upsertQuestionCompleted,
-  upsertQuizCompleted,
-} from "@/actions/quiz_progress";
-import { upsertWordMastery } from "@/actions/word_progress";
-import { type Answer, type UserQuizProgressWithQuiz } from "@/prisma/types";
+// import { Button } from "@/components/ui/button";
+// import ProgressBar from "@/components/progressBar";
+// import {
+//   upsertQuestionCompleted,
+//   upsertQuizCompleted,
+// } from "@/actions/quiz_progress";
+// import { upsertWordMastery } from "@/actions/word_progress";
+// import { type Quiz } from "@/prisma/client";
 type Props = {
-  userQuiz: UserQuizProgressWithQuiz;
+  userQuiz: Quiz;
 };
 
 export default function QuizPage({ userQuiz }: Props) {
