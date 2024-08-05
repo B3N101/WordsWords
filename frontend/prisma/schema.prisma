@@ -121,8 +121,8 @@ model UserWordsListProgress {
   user                    User   @relation(fields: [userId], references: [id])
   userId                  String
 
-  class                   Class @relation(fields: [classId], references: [classId])
-  classId                 String
+  class                   Class? @relation(fields: [classId], references: [classId])
+  classId                 String?
 
   wordsList       WordsList @relation(fields: [wordsListListId], references: [listId], onDelete: Cascade)
   wordsListListId String
@@ -199,7 +199,7 @@ model Quiz {
 // include everything userQuestionProgress
 model Question {
   questionId String @id @default(cuid())
-  question   String 
+  questionString   String 
   rank       Int
 
   wordId String
@@ -207,7 +207,8 @@ model Question {
 
   quiz              Quiz  @relation(fields: [quizId], references: [quizId])
   quizId            String
-  answers           String[] // TODO: change to list of strings
+  allAnswers           String[] 
+  correctAnswer        String
   completed         Boolean
 }
 

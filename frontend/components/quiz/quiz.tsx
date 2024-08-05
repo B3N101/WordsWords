@@ -2,47 +2,42 @@
 
 import Link from "next/link";
 import { useState } from "react";
-// import { Button } from "@/components/ui/button";
-// import ProgressBar from "@/components/progressBar";
-// import {
-//   upsertQuestionCompleted,
-//   upsertQuizCompleted,
-// } from "@/actions/quiz_progress";
-// import { upsertWordMastery } from "@/actions/word_progress";
-// import { type Quiz } from "@/prisma/client";
+import { Button } from "@/components/ui/button";
+import ProgressBar from "@/components/progressBar";
+import {
+  upsertQuestionCompleted,
+  upsertQuizCompleted,
+} from "@/actions/quiz_progress";
+import { upsertWordMastery } from "@/actions/word_progress";
+import { type QuizWithQuestions } from "@/prisma/types";
 type Props = {
-  userQuiz: Quiz;
+  quiz: QuizWithQuestions;
 };
 
-export default function QuizPage({ userQuiz }: Props) {
-  const quiz = userQuiz.quiz;
+export default function QuizPage({ quiz }: Props) {
   const questions = quiz.questions;
-  const wordsListId = quiz.wordsListListId;
 
   console.log(quiz);
-  const userQuestions = questions
-    .map((question) => question.userQuestionProgress)
-    .flat(); // flatten from a [[],[],[]] to [, , ,]
+  
   // TODO: shuffle questions here
-  const [completed, setCompleted] = useState<boolean>(userQuiz.completed);
+  const [completed, setCompleted] = useState<boolean>(quiz.completed);
 
   const [started, setStarted] = useState<boolean>(() => {
-    return userQuestions.some((question) => question.completed);
+    return questions.some((question) => question.completed);
   });
   // return the first uncompleted question
   const [currentIndex, setCurrentIndex] = useState<number>(() => {
-    const uncompletedIndex = userQuestions.findIndex(
+    const uncompletedIndex = questions.findIndex(
       (question) => !question.completed,
     );
     return uncompletedIndex === -1 ? 0 : uncompletedIndex;
   });
-  console.log(questions, currentIndex);
   const [score, setScore] = useState<number>(0);
   const [isCurrentCorrect, setIsCurrentCorrect] = useState<boolean | null>(
     null,
   );
 
-  if (!userQuiz.learnCompleted && quiz.quizType === "MINI"){
+  if (!quiz.learnCompleted && quiz.quizType === "MINI"){
     return (
       <div>
         key={0}
@@ -51,17 +46,17 @@ export default function QuizPage({ userQuiz }: Props) {
         </div>
         <Link
           className="flex items-center justify-between border-2 border-[#ff6b6b] rounded-lg p-4"
-          href={`/learn/${userQuiz.quizQuizId}`}
+          href={`/learn/${quiz.quizId}`}
         >
           <div>Go to Learn</div>
         </Link>
       </div>)
   }
   const question = questions[currentIndex];
-  const options = question.answers;
+  const options = question.allAnswers;
   /*TODO: Track user progress so that refresh sends them to the current answer*/
-  const handleAnswerClick = (answer: Answer) => {
-    setIsCurrentCorrect(answer.correct);
+  const handleAnswerClick = (answer: String) => {
+    setIsCurrentCorrect(answer === question.correctAnswer);
   };
 
   const handleNext = async () => {
@@ -76,7 +71,7 @@ export default function QuizPage({ userQuiz }: Props) {
       setCurrentIndex(currentIndex + 1);
       if (isCurrentCorrect !== null) {
         upsertQuestionCompleted(
-          userQuestions[currentIndex].userQuestionProgressId,
+          questions[currentIndex].questionId,
           true,
         );
         upsertWordMastery(question.wordId, isCurrentCorrect);
@@ -84,7 +79,7 @@ export default function QuizPage({ userQuiz }: Props) {
         throw Error("No answer selected");
       }
     } else {
-      await upsertQuizCompleted(userQuiz.userQuizProgressId, true);
+      await upsertQuizCompleted(quiz.quizId, true);
       setCompleted(true);
       return;
     }
@@ -104,15 +99,15 @@ export default function QuizPage({ userQuiz }: Props) {
               <h1 className="text-3xl font-bol">Quiz {quiz.quizId}</h1>
             ) : (
               <div>
-                <h2 className="text-2xl font-bold">{question.question}</h2>
+                <h2 className="text-2xl font-bold">{question.questionString}</h2>
                 <div className="grid grid-cols1 gap-6 m-12">
-                  {options.map((answer) => (
+                  {options.map((answer, index) => (
                     <Button
-                      key={answer.answerId}
+                      key={index}
                       variant="answer_choice"
                       onClick={() => handleAnswerClick(answer)}
                     >
-                      {answer.answerText}
+                      {answer}
                     </Button>
                   ))}
                 </div>
@@ -141,7 +136,7 @@ export default function QuizPage({ userQuiz }: Props) {
           <div>
             <Button
               onClick={async () => {
-                await upsertQuizCompleted(userQuiz.userQuizProgressId, false);
+                await upsertQuizCompleted(quiz.quizId, false);
 
                 // TODO: switch to updating react states, remove async
                 window.location.reload();
@@ -154,8 +149,8 @@ export default function QuizPage({ userQuiz }: Props) {
           <div>
             <Button
               onClick={async () => {
-                await upsertQuizCompleted(userQuiz.userQuizProgressId, false);
-                window.location.href = "/wordList/" + wordsListId;
+                await upsertQuizCompleted(quiz.quizId, false);
+                window.location.href = "/wordList/" + quiz.wordsListId;
               }}
             >
               {" "}
@@ -166,7 +161,7 @@ export default function QuizPage({ userQuiz }: Props) {
           {/* TODO: Fix the back to dashboard */}
           <Button
               onClick={async () => {
-                window.location.href = "/wordList/" + wordsListId;
+                window.location.href = "/wordList/" + quiz.wordsListId;
               }}
             >
               {" "}
