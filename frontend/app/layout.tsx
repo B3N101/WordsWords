@@ -6,6 +6,7 @@ import { cn } from "@/lib/utils";
 import { Analytics } from "@vercel/analytics/react";
 import { SpeedInsights } from "@vercel/speed-insights/next";
 import NavBar from "@/components/NavBar";
+import { Toaster } from "@/components/ui/toaster";
 
 const inter = Inter({
   subsets: ["latin"],
@@ -43,6 +44,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
       >
         <NavBar />
         {children}
+        <Toaster />
       </body>
     </html>
   );
