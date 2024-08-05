@@ -1,4 +1,5 @@
 import WordListPage from "@/components/wordList/wordListPage";
+import { Suspense } from "react";
 
 export default function Page({ params }: { params: { slug: string } }) {
   const wordListString = params.slug;
@@ -7,7 +8,9 @@ export default function Page({ params }: { params: { slug: string } }) {
     <div>
       <h1>WordList page for {wordListString}</h1>
       {/* Add your class page content here */}
-      <WordListPage wordListID={wordListString} />
+      <Suspense>
+        <WordListPage wordListID={wordListString} />
+      </Suspense>
     </div>
   );
 }

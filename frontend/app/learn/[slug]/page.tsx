@@ -1,5 +1,5 @@
 import { auth } from "@/auth/auth";
-import ContextPage from "@/app/learn/context";
+import ContextPage from "@/components/quiz/learn";
 import { getQuizWords } from "@/prisma/queries";
 
 const page = async ({ params }: { params: { slug: string } }) => {

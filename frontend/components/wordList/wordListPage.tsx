@@ -18,7 +18,7 @@ import {
 } from "@/components/ui/table";
 import { Card, CardContent } from "@/components/ui/card";
 
-import { getWordList, getUserWordListProgress, getUserQuizProgress } from "@/prisma/queries";
+import { fetchQuizzes } from "@/actions/quiz_creation";
 import { masteryAvailable, createOrGetMasterQuiz } from "@/actions/master_quiz";
 import { auth } from "@/auth/auth";
 
@@ -72,65 +72,46 @@ export default async function WordListPage({ wordListID }: WordListPageProps) {
   }
 
   // get wordList, userWordListProgress from wordListID
-  const wordListData = getWordList(wordListID);
-  const userWordListProgressData = getUserWordListProgress(userId, wordListID);
-  const [wordList, userWordListProgress] = await Promise.all([
-    wordListData,
-    userWordListProgressData,
-  ]);
-  // could consider not awaiting, render a skeleton
-  const masterQuizAvailable = await masteryAvailable(wordList!.listId, userId);
-  let masterQuiz;
-  let userMasterQuiz;
-  if (masterQuizAvailable) {
-    masterQuiz = await createOrGetMasterQuiz(wordListID, userId);
-    userMasterQuiz = await getUserQuizProgress(userId, masterQuiz.quizId);
-  }
+  // const wordListData = getWordList(wordListID);
+  // const userWordListProgressData = getUserWordListProgress(userId, wordListID);
+  // const [wordList, userWordListProgress] = await Promise.all([
+  //   wordListData,
+  //   userWordListProgressData,
+  // ]);
 
-  const userQuizProgresses = userWordListProgress?.userQuizProgresses;
-  const userMiniQuizzes = userQuizProgresses?.filter(userQuizProgress => userQuizProgress.quiz.quizType === "MINI");
+  const {miniQuizzes, masterQuiz} = await fetchQuizzes(wordListID, userId);
+
   // filter only mini quizzes
-  const quizData = userMiniQuizzes?.map((userQuizProgress, i) => {
-    const quizId = userQuizProgress.quizQuizId;
-    const status: QuizStatusType = userQuizProgress.learnCompleted
-      ? userQuizProgress.completed
+  const quizData = miniQuizzes?.map((miniQuiz, i) => {
+    const status: QuizStatusType = miniQuiz.learnCompleted
+      ? miniQuiz.completed
         ? "completed"
         : "open"
       : "locked";
     return {
       name: "Quiz " + (i + 1),
       status: status,
-      quizID: quizId,
+      quizID: miniQuiz.quizId,
       dueDate: new Date("2022-09-15"),
     };
   });
-  const learnData = userMiniQuizzes?.map((userQuizProgress, i) => {
-    const quizId = userQuizProgress.quizQuizId;
+  const learnData = miniQuizzes?.map((miniQuiz, i) => {
     let learnStatus: LearnStatusType;
     if (i == 0) {
-      learnStatus = userQuizProgress.learnCompleted ? "completed" : "open";
+      learnStatus = miniQuiz.learnCompleted ? "completed" : "open";
     } else {
-      learnStatus = userQuizProgress.learnCompleted
+      learnStatus = miniQuiz.learnCompleted
         ? "completed"
-        : userMiniQuizzes[i - 1]?.completed
+        : miniQuizzes[i - 1]?.completed
           ? "open"
           : "locked";
     }
     return {
       name: "Learn " + (i + 1),
       status: learnStatus,
-      quizID: quizId,
+      quizID: miniQuiz.quizId,
     };
   });
-  // get className, teacherName, startDate, endDate from classID
-  // const className = await getClassNameFromClassId(classID);
-  // const startDate = await getClassStartDate(classID);
-  // const endDate = await getClassEndDate(classID);
-  // const students = await getClassStudents(classID);
-  // const teacherName = await getTeacherNameFromClassId(classID);
-  // // active, upcoming, completed
-  // const classStatus = startDate < new Date() && endDate > new Date() ? "active" : startDate > new Date() ? "upcoming" : "completed";
-
   return (
     <div className="flex-1 p-6">
       <div className="flex items-center justify-between mb-6">
@@ -197,14 +178,14 @@ export default async function WordListPage({ wordListID }: WordListPageProps) {
           </CardContent>
         </Card>
       </div>
-      {masterQuizAvailable ? (
+      {masterQuiz ? (
         <MasterQuiz
-          quizID={masterQuiz!.quizId}
-          available={masterQuizAvailable}
-          completed={userMasterQuiz!.completed}
+          quizID={masterQuiz.quizId}
+          available={true}
+          completed={masterQuiz!.completed}
         />
       ) : (
-        <MasterQuiz quizID={"NULL"} available={masterQuizAvailable} completed={false} />
+        <MasterQuiz quizID={"NULL"} available={false} completed={false} />
       )}
     </div>
   );

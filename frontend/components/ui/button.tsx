@@ -11,7 +11,7 @@ const buttonVariants = cva(
   {
     variants: {
       variant: {
-        answer_choice:"bg-primary text-black hover:bg-primary/90 border-white-500 border-2 border-b-[3px]",
+        answer_choice:"bg-green-100 text-black hover:bg-green-200 border-white-500 border-2 border-b-[3px]",
         default: "bg-gray-100 text-black hover:bg-gray-100/90 border-black border-2 border-b-[3px]",
         destructive:
           "bg-destructive text-destructive-foreground hover:bg-destructive/90",

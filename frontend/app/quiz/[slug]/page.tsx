@@ -1,6 +1,6 @@
 import { auth } from "@/auth/auth";
 import QuizPage from "@/components/quiz/quiz";
-import { getQuestions, getQuiz, getUserQuizProgress } from "@/prisma/queries";
+import { getQuiz } from "@/prisma/queries";
 
 const page = async ({ params }: { params: { slug: string } }) => {
   const quizId = params.slug;
@@ -10,14 +10,14 @@ const page = async ({ params }: { params: { slug: string } }) => {
   if (!userId) {
     throw new Error("User not found");
   }
-  const userQuizProgress = await getUserQuizProgress(userId, quizId);
-  if (!userQuizProgress) {
-    throw new Error("User quiz not found");
+  const quiz = await getQuiz(quizId);
+  if(!quiz){
+    throw new Error("Quiz not found");
   }
   return (
     <div>
       <h1>Quiz</h1>
-      <QuizPage userQuiz={userQuizProgress} />
+      <QuizPage quiz={quiz} />
     </div>
   );
 };
