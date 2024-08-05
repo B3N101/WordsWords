@@ -91,15 +91,6 @@ export default async function ClassPage({ classID }: ClassPageProps) {
     isTeacher = true;
   }
 
-  // get className, teacherName, startDate, endDate from classID
-  // const className = await getClassNameFromClassId(classID);
-  // const startDate = await getClassStartDate(classID);
-  // const endDate = await getClassEndDate(classID);
-  // const students = await getClassStudents(classID);
-  // const teacherName = await getTeacherNameFromClassId(classID);
-  // // active, upcoming, completed
-  // const classStatus = startDate < new Date() && endDate > new Date() ? "active" : startDate > new Date() ? "upcoming" : "completed";
-
   return (
     <div className="flex-1 p-6">
       <div className="flex items-center justify-between mb-6">

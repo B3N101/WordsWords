@@ -14,7 +14,17 @@ import {
   PopoverTrigger,
 } from "@/components/ui/popover";
 
-export function DatePickerWithRange({ className, daysAdded, startDate, endDate} : {className?: React.HTMLAttributes<HTMLDivElement>, daysAdded?: number, startDate?: Date, endDate?: Date}) {
+export function DatePickerWithRange({
+  className,
+  daysAdded,
+  startDate,
+  endDate,
+}: {
+  className?: React.HTMLAttributes<HTMLDivElement>;
+  daysAdded?: number;
+  startDate?: Date;
+  endDate?: Date;
+}) {
   if (daysAdded === undefined) {
     daysAdded = 0;
   }
@@ -24,7 +34,7 @@ export function DatePickerWithRange({ className, daysAdded, startDate, endDate} 
   if (endDate === undefined) {
     endDate = addDays(new Date(), daysAdded);
   }
-  
+
   const [date, setDate] = React.useState<DateRange | undefined>({
     from: startDate,
     to: endDate,

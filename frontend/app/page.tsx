@@ -24,6 +24,7 @@ type classData = {
 };
 
 export default async function Home() {
+  // const { toast } = useToast();
   const session = await auth();
 
   if (!session) redirect("/api/auth/signin");
@@ -80,7 +81,7 @@ export default async function Home() {
     <div>
       <ClassDashboard data={classData} />
 
-      <CreateClassCard />
+      <CreateClassCard teacherId={userId} />
       <JoinClassCard />
 
       <footer>

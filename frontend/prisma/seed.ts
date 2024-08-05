@@ -244,14 +244,14 @@ async function seedQuizzes(userID: string) {
   }
 }
 
-async function seedAll(userID: string) {
-  await seedWords();
-  await seedWordLists(userID);
-  await seedQuestions(userID);
-  await seedQuizzes(userID);
-}
+// async function seedAll(userID: string) {
+//   await seedWords();
+//   await seedWordLists(userID);
+//   await seedQuestions(userID);
+//   await seedQuizzes(userID);
+// }
 
-seedAll("96c6654a-8f9b-4457-8e9f-8034aac25740");
+// seedAll("96c6654a-8f9b-4457-8e9f-8034aac25740");
 
 // seedAll("6aaad536-297b-4a47-b9c6-b9b90628ac01").then(async () => {
 //   await prisma.$disconnect();
@@ -290,3 +290,11 @@ seedAll("96c6654a-8f9b-4457-8e9f-8034aac25740");
 //     await prisma.$disconnect();
 //     process.exit(1);
 //   });
+
+// delete classes
+async function deleteClasses() {
+  await prisma.class.deleteMany();
+  console.log("Classes deleted");
+}
+
+deleteClasses();

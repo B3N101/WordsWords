@@ -10,6 +10,10 @@ export async function createClass(
   semesterStart: Date,
   semesterEnd: Date,
 ): Promise<Class> {
+  if (semesterStart > semesterEnd) {
+    throw new Error("Semester start date must be before semester end");
+  }
+
   return await prisma.class.create({
     data: {
       className: className,

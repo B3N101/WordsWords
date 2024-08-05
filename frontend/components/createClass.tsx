@@ -1,33 +1,55 @@
-/**
- * v0 by Vercel.
- * @see https://v0.dev/t/E6bwvrh38fR
- * Documentation: https://v0.dev/docs#integrating-generated-code-into-your-nextjs-app
- */
 "use client";
 
 import { useState } from "react";
-import Link from "next/link";
 import { Button } from "@/components/ui/button";
-// import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import { Card, CardContent } from "@/components/ui/card";
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
+import { createClass } from "@/lib/teacherSettings";
+import { useToast } from "@/components/ui/use-toast";
+import { ToastAction } from "@/components/ui/toast";
 
-export default function CreateClassCard() {
+export default function CreateClassCard({ teacherId }: { teacherId: string }) {
+  const { toast } = useToast();
   const [newClass, setNewClass] = useState({
-    name: "",
-    startDate: null,
-    endDate: null,
-    classCode: "",
+    className: "",
+    semesterStart: "",
+    semesterEnd: "",
   });
-//   const [joinClass, setJoinClass] = useState("");
-  const handleNewClassSubmit = () => {
-    const classCode = Math.random().toString(36).substring(2, 8).toUpperCase();
-    setNewClass({ ...newClass, classCode });
+  const [isLoading, setIsLoading] = useState(false);
+
+  const handleNewClassSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setIsLoading(true);
+
+    try {
+      const { className, semesterStart, semesterEnd } = newClass;
+
+      const createdClass = await createClass(
+        className,
+        teacherId,
+        new Date(semesterStart),
+        new Date(semesterEnd),
+      );
+
+      setNewClass({ className: "", semesterStart: "", semesterEnd: "" });
+      toast({
+        description:
+          "Class " + createdClass.className + " created successfully",
+      });
+    } catch (error) {
+      // console.error("Error creating class:", error);
+      toast({
+        variant: "destructive",
+        title: "Uh oh! Something went wrong.",
+        description: "There was a problem creating a class.",
+        action: <ToastAction altText="Try again">Try again</ToastAction>,
+      });
+    } finally {
+      setIsLoading(false);
+    }
   };
-//   const handleJoinClass = () => {
-//     console.log(`Joining class with code: ${joinClass}`);
-//   };
+
   return (
     <div className="mt-8">
       <h2 className="text-2xl font-bold mb-4 text-[#ff6b6b]">
@@ -41,34 +63,62 @@ export default function CreateClassCard() {
                 <Label htmlFor="className">Class Name</Label>
                 <Input
                   id="className"
-                  value={newClass.name}
+                  value={newClass.className}
                   onChange={(e) =>
-                    setNewClass({ ...newClass, name: e.target.value })
+                    setNewClass({ ...newClass, className: e.target.value })
                   }
                   required
                 />
               </div>
               <div className="grid grid-cols-2 gap-4">
                 <div className="grid gap-2">
-                  <Label htmlFor="startDate">Start Date</Label>
-                  <div />
+                  <Label htmlFor="semesterStart">Semester Start</Label>
+                  <Input
+                    id="semesterStart"
+                    type="date"
+                    value={newClass.semesterStart}
+                    onChange={(e) =>
+                      setNewClass({
+                        ...newClass,
+                        semesterStart: e.target.value,
+                      })
+                    }
+                    required
+                  />
                 </div>
                 <div className="grid gap-2">
-                  <Label htmlFor="endDate">End Date</Label>
-                  <div />
+                  <Label htmlFor="semesterEnd">Semester End</Label>
+                  <Input
+                    id="semesterEnd"
+                    type="date"
+                    value={newClass.semesterEnd}
+                    onChange={(e) =>
+                      setNewClass({ ...newClass, semesterEnd: e.target.value })
+                    }
+                    required
+                  />
                 </div>
               </div>
-              <div className="grid gap-2">
-                <Label htmlFor="classCode">Class Code</Label>
-                <Input id="classCode" value={newClass.classCode} readOnly />
-              </div>
-              <Button type="submit" className="justify-self-end">
-                Create Class
+              <Button
+                type="submit"
+                className="justify-self-end"
+                disabled={isLoading}
+              >
+                {isLoading ? "Creating..." : "Create Class"}
               </Button>
             </div>
           </form>
         </CardContent>
       </Card>
+      <button
+        onClick={() => {
+          toast({
+            description: "Your message has been sent.",
+          });
+        }}
+      >
+        toast
+      </button>
     </div>
   );
 }

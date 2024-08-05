@@ -21,10 +21,10 @@ export default function JoinClassCard() {
     classCode: "",
   });
   const [joinClass, setJoinClass] = useState("");
-//   const handleNewClassSubmit = () => {
-//     const classCode = Math.random().toString(36).substring(2, 8).toUpperCase();
-//     setNewClass({ ...newClass, classCode });
-//   };
+  //   const handleNewClassSubmit = () => {
+  //     const classCode = Math.random().toString(36).substring(2, 8).toUpperCase();
+  //     setNewClass({ ...newClass, classCode });
+  //   };
   const handleJoinClass = () => {
     console.log(`Joining class with code: ${joinClass}`);
   };

@@ -12,6 +12,7 @@ module.exports = {
       colors: {
         tan: "#f1efd7",
         lightgreen: "#c8ffc5",
+        mx: "cf003d",
       },
     },
     colors: {
