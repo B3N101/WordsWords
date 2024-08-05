@@ -32,6 +32,18 @@ yarn-error.log*
 .env.test.local
 .env.production.local
 
+# google secrets
+sheets_secrets.json
+
+# ignore file : "google_sheets_secrets.json"
+google_sheets_secrets.json
+
 # vercel
 .vercel
 .env*.local
+
+# vscode
+.vscode
+
+# prisma migrations
+/prisma/migrations

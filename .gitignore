@@ -7,3 +7,8 @@ backend/target/*
 
 # ignore .vscode folder and its content
 .vscode
+# google secrets
+sheets_secrets.json
+
+
+
