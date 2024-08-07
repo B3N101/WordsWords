@@ -87,24 +87,27 @@ model Class {
 }
 
 model Word {
-  wordId               String       @id @default(cuid())
-  word                 String
-  partOfSpeech         partOfSpeech
-  gradeLevel           Grade
-  exampleSentence      String
+  wordId String @id @default(cuid())
+  word String
+
+  partOfSpeech partOfSpeech
+  gradeLevel   Grade
+
   context              String
   definition           String
   incorrectDefinitions String[]
-  listId               String? //TODO: remove optional when seeding is complete
-  wordsList            WordsList?   @relation(fields: [listId], references: [listId], onDelete: Cascade)
-  // TODO: implement wordmastery seeding. Uncomment when complete
-  // WordMastery          WordMastery[]
 
-  rankWithinList Int?
+  exampleSentence String
+  incorrectFillIn String[]
+
   wordListNumber Int?
+  rankWithinList Int?
 
   userWordMasteries UserWordMastery[]
-  questions         Question[]
+
+  listId    String?
+  wordsList WordsList? @relation(fields: [listId], references: [listId], onDelete: Cascade)
+  questions Question[]
 }
 
 // TODO: static piece. woulnd't have to keep track of quizzes
@@ -129,7 +132,7 @@ model UserWordsListProgress {
   quizzes   Quiz[]
   completed Boolean @default(false)
 
-  @@id(name: "userWordsListProgressId", [userId, wordsListListId])
+  @@id(name: "userWordsListProgressId", [userId, wordsListListId]) 
 }
 
 // model PublishedList {

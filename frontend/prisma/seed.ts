@@ -49,6 +49,7 @@ async function seedWords() {
       exampleSentence: row[4] ? row[4] : "",
       incorrectDefinitions: row.slice(5, 10) ? row.slice(5, 10) : [""],
       gradeLevel: getGrade(row[10]),
+      incorrectFillIn: row.slice(11, 14) ? row.slice(11, 14) : [""],
       wordListNumber: row[14] ? parseInt(row[14]) : -1,
       rankWithinList: row[15] ? parseInt(row[15]) : -1,
     }));
@@ -81,7 +82,6 @@ async function seedWordLists(userID: string) {
       wordListNumber: "asc",
     },
   });
-  console.log(words);
   let prevWordListID = words[0].wordListNumber!;
   let currWords = [];
   for (const word of words!) {
@@ -252,7 +252,7 @@ async function seedAll(userID: string) {
   // await seedQuizzes(userID);
 }
 
-seedAll("011a1867-2eab-46b8-9520-7e51b1dcff1b").then(async () => {
+seedAll("01ca9e78-3322-4ccb-b9b0-8f08f2065428").then(async () => {
   await prisma.$disconnect();
 });
 // // seedWords().then(async () => {
