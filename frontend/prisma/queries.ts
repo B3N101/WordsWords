@@ -24,10 +24,9 @@ export const getUserWordListProgress = cache(
   async (userID: string, wordListID: string) => {
     const data = await prisma.userWordsListProgress.findFirst({
       where: { userId: userID, wordsListListId: wordListID },
-      include: { userQuizProgresses: 
+      include: { quizzes: 
         {
-          orderBy: { quizQuizId: 'asc'},
-          include: { quiz: true}
+          orderBy: { quizId: 'asc'},
         },
       },
     });
@@ -59,53 +58,19 @@ export const getWordListWords = cache(async (wordListID: string) => {
   return words;
 });
 export const getUserQuizzes = cache(async (userID: string) => {
-  const data = await prisma.userQuizProgress.findMany({
+  const data = await prisma.quiz.findMany({
     where: { userId: userID },
-    select: { quizQuizId: true, learnCompleted: true },
+    select: { quizId: true, learnCompleted: true },
   });
   return data;
 });
-export const getUserQuizProgress = cache(
-  async (userID: string, quizID: string) => {
-    const data = await prisma.userQuizProgress.findFirst({
-      where: { userId: userID, quizQuizId: quizID },
-      include: {
-        quiz: {
-          include: {
-            questions: {
-              include: {
-                answers: true,
-                userQuestionProgress: {
-                  where: {
-                    userId: userID,
-                  },
-                },
-              },
-              orderBy: {
-                questionId: "asc",
-              },
-            },
-          },
-        },
-      },
-    });
-    return data;
-  },
-);
 export const getQuiz = cache(async (quizID: string) => {
   const quiz = await prisma.quiz.findFirst({
     where: {
       quizId: quizID,
     },
     include: {
-      questions: {
-        include: {
-          answers: true,
-        },
-        orderBy: {
-          questionId: "asc",
-        },
-      },
+      questions: true,
     },
   });
   if (!quiz) {
@@ -114,28 +79,6 @@ export const getQuiz = cache(async (quizID: string) => {
   return quiz;
 });
 
-export const getQuestions = cache(async (quizID: string) => {
-  const quiz = await prisma.quiz.findFirst({
-    where: {
-      quizId: quizID,
-    },
-    include: {
-      questions: {
-        include: {
-          answers: true,
-        },
-        orderBy: {
-          questionId: "asc",
-        },
-      },
-    },
-  });
-  if (!quiz) {
-    throw Error("Quiz not found");
-  }
-
-  return quiz.questions;
-});
 
 export const getQuizWords = cache(async (quizID: string) => {
   const quiz = await prisma.quiz.findFirst({
@@ -143,12 +86,16 @@ export const getQuizWords = cache(async (quizID: string) => {
       quizId: quizID,
     },
     select: {
-      words: true,
+      questions:{
+        select:{
+          word: true
+        }
+      }
     },
   });
 
   if (!quiz) {
     throw new Error("Quiz not found");
   }
-  return quiz.words;
+  return quiz.questions.map((question) => question.word);
 });
