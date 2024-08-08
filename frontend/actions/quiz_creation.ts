@@ -17,7 +17,7 @@ function pickNRandom(arr: string[], n: number){
     }
     return result;
 }
-export const createMiniQuiz = async (wordListId: string, userId: string, miniSetId: number) => {
+export const createMiniQuiz = async (wordListId: string, userId: string, miniSetId: number, learnCompleted: boolean) => {
     const wordList = await prisma.wordsList.findFirst({
         where: {
             listId: wordListId,
@@ -38,7 +38,7 @@ export const createMiniQuiz = async (wordListId: string, userId: string, miniSet
     }
     const questions = words.map((word, index) => {
         // Take two of the incorrect definitions at random
-        const answerChoices = pickNRandom(word.incorrectDefinitions, 2)
+        const answerChoices = pickNRandom(word.incorrectDefinitions, 3)
         // add the correct definition
         answerChoices.push(word.definition)
         return {
@@ -55,6 +55,9 @@ export const createMiniQuiz = async (wordListId: string, userId: string, miniSet
             user: { connect: { id: userId } },
             wordsList: { connect: { listId: wordListId } },
             quizType: QuizType.MINI,
+            name: wordListId + "_mini_quiz_" + miniSetId,
+            miniSetNumber: miniSetId,
+            learnCompleted: learnCompleted,
             userWordsListProgress: { 
                 connectOrCreate: {
                     create:{
@@ -129,7 +132,10 @@ export const createMasterQuiz = async (wordListId: string, userId: string) => {
         data:{
             user: { connect: { id: userId } },
             wordsList: { connect: { listId: wordListId } },
+            name: wordListId + "_master_quiz",
             quizType: QuizType.MASTERY,
+            miniSetNumber: -1,
+            learnCompleted: true,
             userWordsListProgress: { 
                 connectOrCreate: {
                     create:{
@@ -154,26 +160,33 @@ export const createMasterQuiz = async (wordListId: string, userId: string) => {
     return quiz;
 }
 
-
 // Fetchquizzes used in every wordlist page to get the active quiz
 export const fetchQuizzes = async (wordListId: string, userId: string) => {
-    let miniQuizzes = await prisma.quiz.findMany({
-        where: {
-            wordsListId: wordListId,
-            userId: userId,
-            quizType: QuizType.MINI,
-        },
-    });
-    if (miniQuizzes.length === 0){
-        miniQuizzes = [];
-        for (let i = 0; i < 3; i++)
-        {
-            const newMiniQuiz = await createMiniQuiz(wordListId, userId, i);
-            if (newMiniQuiz){
-                miniQuizzes.push(newMiniQuiz);
-            }
+
+    let miniQuizzes = [];
+
+    for (let miniSetNumber = 0; miniSetNumber < 3; miniSetNumber++) {
+        let latestQuiz = await prisma.quiz.findFirst({
+            where: {
+                wordsListId: wordListId,
+                userId: userId,
+                quizType: QuizType.MINI,
+                miniSetNumber: miniSetNumber,
+            },
+            orderBy: {
+                createdAt: 'desc',
+            },
+        });
+
+        if (!latestQuiz) {
+            latestQuiz = await createMiniQuiz(wordListId, userId, miniSetNumber, false);
+        }
+
+        if (latestQuiz) {
+            miniQuizzes.push(latestQuiz);
         }
     }
+
     // check if all the miniquizzes are completed. If not, no master quiz
     for (let miniquiz of miniQuizzes){
         if (!miniquiz.completed){
@@ -187,61 +200,12 @@ export const fetchQuizzes = async (wordListId: string, userId: string) => {
             userId: userId,
             quizType: QuizType.MASTERY,
         },
+        orderBy: {
+            createdAt: 'desc',
+        }
     });
     if (!masterQuiz){
         masterQuiz = await createMasterQuiz(wordListId, userId);
     }
     return { miniQuizzes, masterQuiz };
-}
-
-// Creating a set of backups for the user to retake if they'd like. Call after fetchquizzes
-export const createMiniQuizFromQuestions = async (questions: Question[], userId: string, wordListId: string) => {
-    const wordIds = questions.map((question) => question.wordId);
-    const words = await prisma.word.findMany({
-        where:{
-            wordId: {
-                in: wordIds,
-            }
-        }
-    })
-    const newQuestions = words.map((word, index) => {
-        // Take three of the incorrect definitions at random
-        const answerChoices = pickNRandom(word.incorrectDefinitions, 3)
-        // add the correct definition
-        answerChoices.push(word.definition)
-        return {
-            questionString: "What is the definition of " + word.word + "?",
-            rank: index,
-            allAnswers: answerChoices,
-            correctAnswer: word.definition,
-            wordId: word.wordId,
-        }
-    })
-    const quiz = await prisma.quiz.create({
-        data:{
-            user: { connect: { id: userId } },
-            wordsList: { connect: { listId: wordListId } },
-            quizType: QuizType.MINI,
-            userWordsListProgress: { 
-                connectOrCreate: {
-                    create:{
-                        user: { connect: { id: userId }},
-                        wordsList: { connect: { listId: wordListId }},
-                    },
-                    where: {
-                        userWordsListProgressId:{
-                            userId: userId,
-                            wordsListListId: wordListId,
-                        },
-                    }
-                }
-            },
-            questions:{
-                createMany:{
-                    data: newQuestions
-                }
-            }
-        }
-    })
-    return quiz;
 }

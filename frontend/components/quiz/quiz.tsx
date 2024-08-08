@@ -10,7 +10,7 @@ import {
 } from "@/actions/quiz_progress";
 
 import {
-  createMiniQuizFromQuestions
+  createMiniQuiz,
 } from "@/actions/quiz_creation";
 
 import { upsertWordMastery } from "@/actions/word_progress";
@@ -141,9 +141,15 @@ export default function QuizPage({ quiz }: Props) {
           <div>
             <Button
               onClick={async () => {
-                const newQuiz = await createMiniQuizFromQuestions(questions, quiz.wordsListId, quiz.userId);
+                const newQuizData = createMiniQuiz(quiz.wordsListId, quiz.userId, quiz.miniSetNumber, true);
                 // TODO: switch to updating react states, remove async
-                window.location.href = "/quiz/" + newQuiz.quizId;
+                <div> Loading ... </div>
+                console.log("Making new quiz")
+                newQuizData.then((newQuiz) => {
+                  if (newQuiz) {
+                    window.location.href = "/quiz/" + newQuiz.quizId;
+                  }
+                });
               }}
             >
               {" "}
@@ -151,7 +157,6 @@ export default function QuizPage({ quiz }: Props) {
             </Button>
           </div>
           <div>
-          {/* TODO: Fix the back to dashboard */}
           <Button
               onClick={async () => {
                 window.location.href = "/wordList/" + quiz.wordsListId;

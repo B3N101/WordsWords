@@ -17,7 +17,7 @@ import {
   TableHeader,
 } from "@/components/ui/table";
 import { Card, CardContent } from "@/components/ui/card";
-
+import { AttemptsTable } from "./attemptsTable";
 import { fetchQuizzes } from "@/actions/quiz_creation";
 import { masteryAvailable, createOrGetMasterQuiz } from "@/actions/master_quiz";
 import { auth } from "@/auth/auth";
@@ -187,6 +187,7 @@ export default async function WordListPage({ wordListID }: WordListPageProps) {
       ) : (
         <MasterQuiz quizID={"NULL"} available={false} completed={false} />
       )}
+      <AttemptsTable wordsListId={wordListID} userId={userId} />
     </div>
   );
 }

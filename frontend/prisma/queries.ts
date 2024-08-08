@@ -79,6 +79,16 @@ export const getQuiz = cache(async (quizID: string) => {
   return quiz;
 });
 
+export const getQuizzesFromWordsList = cache(async (wordListID: string, userId: string) => {
+  const quizzes = await prisma.quiz.findMany({
+    where: {
+      wordsListId: wordListID,
+      userId: userId,
+      completed: true,
+    },
+  });
+  return quizzes;
+});
 
 export const getQuizWords = cache(async (quizID: string) => {
   const quiz = await prisma.quiz.findFirst({

@@ -93,6 +93,7 @@ async function seedWordLists(userID: string) {
     else {
       await prisma.wordsList.create({
         data: {
+          listId: "grade_" + words[0].gradeLevel + "_list_" + prevWordListID, 
           words: {
             connect: currWords.map((word) => ({ wordId: word.wordId })),
           },
@@ -252,7 +253,7 @@ async function seedAll(userID: string) {
   // await seedQuizzes(userID);
 }
 
-seedAll("ba19ef08-fdaa-4462-9eff-1b331675da2e").then(async () => {
+seedAll("26d30fa4-a892-44a2-b2dd-e1a2e6177110").then(async () => {
   await prisma.$disconnect();
 });
 // // seedWords().then(async () => {
