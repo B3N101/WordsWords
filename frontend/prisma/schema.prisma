@@ -98,7 +98,7 @@ model Word {
   incorrectDefinitions String[]
 
   exampleSentence String
-  incorrectFillIn String[]
+  incorrectFillIns String[]
 
   wordListNumber Int?
   rankWithinList Int?
@@ -177,6 +177,8 @@ model UserQuestionAttempt {
   questionAttempt   DateTime        @default(now())
 }
 
+
+// todo: add a creation date for the quiz and only fetch the latest created quiz
 model Quiz {
   quizId   String   @id @default(cuid())
   quizType QuizType @default(MINI)
@@ -192,6 +194,8 @@ model Quiz {
 
   score   Float     @default(0)
   dueDate DateTime?
+
+  // createdAt DateTime @default(now())
 
   learnCompleted Boolean @default(false)
 

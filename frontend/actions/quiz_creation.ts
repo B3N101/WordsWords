@@ -1,5 +1,5 @@
 "use server";
-import { PrismaClient, QuizType } from "@prisma/client";
+import { PrismaClient, QuizType, Question } from "@prisma/client";
 import { create } from "domain";
 const prisma = new PrismaClient();
 
@@ -39,12 +39,6 @@ export const createMiniQuiz = async (wordListId: string, userId: string, miniSet
     const questions = words.map((word, index) => {
         // Take two of the incorrect definitions at random
         const answerChoices = pickNRandom(word.incorrectDefinitions, 2)
-        let randword = words[Math.floor(Math.random()*words.length)]
-        // Add in a definition from a different word in the list
-        while(randword.word === word.word){
-            randword = words[Math.floor(Math.random()*words.length)]
-        }
-        answerChoices.push(randword.definition)
         // add the correct definition
         answerChoices.push(word.definition)
         return {
@@ -120,13 +114,7 @@ export const createMasterQuiz = async (wordListId: string, userId: string) => {
 
     const questions = allWords.map((word, index) => {
         // Take two of the incorrect definitions at random
-        const answerChoices = pickNRandom(word.incorrectDefinitions, 2)
-        let randword = allWords[Math.floor(Math.random()*allWords.length)]
-        // Add in a definition from a different word in the list
-        while(randword.word === word.word){
-            randword = allWords[Math.floor(Math.random()*allWords.length)]
-        }
-        answerChoices.push(randword.definition)
+        const answerChoices = pickNRandom(word.incorrectDefinitions, 3)
         // add the correct definition
         answerChoices.push(word.definition)
         return {
@@ -167,6 +155,7 @@ export const createMasterQuiz = async (wordListId: string, userId: string) => {
 }
 
 
+// Fetchquizzes used in every wordlist page to get the active quiz
 export const fetchQuizzes = async (wordListId: string, userId: string) => {
     let miniQuizzes = await prisma.quiz.findMany({
         where: {
@@ -203,4 +192,56 @@ export const fetchQuizzes = async (wordListId: string, userId: string) => {
         masterQuiz = await createMasterQuiz(wordListId, userId);
     }
     return { miniQuizzes, masterQuiz };
+}
+
+// Creating a set of backups for the user to retake if they'd like. Call after fetchquizzes
+export const createMiniQuizFromQuestions = async (questions: Question[], userId: string, wordListId: string) => {
+    const wordIds = questions.map((question) => question.wordId);
+    const words = await prisma.word.findMany({
+        where:{
+            wordId: {
+                in: wordIds,
+            }
+        }
+    })
+    const newQuestions = words.map((word, index) => {
+        // Take three of the incorrect definitions at random
+        const answerChoices = pickNRandom(word.incorrectDefinitions, 3)
+        // add the correct definition
+        answerChoices.push(word.definition)
+        return {
+            questionString: "What is the definition of " + word.word + "?",
+            rank: index,
+            allAnswers: answerChoices,
+            correctAnswer: word.definition,
+            wordId: word.wordId,
+        }
+    })
+    const quiz = await prisma.quiz.create({
+        data:{
+            user: { connect: { id: userId } },
+            wordsList: { connect: { listId: wordListId } },
+            quizType: QuizType.MINI,
+            userWordsListProgress: { 
+                connectOrCreate: {
+                    create:{
+                        user: { connect: { id: userId }},
+                        wordsList: { connect: { listId: wordListId }},
+                    },
+                    where: {
+                        userWordsListProgressId:{
+                            userId: userId,
+                            wordsListListId: wordListId,
+                        },
+                    }
+                }
+            },
+            questions:{
+                createMany:{
+                    data: newQuestions
+                }
+            }
+        }
+    })
+    return quiz;
 }

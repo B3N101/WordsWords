@@ -8,6 +8,11 @@ import {
   upsertQuestionCompleted,
   upsertQuizCompleted,
 } from "@/actions/quiz_progress";
+
+import {
+  createMiniQuizFromQuestions
+} from "@/actions/quiz_creation";
+
 import { upsertWordMastery } from "@/actions/word_progress";
 import { type QuizWithQuestions } from "@/prisma/types";
 type Props = {
@@ -136,25 +141,13 @@ export default function QuizPage({ quiz }: Props) {
           <div>
             <Button
               onClick={async () => {
-                await upsertQuizCompleted(quiz.quizId, false);
-
+                const newQuiz = await createMiniQuizFromQuestions(questions, quiz.wordsListId, quiz.userId);
                 // TODO: switch to updating react states, remove async
-                window.location.reload();
+                window.location.href = "/quiz/" + newQuiz.quizId;
               }}
             >
               {" "}
               Retake Quiz
-            </Button>
-          </div>
-          <div>
-            <Button
-              onClick={async () => {
-                await upsertQuizCompleted(quiz.quizId, false);
-                window.location.href = "/wordList/" + quiz.wordsListId;
-              }}
-            >
-              {" "}
-              Reset Quiz and Back to Dashboard
             </Button>
           </div>
           <div>

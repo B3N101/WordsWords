@@ -229,7 +229,7 @@ function QuizStatus({ status }: { status: QuizStatusType }) {
   if (status === "completed") {
     return (
       <div className="bg-[#e6f7f2] text-[#1abc9c] font-medium px-3 py-1 rounded-full text-sm">
-        Completed
+        Completed - View Score or Retake
       </div>
     );
   } else if (status === "open") {
@@ -250,7 +250,7 @@ function LearnStatus({ status }: { status: LearnStatusType }) {
   if (status === "completed") {
     return (
       <div className="bg-[#e6f7f2] text-[#1abc9c] font-medium px-3 py-1 rounded-full text-sm">
-        Completed
+        Completed - Practice Again
       </div>
     );
   } else if (status === "open") {
