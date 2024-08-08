@@ -1,16 +1,38 @@
 import { google } from "googleapis";
-import { PrismaClient, Grade, partOfSpeech, QuizType } from "@prisma/client";
-import { content } from "googleapis/build/src/apis/content";
-import { group } from "console";
+import {
+  PrismaClient,
+  Grade,
+  partOfSpeech,
+  QuizType,
+  QuestionType,
+} from "@prisma/client";
+
 const prisma = new PrismaClient();
 
+function getGrade(s: string) {
+  if (s == "9") return Grade.NINE;
+  if (s == "10") return Grade.TEN;
+  return Grade.ELEVEN;
+}
+
+function getPartOfSpeech(s: string) {
+  if (s == "n.") return partOfSpeech.Noun;
+  if (s == "v.") return partOfSpeech.Verb;
+  return partOfSpeech.Adjective;
+}
+
 async function seedWords() {
+  // Ensure questions are deleted before words
+  await prisma.question.deleteMany();
+  console.log("Deleted questions");
   await prisma.word.deleteMany();
-  // Create a new instance of the Google Sheets API
+  console.log("Deleted words");
+
   const auth = await google.auth.getClient({
     scopes: ["https://www.googleapis.com/auth/spreadsheets.readonly"],
   });
   const sheets = google.sheets({ version: "v4", auth });
+
   try {
     const response = await sheets.spreadsheets.values.batchGet({
       spreadsheetId: process.env.SHEET_ID,
@@ -20,321 +42,201 @@ async function seedWords() {
         "Eleventh-grade words",
       ],
     });
+
     const values = response.data
       .valueRanges!.map((range) => range.values!)
-      .flat();
+      .flat()
+      .slice(1); // Skip the first row (header)
 
-    let getGrade = (s: string) => {
-      if (s == "9") {
-        return Grade.NINE;
-      } else if (s == "10") {
-        return Grade.TEN;
-      } else return Grade.ELEVEN;
-    }
-
-    let getPartOfSpeech = (s: string) => {
-      if (s == "n.") {
-        return partOfSpeech.Noun;
-      } else if (s == "v.") {
-        return partOfSpeech.Verb;
-      } else return partOfSpeech.Adjective;
-    }
-
-    let wordData = values!.map((row) => ({
+    const wordData = values.map((row) => ({
       word: row[0],
-      context: row[1] ? row[1] : "",
-      definition: row[2] ? row[2] : "",
+      context: row[1] || "",
+      definition: row[2] || "",
       partOfSpeech: row[3] ? getPartOfSpeech(row[3]) : partOfSpeech.Noun,
-      exampleSentence: row[4] ? row[4] : "",
+      exampleSentence: row[4] || "",
       incorrectDefinitions: [row[5], row[6], row[7], row[8], row[9]],
       gradeLevel: getGrade(row[10]),
-      incorrectFillIns: [row[11], row[12], row[13]],
-      wordListNumber: parseInt(row[14]),
-      rankWithinList: parseInt(row[15]),
+      incorrectFillIns: [row[11] || "", row[12] || "", row[13] || ""],
+      wordListNumber: row[14] ? parseInt(row[14]) : 0,
+      rankWithinList: row[15] ? parseInt(row[15]) : 0,
     }));
-    console.log(wordData);
-    await prisma.word.createMany({
-      data: wordData,
-    });
+    console.log("Retrieved data from spreadsheet");
+
+    await prisma.word.createMany({ data: wordData });
+    console.log("Seeded words");
   } catch (error) {
     console.error("Error retrieving data from spreadsheet:", error);
-    return {
-      props: {
-        error: "Failed to retrieve data from spreadsheet",
-      },
-    };
   }
 }
-seedWords().then(async () => {
-  await prisma.$disconnect();
-})
 
-// async function seedWords() {
-//   await prisma.word.deleteMany();
-//   // Create a new instance of the Google Sheets API
-//   const auth = await google.auth.getClient({
-//     scopes: ["https://www.googleapis.com/auth/spreadsheets.readonly"],
-//   });
-//   const sheets = google.sheets({ version: "v4", auth });
+async function seedWordLists() {
+  await prisma.wordsList.deleteMany();
+  console.log("Deleted word lists");
 
-//   try {
-//     // Specify the spreadsheet ID and range
-//     const ranges = [
-//       "Ninth-grade words",
-//       "Tenth-grade words",
-//       "Eleventh-grade words",
-//     ]; // TODO: update this later
-//     // Make a request to get the values from the spreadsheet
-//     const response = await sheets.spreadsheets.values.batchGet({
-//       spreadsheetId: process.env.SHEET_ID,
-//       ranges: ranges,
-//     });
+  const words = await prisma.word.findMany({
+    where: { wordListNumber: { not: 0 } },
+    orderBy: { wordListNumber: "asc" },
+  });
+  console.log("Retrieved words");
 
-//     const values = response.data
-//       .valueRanges!.map((range) => range.values!)
-//       .flat();
-//     let getGrade = (s: string) => {
-//       if (s == "9") {
-//         return Grade.NINE;
-//       } else if (s == "10") {
-//         return Grade.TEN;
-//       } else return Grade.ELEVEN;
-//     };
-//     let getPartOfSpeech = (s: string) => {
-//       if (s == "n.") {
-//         return partOfSpeech.Noun;
-//       } else if (s == "v.") {
-//         return partOfSpeech.Verb;
-//       } else return partOfSpeech.Adjective;
-//     };
-//     const wordData = values!.map((row) => ({
-//       word: row[0],
-//       context: row[1] ? row[1] : "",
-//       definition: row[2] ? row[2] : "",
-//       partOfSpeech: row[3] ? getPartOfSpeech(row[3]) : partOfSpeech.Noun,
-//       exampleSentence: row[4] ? row[4] : "",
-//       incorrectDefinitions: row.slice(5, 10) ? row.slice(5, 10) : [""],
-//       gradeLevel: getGrade(row[10]),
-//       wordListNumber: row[14] ? parseInt(row[14]) : -1,
-//       rankWithinList: row[15] ? parseInt(row[15]) : -1,
-//     }));
-//     console.log(wordData);
-//     await prisma.word.createMany({
-//       data: wordData,
-//     });
+  const wordListsMap: { [key: number]: string[] } = {};
 
-//     console.log("Database seeded");
-//   } catch (error) {
-//     console.error("Error retrieving data from spreadsheet:", error);
-//     return {
-//       props: {
-//         error: "Failed to retrieve data from spreadsheet",
-//       },
-//     };
-//   }
-// }
+  words.forEach((word) => {
+    const listNumber = word.wordListNumber!;
+    if (!wordListsMap[listNumber]) {
+      wordListsMap[listNumber] = [];
+    }
+    wordListsMap[listNumber].push(word.wordId);
+  });
 
-// async function seedWordLists(userID: string) {
-//   await prisma.wordsList.deleteMany();
-//   console.log("WordLists deleted");
-//   const words = await prisma.word.findMany({
-//     where: {
-//       wordListNumber: {
-//         not: -1,
-//       },
-//     },
-//     orderBy: {
-//       wordListNumber: "asc",
-//     },
-//   });
-//   console.log(words);
-//   let prevWordListID = words[0].wordListNumber!;
-//   let currWords = [];
-//   for (const word of words!) {
-//     const wordListID = word.wordListNumber!;
-//     if (wordListID === prevWordListID) {
-//       currWords.push(word);
-//     }
-//     // time to create a new quiz out of the question bank
-//     else {
-//       await prisma.wordsList.create({
-//         data: {
-//           words: {
-//             connect: currWords.map((word) => ({ wordId: word.wordId })),
-//           },
-//           // UserWordsListProgress: {
-//           //   create: [
-//           //     {
-//           //       userId: userID,
-//           //     },
-//           //   ],
-//           // },
-//         },
-//       });
-//       currWords = [];
-//       currWords.push(word); // include the first word of the new set
-//     }
-//     prevWordListID = wordListID;
-//   }
-//   console.log("WordLists seeded");
-// }
+  for (const number in wordListsMap) {
+    await prisma.wordsList.create({
+      data: {
+        number: parseInt(number),
+        words: { connect: wordListsMap[number].map((wordId) => ({ wordId })) },
+      },
+    });
+  }
+  console.log("Seeded word lists");
+}
 
-// async function seedQuestions(userID: string) {
-//   await prisma.question.deleteMany();
-//   console.log("Questions deleted");
-//   const words = await prisma.word.findMany({
-//     where: {
-//       wordListNumber: {
-//         not: -1,
-//       },
-//     },
-//   });
-//   console.log(words);
-//   for (const word of words!) {
-//     await prisma.question.create({
-//       data: {
-//         question: "What is the definition of " + word.word + "?", // update to just word.
-//         wordId: word.wordId,
-//         rank: word.rankWithinList!,
-//         answers: [word.definition, word.incorrectDefinitions[0], word.incorrectDefinitions[1], word.incorrectDefinitions[2]],
-//       },
-//     });
-//   }
-//   console.log("Questions seeded");
-// // }
-// async function seedQuizzes(userID: string) {
-//   await prisma.quiz.deleteMany();
-//   console.log("Quizzes deleted");
+async function seedQuestions() {
+  // Ensure quizzes are deleted before questions
+  // await prisma.quiz.deleteMany();
+  await prisma.question.deleteMany();
+  console.log("Deleted quizzes and questions");
 
-//   // get all possible questions
-//   const questions = await prisma.question.findMany({
-//     include: { word: true },
-//     orderBy: [
-//       {
-//         word: {
-//           wordListNumber: "asc",
-//         },
-//       },
-//     ],
-//   });
-//   // console.log(questions);
-//   let currQuizQuestions = [];
-//   let prevWordListNumberID = questions[0].word.wordListNumber!;
-//   let count = 0;
-//   for (const question of questions!) {
-//     const wordListNumberID = question.word.wordListNumber!;
-//     const wordListID = question.word.listId;
-//     if (!wordListID) {
-//       // getting to words that don't yet belong to a list (#TODO: fix in google sheets by adding numbers to all words)
-//       console.log("Wordlist for this word not found");
-//       return;
-//     }
-//     const userWordListProgress = await prisma.userWordsListProgress.findFirst({
-//       where: {
-//         userId: userID,
-//         wordsListListId: wordListID,
-//       },
-//     });
-//     // console.log(wordListID, question.word.rankWithinList);
-//     if (wordListNumberID === prevWordListNumberID && count < 5) {
-//       currQuizQuestions.push(question);
-//     }
-//     // time to create a new quiz out of the question bank
-//     else {
-//       await prisma.quiz.create({
-//         data: {
-//           wordListNumber: wordListNumberID - 1, // because we already incremented it at the end of the last loop
-//           quizType: QuizType.MINI,
-//           questions: {
-//             connect: currQuizQuestions.map((question) => ({
-//               questionId: question.questionId,
-//             })),
-//           },
-//           words: {
-//             connect: currQuizQuestions.map((question) => ({
-//               wordId: question.wordId,
-//             })),
-//           },
-//           WordsList: {
-//             connect: {
-//               listId: wordListID,
-//             },
-//           },
-//           //TODO: connect userQuizProgress to corresponding wordlistProgress
-//           UserQuizProgress: {
-//             create: [
-//               {
-//                 userId: userID,
-//                 completed: false,
-//                 score: 0,
-//                 randomSeed: Math.floor(Math.random() * 1000),
-//                 wordListProgressId:
-//                   userWordListProgress!.userWordsListProgressId,
-//               },
-//             ],
-//           },
-//         },
-//       });
-//       currQuizQuestions = [];
-//       currQuizQuestions.push(question); // include the first word of the new set
-//       count = 0;
-//     }
-//     prevWordListNumberID = wordListNumberID;
-//     count += 1;
-//   }
-// }
+  const words = await prisma.word.findMany();
 
-// async function seedAll(userID: string) {
-//   await seedWords();
-//   await seedWordLists(userID);
-//   await seedQuestions(userID);
-//   await seedQuizzes(userID);
-// }
+  for (const word of words) {
+    const quiz = await prisma.quiz.findFirst({
+      where: { wordsList: { words: { some: { wordId: word.wordId } } } },
+    });
 
-// seedAll("96c6654a-8f9b-4457-8e9f-8034aac25740");
+    if (quiz?.quizType == QuizType.LEARN) {
+      await prisma.question.create({
+        data: {
+          type: QuestionType.CONTEXT_DEFINITION,
+          content: word.word,
+          answers: [word.definition],
+          correctAnswer: word.definition,
+          word: { connect: { wordId: word.wordId } },
+          quiz: { connect: { id: quiz.id } },
+        },
+      });
+    } else if (quiz) {
+      await prisma.question.create({
+        data: {
+          type: QuestionType.WORD_DEFINITION,
+          content: word.word,
+          answers: [...word.incorrectDefinitions],
+          correctAnswer: word.definition,
+          word: { connect: { wordId: word.wordId } },
+          quiz: { connect: { id: quiz.id } },
+        },
+      });
 
-// seedAll("6aaad536-297b-4a47-b9c6-b9b90628ac01").then(async () => {
-//   await prisma.$disconnect();
-// });
-// seedWords().then(async () => {
-//         await prisma.$disconnect();
-//       })
-//   .catch(async (e) => {
-//     console.error(e);
-//     await prisma.$disconnect();
-//     process.exit(1);
-//   });
-// seedWordLists("6aaad536-297b-4a47-b9c6-b9b90628ac01").then(async () => {
-//       await prisma.$disconnect();
-//     })
-//     .catch(async (e) => {
-//       console.error(e);
-//       await prisma.$disconnect();
-//       process.exit(1);
-//     });
-// seedQuestions("6aaad536-297b-4a47-b9c6-b9b90628ac01").then(async () => {
-//   await prisma.$disconnect();
-// })
-// .catch(async (e) => {
-//   console.error(e);
-//   await prisma.$disconnect();
-//   process.exit(1);
-// });
+      await prisma.question.create({
+        data: {
+          type: QuestionType.SENTENCE_WORD,
+          content: word.exampleSentence,
+          answers: [...word.incorrectFillIns],
+          correctAnswer: word.word,
+          word: { connect: { wordId: word.wordId } },
+          quiz: { connect: { id: quiz.id } },
+        },
+      });
 
-// seedQuizzes("6aaad536-297b-4a47-b9c6-b9b90628ac01")
-//   .then(async () => {
-//     await prisma.$disconnect();
-//   })
-//   .catch(async (e) => {
-//     console.error(e);
-//     await prisma.$disconnect();
-//     process.exit(1);
-//   });
+      await prisma.question.create({
+        data: {
+          type: QuestionType.DEFINITION_WORD,
+          content: word.definition,
+          answers: [...word.incorrectFillIns],
+          correctAnswer: word.word,
+          word: { connect: { wordId: word.wordId } },
+          quiz: { connect: { id: quiz.id } },
+        },
+      });
 
-// delete classes
-// async function deleteClasses() {
-//   await prisma.class.deleteMany();
-//   console.log("Classes deleted");
-// }
+      if (quiz?.quizType == QuizType.MASTERY) {
+        await prisma.question.create({
+          data: {
+            type: QuestionType.WORD_SPELLING,
+            content: word.exampleSentence,
+            answers: [word.word],
+            correctAnswer: word.word,
+            word: { connect: { wordId: word.wordId } },
+            quiz: { connect: { id: quiz.id } },
+          },
+        });
+      }
+    }
+  }
 
-// deleteClasses();
+  console.log("Seeded questions");
+}
+
+async function seedQuizzes() {
+  // await prisma.quiz.deleteMany();
+  // console.log("Deleted quizzes");
+
+  const wordsLists = await prisma.wordsList.findMany({
+    include: { words: { include: { questions: true } } },
+  });
+  console.log("Retrieved word lists");
+
+  for (const wordsList of wordsLists) {
+    await prisma.quiz.create({
+      data: {
+        quizType: QuizType.BASIC,
+        wordsList: { connect: { id: wordsList.id } },
+        questions: {
+          connect: wordsList.words.flatMap((word) =>
+            word.questions.map((question) => ({ id: question.id })),
+          ),
+        },
+      },
+    });
+    await prisma.quiz.create({
+      data: {
+        quizType: QuizType.LEARN,
+        wordsList: { connect: { id: wordsList.id } },
+        questions: {
+          connect: wordsList.words.flatMap((word) =>
+            word.questions.map((question) => ({ id: question.id })),
+          ),
+        },
+      },
+    });
+    await prisma.quiz.create({
+      data: {
+        quizType: QuizType.MASTERY,
+        wordsList: { connect: { id: wordsList.id } },
+        questions: {
+          connect: wordsList.words.flatMap((word) =>
+            word.questions.map((question) => ({ id: question.id })),
+          ),
+        },
+      },
+    });
+  }
+  console.log("Seeded quizzes");
+}
+
+async function main() {
+  await seedWords();
+  await seedWordLists();
+  await seedQuestions();
+  await seedQuizzes();
+}
+
+main()
+// seedQuestions()
+  .then(async () => {
+    await prisma.$disconnect();
+  })
+  .catch(async (e) => {
+    console.error(e);
+    await prisma.$disconnect();
+    process.exit(1);
+  });

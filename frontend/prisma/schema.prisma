@@ -47,7 +47,7 @@ model VerificationToken {
   @@id([identifier, token])
 }
 
-// OUR MODELS
+// MAIN MODELS
 model User {
   id            String    @id @default(cuid())
   name          String?
@@ -56,173 +56,157 @@ model User {
   image         String?
   accounts      Account[]
   sessions      Session[]
-  // Optional for WebAuthn support
-  // Authenticator Authenticator[]
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  role          Role              @default(STUDENT)
-  // Class         Class?          @relation(fields: [classClassId], references: [classId])
-  // classClassId  String?
-  // _____________ UPDATE _______________
-  // Changed relationship to many to many
-  Classes       Class[]           @relation("UserClasses")
-  wordMasteries UserWordMastery[]
+  role    Role    @default(STUDENT)
+  classes Class[] @relation("UserClasses")
 
-  quizzes Quiz[]
-
-  UserWordsListProgress UserWordsListProgress[]
+  wordMasteries           UserWordMastery[]
+  userWordsListProgresses UserWordsListProgress[]
+  quizAttempts            QuizAttempt[]
 }
 
 model Class {
-  classId   String @id @default(cuid())
-  className String
-  teacherId String
-  students  User[] @relation("UserClasses")
+  classId       String   @id @default(cuid())
+  className     String
+  teacherId     String
+  students      User[]   @relation("UserClasses")
+  semesterStart DateTime
+  semesterEnd   DateTime
 
-  userWordsListProgresses UserWordsListProgress[]
-  SemesterStart           DateTime
-  SemesterEnd             DateTime
+  assignedWordsLists AssignedWordsList[]
 }
 
 model Word {
-  wordId String @id @default(cuid())
-  word String
-
-  partOfSpeech partOfSpeech
-  gradeLevel   Grade
-
+  wordId               String       @id @default(cuid())
+  word                 String
+  partOfSpeech         partOfSpeech
+  gradeLevel           Grade
   context              String
   definition           String
   incorrectDefinitions String[]
+  exampleSentence      String
+  incorrectFillIns      String[]
+  wordListNumber       Int?
+  rankWithinList       Int?
 
-  exampleSentence String
-  incorrectFillIn String[]
-
-  wordListNumber Int?
-  rankWithinList Int?
+  wordsList WordsList? @relation(fields: [listId], references: [id])
+  listId    String?
 
   userWordMasteries UserWordMastery[]
-
-  listId    String?
-  wordsList WordsList? @relation(fields: [listId], references: [listId], onDelete: Cascade)
-  questions Question[]
+  questions         Question[]
 }
 
-// TODO: static piece. woulnd't have to keep track of quizzes
 model WordsList {
-  listId                String                  @id @default(cuid())
-  name                  Int // Number of List
-  words                 Word[]
-  quizzes               Quiz[]
-  UserWordsListProgress UserWordsListProgress[]
+  id     String @id @default(cuid())
+  number Int // Number of List
+
+  words    Word[]
+  quizzes  Quiz[]
+  assigned AssignedWordsList[]
+}
+
+model AssignedWordsList {
+  id          String    @id @default(cuid())
+  class       Class     @relation(fields: [classId], references: [classId])
+  classId     String
+  wordsList   WordsList @relation(fields: [wordsListId], references: [id])
+  wordsListId String
+  startDate   DateTime
+  endDate     DateTime
+
+  userProgresses UserWordsListProgress[]
 }
 
 model UserWordsListProgress {
-  userWordsListProgressId String @id @default(cuid())
-  user                    User   @relation(fields: [userId], references: [id])
-  userId                  String
+  id            String @id @default(cuid())
+  user          User   @relation(fields: [userId], references: [id])
+  userId        String
+  assignment    AssignedWordsList @relation(fields: [assignedWordsListId], references: [id])
+  assignedWordsListId String
+  startDate     DateTime
+  endDate       DateTime
+  completed     Boolean @default(false)
 
-  class   Class  @relation(fields: [classId], references: [classId])
-  classId String
+  quizAttempts QuizAttempt[]
 
-  wordsList       WordsList @relation(fields: [wordsListListId], references: [listId], onDelete: Cascade)
-  wordsListListId String
-
-  quizzes   Quiz[]
-  completed Boolean @default(false)
+  // @@id(name: "UserWordsListProgressId", [userId, assignedWordsListId]) -> don't know why this would be better or worse?
 }
 
-// model PublishedList {
-//   publishedListId String   @id @default(cuid())
-//   userId          String
-//   user            User     @relation(fields: [userId], references: [id])
-//   startDate       DateTime
-//   endDate         DateTime
-
-//   list   WordsList @relation(fields: [listId], references: [listId], onDelete: Cascade)
-//   listId String
-
-//   class   Class?  @relation(fields: [classId], references: [classId])
-//   classId String?
-
-//   timeGoal    Int?
-//   masteryGoal Int?
-//   timeSpent   Int?
-//   isDone      Boolean @default(false)
-//   Score       Float?
-// }
-
 model UserWordMastery {
-  wordId String @id
-  word   Word   @relation(fields: [wordId], references: [wordId], onDelete: Cascade)
+  id           String @id @default(cuid())
+  word         Word   @relation(fields: [wordId], references: [wordId])
+  wordId       String
+
+  user         User   @relation(fields: [userId], references: [id])
+  userId       String
 
   masteryScore Float
 
-  attempts UserQuestionAttempt[]
+  questionAttempts UserQuestionAttempt[]
 
-  user   User   @relation(fields: [userId], references: [id])
-  userId String
-}
-
-model UserQuestionAttempt {
-  questionAttemptId String          @id @default(cuid())
-  wordId            String
-  userId            String
-  wordMastery       UserWordMastery @relation(fields: [wordId], references: [wordId], onDelete: Cascade)
-  correct           Boolean
-  timeSpent         Int?
-  questionAttempt   DateTime        @default(now())
+  @@unique([wordId, userId])
 }
 
 model Quiz {
-  quizId   String   @id @default(cuid())
-  quizType QuizType @default(MINI)
-
-  user   User   @relation(fields: [userId], references: [id])
-  userId String
-
-  wordsList   WordsList @relation(fields: [wordsListId], references: [listId])
+  id          String     @id @default(cuid())
+  quizName    String?
+  quizType    QuizType
+  wordsList   WordsList  @relation(fields: [wordsListId], references: [id], onDelete: Cascade)
   wordsListId String
+  questions   Question[]
 
-  questions Question[]
-  completed Boolean    @default(false)
-
-  score   Float    @default(0)
-  dueDate DateTime
-
-  learnCompleted Boolean @default(false)
-
-  userWordsListProgress   UserWordsListProgress @relation(fields: [userWordsListProgressId], references: [userWordsListProgressId])
-  userWordsListProgressId String
+  quizAttempts QuizAttempt[]
 }
 
-// this can be the dynamic piece (word is static). only link to one quiz. this could 
-// include everything userQuestionProgress
+model QuizAttempt {
+  id          String                @id @default(cuid())
+  quiz        Quiz                  @relation(fields: [quizId], references: [id])
+  quizId      String
+  user        User                  @relation(fields: [userId], references: [id])
+  userId      String
+  progress    UserWordsListProgress @relation(fields: [progressId], references: [id])
+  progressId  String
+  completed   Boolean               @default(false)
+  score       Float                 @default(0)
+  startedAt   DateTime              @default(now())
+  completedAt DateTime?
+
+  questionAttempts UserQuestionAttempt[]
+}
+
 model Question {
-  questionId String @id @default(cuid())
-  question   String
-  rank       Int
+  id            String       @id @default(cuid())
+  type          QuestionType
+  content       String
+  answers       String[]
+  correctAnswer String
 
+  quiz   Quiz   @relation(fields: [quizId], references: [id])
+  quizId String
+  word   Word   @relation(fields: [wordId], references: [wordId])
   wordId String
-  word   Word   @relation(fields: [wordId], references: [wordId], onDelete: Cascade)
 
-  quiz      Quiz     @relation(fields: [quizId], references: [quizId])
-  quizId    String
-  answers   String[]
-  completed Boolean
+  questionAttempts UserQuestionAttempt[]
 }
 
-enum QuestionType {
-  CONTEXT_DEFINITION
-  DEFINITION_WORD
-  SENTENCE_WORD
-  WORD_DEFINITION
-  WORD_SPELLING
+model UserQuestionAttempt {
+  id                String          @id @default(cuid())
+  question          Question        @relation(fields: [questionId], references: [id])
+  questionId        String
+  userWordMastery   UserWordMastery @relation(fields: [userWordMasteryId], references: [id])
+  userWordMasteryId String
+  quizAttempt       QuizAttempt     @relation(fields: [quizAttemptId], references: [id])
+  quizAttemptId     String
+  answer            String
+  correct           Boolean
+  timeSpent         Int?
+  attemptedAt       DateTime        @default(now())
 }
 
-// ENUMS - ROLE, GRADE, PART OF SPEECH
+// Enums
 enum Role {
   ADMIN
   TEACHER
@@ -242,6 +226,15 @@ enum partOfSpeech {
 }
 
 enum QuizType {
-  MINI
+  LEARN
+  BASIC
   MASTERY
+}
+
+enum QuestionType {
+  CONTEXT_DEFINITION // Context Sentences then Definition - LEARN
+  DEFINITION_WORD // Definition then Word - QUIZ - BASIC
+  SENTENCE_WORD // Sentence then Word - QUIZ - BASIC
+  WORD_DEFINITION // Word then Definition - QUIZ - BASIC
+  WORD_SPELLING // Sentence then Spelling - QUIZ - BASIC & MASTERY
 }
