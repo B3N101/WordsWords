@@ -14,6 +14,10 @@ const page = async ({ params }: { params: { slug: string } }) => {
   if(!quiz){
     throw new Error("Quiz not found");
   }
+  // shuffle the answers in all questions
+  quiz.questions.forEach((question) => {
+    question.allAnswers = question.allAnswers.sort(() => Math.random() - 0.5);
+  });
   return (
     <div>
       <h1>Quiz</h1>

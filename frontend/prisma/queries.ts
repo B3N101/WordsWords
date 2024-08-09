@@ -86,6 +86,9 @@ export const getQuizzesFromWordsList = cache(async (wordListID: string, userId: 
       userId: userId,
       completed: true,
     },
+    orderBy:{
+      createdAt: 'desc'
+    }
   });
   return quizzes;
 });

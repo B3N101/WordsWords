@@ -253,7 +253,7 @@ async function seedAll(userID: string) {
   // await seedQuizzes(userID);
 }
 
-seedAll("26d30fa4-a892-44a2-b2dd-e1a2e6177110").then(async () => {
+seedAll("6a023bd0-788b-459a-bae0-81f551bd0c71").then(async () => {
   await prisma.$disconnect();
 });
 // // seedWords().then(async () => {

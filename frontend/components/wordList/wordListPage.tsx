@@ -80,7 +80,7 @@ export default async function WordListPage({ wordListID }: WordListPageProps) {
   // ]);
 
   const {miniQuizzes, masterQuiz} = await fetchQuizzes(wordListID, userId);
-
+  
   // filter only mini quizzes
   const quizData = miniQuizzes?.map((miniQuiz, i) => {
     const status: QuizStatusType = miniQuiz.learnCompleted

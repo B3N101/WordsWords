@@ -20,13 +20,10 @@ type Props = {
 };
 
 export default function QuizPage({ quiz }: Props) {
-  const questions = quiz.questions;
-
-  console.log(quiz);
-  
+  const questions = quiz.questions;  
   // TODO: shuffle questions here
   const [completed, setCompleted] = useState<boolean>(quiz.completed);
-
+  const [selected, setSelected] = useState<string|null>(null);
   const [started, setStarted] = useState<boolean>(() => {
     return questions.some((question) => question.completed);
   });
@@ -41,7 +38,7 @@ export default function QuizPage({ quiz }: Props) {
   const [isCurrentCorrect, setIsCurrentCorrect] = useState<boolean | null>(
     null,
   );
-
+  const [questionSubmitted, setQuestionSubmitted] = useState<boolean>(false);
   if (!quiz.learnCompleted && quiz.quizType === "MINI"){
     return (
       <div>
@@ -62,33 +59,48 @@ export default function QuizPage({ quiz }: Props) {
   /*TODO: Track user progress so that refresh sends them to the current answer*/
   const handleAnswerClick = (answer: String) => {
     setIsCurrentCorrect(answer === question.correctAnswer);
+    setSelected(String(answer));
   };
 
   const handleNext = async () => {
+    // start the quiz
     if (!started) {
       setStarted(true);
       return;
     }
-    if (isCurrentCorrect) {
-      setScore(score + 1);
-    }
-    if (currentIndex + 1 < questions.length) {
-      setCurrentIndex(currentIndex + 1);
-      if (isCurrentCorrect !== null) {
-        upsertQuestionCompleted(
-          questions[currentIndex].questionId,
-          true,
-        );
-        upsertWordMastery(question.wordId, isCurrentCorrect);
-      } else {
-        throw Error("No answer selected");
-      }
-    } else {
-      await upsertQuizCompleted(quiz.quizId, true);
-      setCompleted(true);
+    // make sure an answer is selected
+    if (selected === null) {
       return;
     }
-    setIsCurrentCorrect(null);
+
+    // the user has just submitted an answer
+    if (!questionSubmitted) {
+      if (isCurrentCorrect)
+      {
+        setScore(score+1);
+      }
+      upsertQuestionCompleted(
+        questions[currentIndex].questionId,
+        true,
+      );
+      upsertWordMastery(question.wordId, isCurrentCorrect!);
+
+      setQuestionSubmitted(true);
+    }
+    // user has just pressed next
+    else{
+      if (currentIndex + 1 < questions.length) {
+        setCurrentIndex(currentIndex + 1);
+        setQuestionSubmitted(false);
+        setSelected(null);
+        setIsCurrentCorrect(null);
+      }
+      else{
+        await upsertQuizCompleted(quiz.quizId, true, score);
+        setCompleted(true);
+        return;
+      }
+    }
   };
   return (
     <div>
@@ -109,9 +121,13 @@ export default function QuizPage({ quiz }: Props) {
                   {options.map((answer, index) => (
                     <Button
                       key={index}
-                      variant="answer_choice"
+                      variant={ 
+                        questionSubmitted ? (selected === answer ? (isCurrentCorrect ? "correct" : "incorrect") : (answer === question.correctAnswer? "correct" : "answer_selected")) 
+                        : (selected === answer ? "answer_selected" : "answer_choice")
+                      }
                       onClick={() => handleAnswerClick(answer)}
-                    >
+                      disabled={questionSubmitted}
+                    > 
                       {answer}
                     </Button>
                   ))}
@@ -119,14 +135,20 @@ export default function QuizPage({ quiz }: Props) {
               </div>
             )}
           </main>
-          <footer className="flow-root pb-9 px-6 bottom mb-0">
+          <footer className="flow-root pb-9 px-6 bottom mb-0 items-center justify-center">
+            {
+              questionSubmitted ? (
+              <div className="flex flex-col">
+                {isCurrentCorrect ? ("Correct!") : ("Incorrect!")}
+              </div>
+            ) : null
+            }
             <div className="float-right flex flex-col">
-              <p>{isCurrentCorrect ? "correct" : "incorrect"}</p>
-              <Button onClick={handleNext}>
+              <Button onClick={handleNext} disabled={started ? selected===null : false}>
                 {!started
                   ? "Start"
-                  : currentIndex !== questions.length - 1
-                    ? "Next"
+                  : questionSubmitted ? 
+                    "Next"
                     : "Submit"}
               </Button>
             </div>
