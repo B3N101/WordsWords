@@ -38,6 +38,7 @@ export const upsertQuestionCompleted = async (
 export const upsertQuizCompleted = async (
   quizId: string,
   completed: boolean,
+  score: number,
 ) => {
   const session = await auth();
   const userId = session?.user?.id;
@@ -73,6 +74,7 @@ export const upsertQuizCompleted = async (
     },
     data: {
       completed: completed,
+      score: score,
     },
   });
   return;

@@ -98,7 +98,7 @@ model Word {
   incorrectDefinitions String[]
 
   exampleSentence String
-  incorrectFillIn String[]
+  incorrectFillIns String[]
 
   wordListNumber Int?
   rankWithinList Int?
@@ -113,7 +113,7 @@ model Word {
 // TODO: static piece. woulnd't have to keep track of quizzes
 model WordsList {
   listId                String                  @id @default(cuid())
-  name                  String
+  name                  String                  
   words                 Word[]
   quizzes               Quiz[]
   UserWordsListProgress UserWordsListProgress[]
@@ -177,9 +177,13 @@ model UserQuestionAttempt {
   questionAttempt   DateTime        @default(now())
 }
 
+
+// todo: add a creation date for the quiz and only fetch the latest created quiz
 model Quiz {
   quizId   String   @id @default(cuid())
   quizType QuizType @default(MINI)
+
+  name String
 
   user   User   @relation(fields: [userId], references: [id])
   userId String
@@ -192,6 +196,9 @@ model Quiz {
 
   score   Float     @default(0)
   dueDate DateTime?
+
+  createdAt DateTime @default(now())
+  miniSetNumber Int // -1 for masterQuiz
 
   learnCompleted Boolean @default(false)
 

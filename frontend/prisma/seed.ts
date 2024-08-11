@@ -49,7 +49,7 @@ async function seedWords() {
       exampleSentence: row[4] ? row[4] : "",
       incorrectDefinitions: row.slice(5, 10) ? row.slice(5, 10) : [""],
       gradeLevel: getGrade(row[10]),
-      incorrectFillIn: row.slice(11, 14) ? row.slice(11, 14) : [""],
+      incorrectFillIns: row.slice(11, 14) ? row.slice(11, 14) : [""],
       wordListNumber: row[14] ? parseInt(row[14]) : -1,
       rankWithinList: row[15] ? parseInt(row[15]) : -1,
     }));
@@ -93,6 +93,7 @@ async function seedWordLists(userID: string) {
     else {
       await prisma.wordsList.create({
         data: {
+          listId: "grade_" + words[0].gradeLevel + "_list_" + prevWordListID, 
           words: {
             connect: currWords.map((word) => ({ wordId: word.wordId })),
           },
@@ -252,7 +253,7 @@ async function seedAll(userID: string) {
   // await seedQuizzes(userID);
 }
 
-seedAll("01ca9e78-3322-4ccb-b9b0-8f08f2065428").then(async () => {
+seedAll("6a023bd0-788b-459a-bae0-81f551bd0c71").then(async () => {
   await prisma.$disconnect();
 });
 // // seedWords().then(async () => {

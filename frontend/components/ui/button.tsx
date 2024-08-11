@@ -11,7 +11,11 @@ const buttonVariants = cva(
   {
     variants: {
       variant: {
-        answer_choice:"bg-green-100 text-black hover:bg-green-200 border-white-500 border-2 border-b-[3px]",
+        answer_choice:"bg-gray-100 text-black hover:bg-gray-100/90 border-white-500 border-2 border-b-[3px]",
+        answer_selected: "bg-gray-200 text-black border-white-500 border-2 border-b-[3px]",
+        correct: "bg-green-200 text-black hover:bg-green-200/90 border-green-500 border-2 border-b-[3px]",
+        incorrect: "bg-red-200 text-black hover:bg-red-200/90 border-red-500 border-2 border-b-[3px]",
+        
         default: "bg-gray-100 text-black hover:bg-gray-100/90 border-black border-2 border-b-[3px]",
         destructive:
           "bg-destructive text-destructive-foreground hover:bg-destructive/90",
@@ -21,6 +25,7 @@ const buttonVariants = cva(
           "bg-secondary text-secondary-foreground hover:bg-secondary/80",
         ghost: "hover:bg-accent hover:text-accent-foreground",
         link: "text-primary underline-offset-4 hover:underline",
+        open: "bg-[#f2f7fe] text-[#3498db] font-medium px-3 py-1 rounded-full text-sm hover:bg-[#3498db] hover:text-white",
       },
       size: {
         default: "h-10 px-4 py-2",
