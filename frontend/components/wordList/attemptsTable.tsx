@@ -30,8 +30,8 @@ export async function AttemptsTable({ wordsListId, userId} : { wordsListId: stri
                     </TableHeader>
                     <TableBody>
                     {
-                        quizzes.map((quiz) => (
-                            <TableRow>
+                        quizzes.map((quiz, index) => (
+                            <TableRow key={index}>
                                 <TableCell>{quiz.name}</TableCell>
                                 <TableCell>{quiz.score} / {quiz.quizType === "MINI" ? "5" : "15"}</TableCell>
                             </TableRow>
