@@ -17,7 +17,7 @@ function pickNRandom(arr: string[], n: number){
     }
     return result;
 }
-export const createMiniQuiz = async (wordListId: string, userId: string, miniSetId: number, learnCompleted: boolean) => {
+export const createMiniQuiz = async (wordListId: string, userId: string, classId: string, miniSetId: number, learnCompleted: boolean) => {
     const wordList = await prisma.wordsList.findFirst({
         where: {
             listId: wordListId,
@@ -63,6 +63,7 @@ export const createMiniQuiz = async (wordListId: string, userId: string, miniSet
                     create:{
                         user: { connect: { id: userId }},
                         wordsList: { connect: { listId: wordListId }},
+                        class: { connect: {classId: classId}},
                     },
                     where: {
                         userWordsListProgressId:{
@@ -82,7 +83,7 @@ export const createMiniQuiz = async (wordListId: string, userId: string, miniSet
     return quiz;
 }
 
-export const createMasterQuiz = async (wordListId: string, userId: string) => {
+export const createMasterQuiz = async (wordListId: string, userId: string, classId: string) => {
     const wordList = await prisma.wordsList.findFirst({
         where: {
             listId: wordListId,
@@ -141,6 +142,7 @@ export const createMasterQuiz = async (wordListId: string, userId: string) => {
                     create:{
                         user: { connect: { id: userId }},
                         wordsList: { connect: { listId: wordListId }},
+                        class: { connect: { classId: classId}}
                     },
                     where: {
                         userWordsListProgressId:{
@@ -161,7 +163,7 @@ export const createMasterQuiz = async (wordListId: string, userId: string) => {
 }
 
 // Fetchquizzes used in every wordlist page to get the active quiz
-export const fetchQuizzes = async (wordListId: string, userId: string) => {
+export const fetchQuizzes = async (wordListId: string, userId: string, classId: string) => {
 
     let miniQuizzes = [];
 
@@ -179,7 +181,7 @@ export const fetchQuizzes = async (wordListId: string, userId: string) => {
         });
 
         if (!latestQuiz) {
-            latestQuiz = await createMiniQuiz(wordListId, userId, miniSetNumber, false);
+            latestQuiz = await createMiniQuiz(wordListId, userId, classId, miniSetNumber, false);
         }
 
         if (latestQuiz) {
@@ -205,7 +207,7 @@ export const fetchQuizzes = async (wordListId: string, userId: string) => {
         }
     });
     if (!masterQuiz){
-        masterQuiz = await createMasterQuiz(wordListId, userId);
+        masterQuiz = await createMasterQuiz(wordListId, userId, classId);
     }
     return { miniQuizzes, masterQuiz };
 }

@@ -1,5 +1,5 @@
 import ClassPage from "@/components/class/classPage";
-
+import StudentClassPage from "@/components/class/studentClassPage"
 export default function Page({ params }: { params: { classID: string } }) {
   const classString = params.classID;
 
@@ -7,7 +7,7 @@ export default function Page({ params }: { params: { classID: string } }) {
     <div>
       <h1>Class Page for {classString}</h1>
       {/* Add your class page content here */}
-      <ClassPage classID={classString} />
+      <StudentClassPage classID={classString} />
     </div>
   );
 }

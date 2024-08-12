@@ -47,6 +47,7 @@ type LearnData = {
 };
 
 type WordListPageProps = {
+  classID: string
   wordListID: string;
 };
 
@@ -56,9 +57,10 @@ type MasterQuizProps = {
   completed: boolean;
 };
 
-export default async function WordListPage({ wordListID }: WordListPageProps) {
+export default async function WordListPage({ classID, wordListID }: WordListPageProps) {
   console.log("Rendering wordlist page for", wordListID);
   // Make an example of below code
+
   const className = "WordsList " + wordListID;
   const classStatus: ClassStatusType = "active";
   const teacherId = "b6f7523b-f1a7-49d8-8543-93551ee30179";
@@ -80,9 +82,9 @@ export default async function WordListPage({ wordListID }: WordListPageProps) {
   //   userWordListProgressData,
   // ]);
 
-  const {miniQuizzes, masterQuiz} = await fetchQuizzes(wordListID, userId);
+  const {miniQuizzes, masterQuiz} = await fetchQuizzes(wordListID, userId, classID);
 
-  const {backupMiniQuizzes, backupMasterQuiz } = await createBackupQuizzes({ miniQuizzes, masterQuiz, wordListID, userId });
+  const {backupMiniQuizzes, backupMasterQuiz } = await createBackupQuizzes({ miniQuizzes, masterQuiz, wordListID, userId, classID });
   
   // filter only mini quizzes
   const quizData = miniQuizzes?.map((miniQuiz, i) => {
@@ -115,7 +117,7 @@ export default async function WordListPage({ wordListID }: WordListPageProps) {
       quizID: miniQuiz.quizId,
     };
   });
-  
+
   return (
     <div className="flex-1 p-6">
       <div className="flex items-center justify-between mb-6">
@@ -314,12 +316,13 @@ type BackUpQuizProps = {
   masterQuiz: Quiz | null;
   wordListID: string;
   userId: string;
+  classID: string;
 }
-async function createBackupQuizzes( { miniQuizzes, masterQuiz, wordListID, userId }: BackUpQuizProps){
+async function createBackupQuizzes( { miniQuizzes, masterQuiz, wordListID, userId, classID}: BackUpQuizProps){
   let backupMiniQuizzes = [];
   for (let i = 0; i < miniQuizzes.length; i++) {
     if (miniQuizzes[i].completed) {
-      backupMiniQuizzes.push(await createMiniQuiz(wordListID, userId, i, true));
+      backupMiniQuizzes.push(await createMiniQuiz(wordListID, userId, classID, i, true,));
 
     } else {
       backupMiniQuizzes.push(null);
@@ -327,7 +330,7 @@ async function createBackupQuizzes( { miniQuizzes, masterQuiz, wordListID, userI
   }
   if (masterQuiz) {
     if (masterQuiz.completed) {
-      const newMasterQuiz = await createMasterQuiz(wordListID, userId);
+      const newMasterQuiz = await createMasterQuiz(wordListID, userId, classID);
       if (newMasterQuiz) {
         return { backupMiniQuizzes: backupMiniQuizzes, backupMasterQuiz: newMasterQuiz };
       }

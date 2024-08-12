@@ -43,7 +43,7 @@ export default function SideBarStructure({ wordLists }: { wordLists: UserWordsLi
         <ul className="grid gap-y-2 gap-x-0 p-0">
           <li>
             <Link
-              href="#"
+              href={"/class/" + wordLists[0].classId}
               className={`flex items-center gap-3 rounded-md px-3 py-2 text-muted-foreground transition-colors hover:bg-accent hover:text-accent-foreground ${
                 isExpanded ? "justify-start" : "justify-center"
               }`}
@@ -51,18 +51,6 @@ export default function SideBarStructure({ wordLists }: { wordLists: UserWordsLi
             >
               <HomeIcon className="h-5 w-5" />
               <span className={`text-sm font-medium ${isExpanded ? "block" : "hidden"}`}>Home</span>
-            </Link>
-          </li>
-          <li>
-            <Link
-              href="#"
-              className={`flex items-center gap-3 rounded-md px-3 py-2 text-muted-foreground transition-colors hover:bg-accent hover:text-accent-foreground ${
-                isExpanded ? "justify-start" : "justify-center"
-              }`}
-              prefetch={false}
-            >
-              <ShoppingCartIcon className="h-5 w-5" />
-              <span className={`text-sm font-medium ${isExpanded ? "block" : "hidden"}`}>Orders</span>
             </Link>
           </li>
           <li>
@@ -82,7 +70,7 @@ export default function SideBarStructure({ wordLists }: { wordLists: UserWordsLi
               }
             }
             >
-              <PackageIcon className="h-5 w-5" />
+              <BookIcon className="h-5 w-5" />
               <span className={`text-sm font-medium ${isExpanded ? "block" : "hidden"}`}>Word Lists</span>
               {isExpanded ?
               <ChevronRightIcon
@@ -139,7 +127,7 @@ export default function SideBarStructure({ wordLists }: { wordLists: UserWordsLi
               prefetch={false}
             >
               <UsersIcon className="h-5 w-5" />
-              <span className={`text-sm font-medium ${isExpanded ? "block" : "hidden"}`}>Customers</span>
+              <span className={`text-sm font-medium ${isExpanded ? "block" : "hidden"}`}>People</span>
             </Link>
           </li>
           <li>
@@ -151,7 +139,7 @@ export default function SideBarStructure({ wordLists }: { wordLists: UserWordsLi
               prefetch={false}
             >
               <LineChartIcon className="h-5 w-5" />
-              <span className={`text-sm font-medium ${isExpanded ? "block" : "hidden"}`}>Analytics</span>
+              <span className={`text-sm font-medium ${isExpanded ? "block" : "hidden"}`}>History</span>
             </Link>
           </li>
         </ul>
@@ -242,7 +230,7 @@ function LineChartIcon(props: React.SVGProps<SVGSVGElement>) {
 }
 
 
-function Package2Icon(props: React.SVGProps<SVGSVGElement>) {
+function BookIcon(props: React.SVGProps<SVGSVGElement>) {
   return (
     <svg
       {...props}
@@ -256,9 +244,8 @@ function Package2Icon(props: React.SVGProps<SVGSVGElement>) {
       strokeLinecap="round"
       strokeLinejoin="round"
     >
-      <path d="M3 9h18v10a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V9Z" />
-      <path d="m3 9 2.45-4.9A2 2 0 0 1 7.24 3h9.52a2 2 0 0 1 1.8 1.1L21 9" />
-      <path d="M12 3v6" />
+    <path d="M4 19V6.2C4 5.0799 4 4.51984 4.21799 4.09202C4.40973 3.71569 4.71569 3.40973 5.09202 3.21799C5.51984 3 6.0799 3 7.2 3H16.8C17.9201 3 18.4802 3 18.908 3.21799C19.2843 3.40973 19.5903 3.71569 19.782 4.09202C20 4.51984 20 5.0799 20 6.2V17H6C4.89543 17 4 17.8954 4 19ZM4 19C4 20.1046 4.89543 21 6 21H20M9 7H15M9 11H15M19 17V21" stroke="#000000" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+
     </svg>
   )
 }

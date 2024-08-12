@@ -11,7 +11,7 @@ export function WordListSubMenu( {wordLists} : {wordLists: UserWordsListProgress
           {wordLists.map((wordlist, index) => (
             <li key={index}>
               <Link
-                href={"/wordList/" + wordlist.wordsListListId}
+                href={"/class/" + wordlist.classId + "/" + wordlist.wordsListListId}
                 className={`flex items-center gap-3 rounded-md px-3 py-2 text-muted-foreground transition-colors hover:bg-accent hover:text-accent-foreground`}
                 prefetch={false}
               >
