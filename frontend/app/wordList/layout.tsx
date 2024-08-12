@@ -1,11 +1,13 @@
-import { SideBar } from "@/components/sideBar";
+import { SideBar } from "@/components/sidebar/sideBar";
 
 
 export default function Layout({ children }: { children: React.ReactNode }) {
     return (
-      <div className="flex flex-col flex-1 w-full m-auto h-screen gap-6">
-        {children}
+      <div className="flex">
         <SideBar/>
+        <div className="w-full">
+          {children}
+        </div>
       </div>
     );
   }

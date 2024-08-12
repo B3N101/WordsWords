@@ -57,6 +57,7 @@ type MasterQuizProps = {
 };
 
 export default async function WordListPage({ wordListID }: WordListPageProps) {
+  console.log("Rendering wordlist page for", wordListID);
   // Make an example of below code
   const className = "WordsList " + wordListID;
   const classStatus: ClassStatusType = "active";
@@ -114,6 +115,7 @@ export default async function WordListPage({ wordListID }: WordListPageProps) {
       quizID: miniQuiz.quizId,
     };
   });
+  
   return (
     <div className="flex-1 p-6">
       <div className="flex items-center justify-between mb-6">

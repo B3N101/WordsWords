@@ -34,7 +34,7 @@ export default async function Navbar() {
   const session = await auth();
 
   return (
-    <header className="flex h-16 w-full items-center justify-between bg-background px-4 sm:px-6">
+    <header className="flex h-16 w-full mb-0 py-0 items-center justify-between border bg-background px-4 sm:px-6">
       <div className="flex items-center justify-center flex-1">
         <Link
           href="/"
