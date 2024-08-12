@@ -5,7 +5,6 @@ export default function Page({ params }: { params: { classID: string } }) {
 
   return (
     <div>
-      <h1>Class Page for {classString}</h1>
       {/* Add your class page content here */}
       <StudentClassPage classID={classString} />
     </div>

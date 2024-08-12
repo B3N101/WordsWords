@@ -249,13 +249,13 @@ async function MasterQuiz({ quizID, available, completed }: MasterQuizProps) {
 function QuizStatus({ status }: { status: QuizStatusType }) {
   if (status === "completed") {
     return (
-      <div className="bg-[#e6f7f2] text-[#1abc9c] font-medium px-3 py-1 rounded-full text-sm">
+      <div className="bg-[#e6f7f2] text-[#1abc9c] hover:text-[#e6f7f2] hover:bg-[#1abc9c] transition ease-in-out font-medium px-3 py-1 rounded-full text-sm">
         Completed - Retake
       </div>
     );
   } else if (status === "open") {
     return (
-      <div className="bg-[#f2f7fe] text-[#3498db] font-medium px-3 py-1 rounded-full text-sm">
+      <div className="bg-[#f2f7fe] text-[#3498db] hover:bg-[#3498db] hover:text-[#f2f7fe] transition ease-in-out font-medium px-3 py-1 rounded-full text-sm">
         Open
       </div>
     );
@@ -270,13 +270,13 @@ function QuizStatus({ status }: { status: QuizStatusType }) {
 function LearnStatus({ status }: { status: LearnStatusType }) {
   if (status === "completed") {
     return (
-      <div className="bg-[#e6f7f2] text-[#1abc9c] font-medium px-3 py-1 rounded-full text-sm">
+      <div className="bg-[#e6f7f2] text-[#1abc9c] hover:text-[#e6f7f2] hover:bg-[#1abc9c] transition ease-in-out font-medium px-3 py-1 rounded-full text-sm">
         Completed - Practice Again
       </div>
     );
   } else if (status === "open") {
     return (
-      <div className="bg-[#f2f7fe] text-[#3498db] font-medium px-3 py-1 rounded-full text-sm">
+      <div className="bg-[#f2f7fe] text-[#3498db] hover:bg-[#3498db] hover:text-[#f2f7fe] transition ease-in-out font-medium px-3 py-1 rounded-full text-sm">
         Open
       </div>
     );
