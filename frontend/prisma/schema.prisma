@@ -88,7 +88,7 @@ model Class {
 
 model Word {
   wordId String @id @default(cuid())
-  word String
+  word   String
 
   partOfSpeech partOfSpeech
   gradeLevel   Grade
@@ -97,7 +97,7 @@ model Word {
   definition           String
   incorrectDefinitions String[]
 
-  exampleSentence String
+  exampleSentence  String
   incorrectFillIns String[]
 
   wordListNumber Int?
@@ -112,8 +112,9 @@ model Word {
 
 // TODO: static piece. woulnd't have to keep track of quizzes
 model WordsList {
-  listId                String                  @id @default(cuid())
-  name                  String                  
+  listId String @id @default(cuid())
+  name   String
+
   words                 Word[]
   quizzes               Quiz[]
   UserWordsListProgress UserWordsListProgress[]
@@ -129,12 +130,14 @@ model UserWordsListProgress {
   wordsList       WordsList @relation(fields: [wordsListListId], references: [listId])
   wordsListListId String
 
+  userWordMasteries UserWordMastery[]
+
   quizzes   Quiz[]
   completed Boolean @default(false)
 
   dueDate DateTime? @default(dbgenerated("NOW() + interval '1 week'"))
 
-  @@id(name: "userWordsListProgressId", [userId, wordsListListId]) 
+  @@id(name: "userWordsListProgressId", [userId, wordsListListId])
 }
 
 // model PublishedList {
@@ -161,7 +164,10 @@ model UserWordMastery {
   wordId String @id
   word   Word   @relation(fields: [wordId], references: [wordId], onDelete: Cascade)
 
-  masteryScore Float
+  wordsListId  String
+  masteryScore Float  @default(0)
+
+  userWordsListProgress UserWordsListProgress @relation(fields: [userId, wordsListId], references: [userId, wordsListListId])
 
   attempts UserQuestionAttempt[]
 
@@ -173,12 +179,11 @@ model UserQuestionAttempt {
   questionAttemptId String          @id @default(cuid())
   wordId            String
   userId            String
-  wordMastery       UserWordMastery @relation(fields: [wordId], references: [wordId], onDelete: Cascade)
+  wordMastery       UserWordMastery @relation(fields: [wordId], references: [wordId])
   correct           Boolean
   timeSpent         Int?
   questionAttempt   DateTime        @default(now())
 }
-
 
 // todo: add a creation date for the quiz and only fetch the latest created quiz
 model Quiz {
@@ -199,7 +204,7 @@ model Quiz {
   score   Float     @default(0)
   dueDate DateTime?
 
-  createdAt DateTime @default(now())
+  createdAt     DateTime @default(now())
   miniSetNumber Int // -1 for masterQuiz
 
   learnCompleted Boolean @default(false)
@@ -214,15 +219,15 @@ model Question {
   questionString String
   rank           Int
 
-  quiz          Quiz     @relation(fields: [quizId], references: [quizId])
-  quizId        String
+  quiz   Quiz   @relation(fields: [quizId], references: [quizId], onDelete: Cascade)
+  quizId String
 
-  word          Word     @relation(fields: [wordId], references: [wordId])
-  wordId        String
+  word   Word   @relation(fields: [wordId], references: [wordId], onDelete: Cascade)
+  wordId String
 
   allAnswers    String[]
   correctAnswer String
-  completed     Boolean @default(false)
+  completed     Boolean  @default(false)
 }
 
 // ENUMS - ROLE, GRADE, PART OF SPEECH

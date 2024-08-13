@@ -70,6 +70,24 @@ async function seedWords() {
   }
 }
 
+async function seedWordMasteries(userId: string){
+  const words = await prisma.word.findMany();
+
+  for (const word of words){
+    if (word.listId)
+    {
+      await prisma.userWordMastery.create({
+        data: {
+          userId: userId,
+          wordId: word.wordId,
+          masteryScore: 0,
+          wordsListId: word.listId,
+        }
+      });
+    }
+  }
+  console.log("WordMasteries seeded");
+}
 async function seedClass(userID: string){
   const createdClass = await prisma.class.create({
       data:{
@@ -290,11 +308,12 @@ async function seedAll(userID: string) {
   await seedWords();
   const createdClass = await seedClass(userID);
   await seedWordLists(userID, createdClass.classId);
+  await seedWordMasteries(userID);
   // await seedQuestions(userID);
   // await seedQuizzes(userID);
 }
 
-seedAll("d23716f9-0d54-4ed3-92c3-afeb18a5dd2b").then(async () => {
+seedAll("5e1ded26-1f61-4fd3-81e3-4cd62e1ad2ff").then(async () => {
   await prisma.$disconnect();
 });
 // // seedWords().then(async () => {

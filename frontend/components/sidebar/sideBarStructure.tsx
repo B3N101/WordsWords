@@ -81,42 +81,22 @@ export default function SideBarStructure({ wordLists }: { wordLists: UserWordsLi
             </div>
             {isSubMenuExpanded ? (
               <WordListSubMenu wordLists={wordLists}/>
-              // <ul className="grid gap-2 pl-8 pt-2">
-              //   <li>
-              //     <Link
-              //       href="#"
-              //       className={`flex items-center gap-3 rounded-md px-3 py-2 text-muted-foreground transition-colors hover:bg-accent hover:text-accent-foreground`}
-              //       prefetch={false}
-              //     >
-              //       <PackageIcon className="h-5 w-5" />
-              //       <span className={`text-sm font-medium`}>All Products</span>
-              //     </Link>
-              //   </li>
-              //   <li>
-              //     <Link
-              //       href="#"
-              //       className={`flex items-center gap-3 rounded-md px-3 py-2 text-muted-foreground transition-colors hover:bg-accent hover:text-accent-foreground`}
-              //       prefetch={false}
-              //     >
-              //       <PackageIcon className="h-5 w-5" />
-              //       <span className={`text-sm font-medium`}>New Products</span>
-              //     </Link>
-              //   </li>
-              //   <li>
-              //     <Link
-              //       href="#"
-              //       className={`flex items-center gap-3 rounded-md px-3 py-2 text-muted-foreground transition-colors hover:bg-accent hover:text-accent-foreground`}
-              //       prefetch={false}
-              //     >
-              //       <PackageIcon className="h-5 w-5" />
-              //       <span className={`text-sm font-medium`}>Archived Products</span>
-              //     </Link>
-              //   </li>
-              // </ul>
             ):
             null
             }  
             
+          </li>
+          <li>
+            <Link
+              href={"/class/" + wordLists[0].classId + "/wordAnalytics"}
+              className={`flex items-center gap-3 rounded-md px-3 py-2 text-muted-foreground transition-colors hover:bg-accent hover:text-accent-foreground ${
+                isExpanded ? "justify-start" : "justify-center"
+              }`}
+              prefetch={false}
+            >
+              <LineChartIcon className="h-5 w-5" />
+              <span className={`text-sm font-medium ${isExpanded ? "block" : "hidden"}`}>History</span>
+            </Link>
           </li>
           <li>
             <Link
@@ -128,18 +108,6 @@ export default function SideBarStructure({ wordLists }: { wordLists: UserWordsLi
             >
               <UsersIcon className="h-5 w-5" />
               <span className={`text-sm font-medium ${isExpanded ? "block" : "hidden"}`}>People</span>
-            </Link>
-          </li>
-          <li>
-            <Link
-              href="#"
-              className={`flex items-center gap-3 rounded-md px-3 py-2 text-muted-foreground transition-colors hover:bg-accent hover:text-accent-foreground ${
-                isExpanded ? "justify-start" : "justify-center"
-              }`}
-              prefetch={false}
-            >
-              <LineChartIcon className="h-5 w-5" />
-              <span className={`text-sm font-medium ${isExpanded ? "block" : "hidden"}`}>History</span>
             </Link>
           </li>
         </ul>
