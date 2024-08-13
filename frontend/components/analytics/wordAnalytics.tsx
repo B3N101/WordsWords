@@ -1,6 +1,7 @@
 import { getUserWordListsWithMasteries } from "@/prisma/queries";
 import { Card, CardContent } from "@/components/ui/card";
 import { auth }  from "@/auth/auth";
+import { UserWordMastery } from "@prisma/client";
 
 export async function WordAnalytics( { classID }: { classID: string} ) {
     const session = await auth();
@@ -10,20 +11,22 @@ export async function WordAnalytics( { classID }: { classID: string} ) {
     <div className="flex-1 p-6">
         <div className="flex items-center justify-between mb-6">
             <h1 className="text-2xl font-bold text-[#ff6b6b]">Word Analytics</h1>
+            <AllStatus userWordMasteries={userWordLists.flatMap((userWordList) => userWordList.userWordMasteries)} />
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
         {userWordLists.map((userWordList, i) => (
             userWordList.userWordMasteries.length > 0 ?
             (
-            <Card className="bg-white rounded-lg shadow-md, max-h-fit">
+            <Card className="bg-white rounded-lg shadow-md, max-h-fit" key={i}>
                 <CardContent className="p-6">
                     <div className="flex items-center justify-between mb-4">
                         <h2 className="text-xl font-bold text-[#ff6b6b]">{userWordList.wordsList.name}</h2>
+                        <ListStatus userWordMasteries={userWordList.userWordMasteries} />
                     </div>
                     <div className="space-y-4">
                         {userWordList.userWordMasteries.map((wordMastery, j) => (
-                            <div key={wordMastery.wordId} className="flex items-center gap-4">
+                            <div key={j} className="flex items-center gap-4">
                                 <div>{wordMastery.word.word}</div>
                                 <WordStatus wordMasteryScore={wordMastery.masteryScore} />
                             </div>
@@ -38,11 +41,71 @@ export async function WordAnalytics( { classID }: { classID: string} ) {
   </div>
   );
 }
+function ListStatus( { userWordMasteries } : { userWordMasteries: UserWordMastery[] }) {
+    const masteredWords = userWordMasteries.filter((wordMastery) => wordMastery.masteryScore == 1).length;
+    const proficientWords = userWordMasteries.filter((wordMastery) => wordMastery.masteryScore >= 0.75).length;
+    const learningWords = userWordMasteries.filter((wordMastery) => wordMastery.masteryScore > 0).length;
+
+    if (masteredWords == userWordMasteries.length) {
+        return (
+            <div className="bg-[#f8f5ff] text-[#8e52ff] font-medium px-3 py-1 rounded-full text-sm">
+                Mastered
+            </div>
+        );
+    }
+    else if (proficientWords == userWordMasteries.length) {
+        return (
+            <div className="bg-[#e6f7f2] text-[#1abc9c] font-bold px-3 py-1 rounded-full text-sm">
+                Proficient
+            </div>
+        );
+    }
+    else if ((learningWords === 0 && proficientWords === 0 && masteredWords === 0)) {
+        return (
+            <div className="bg-[#fafafa] text-[#6b6b6b] font-bold px-3 py-1 rounded-full text-sm">
+                Not started
+              </div>
+        );
+    }
+    else{
+        return (
+          <div className="bg-[#eef8ff] text-[#52b4ff] font-bold px-3 py-1 rounded-full text-sm">
+            Learning
+          </div>
+        );
+    }
+}
+
+function AllStatus( { userWordMasteries } : { userWordMasteries: UserWordMastery[] }) {
+    const masteredWords = userWordMasteries.filter((wordMastery) => wordMastery.masteryScore == 1).length;
+    const proficientWords = userWordMasteries.filter((wordMastery) => wordMastery.masteryScore >= 0.75).length;
+    const learningWords = userWordMasteries.filter((wordMastery) => wordMastery.masteryScore > 0).length;
+    const notStartedWords = userWordMasteries.filter((wordMastery) => wordMastery.masteryScore == 0).length;
+
+    return (
+        <div className="flex items-center gap-4">
+            <div className="flex items-center gap-2">
+                <div className="bg-[#f8f5ff] text-[#8e52ff] font-medium px-3 py-1 rounded-full text-lg">
+                    Mastered: {masteredWords}
+                </div>
+                <div className="bg-[#e6f7f2] text-[#1abc9c] font-medium px-3 py-1 rounded-full text-lg">
+                    Proficient: {proficientWords}
+                </div>
+                <div className="bg-[#eef8ff] text-[#52b4ff] font-medium px-3 py-1 rounded-full text-lg">
+                    Learning: {learningWords}
+                </div>
+                <div className="bg-[#fafafa] text-[#6b6b6b] font-medium px-3 py-1 rounded-full text-lg">
+                    Not started: {notStartedWords}
+                </div>
+            </div>
+        </div>
+    );
+}
 
 function WordStatus( { wordMasteryScore } : { wordMasteryScore: number }) {
     if (wordMasteryScore == 1) {
         return (
-          <div className="bg-[#eef8ff] text-[#52b4ff] font-medium px-3 py-1 rounded-full text-sm">
+          <div className="bg-[#f8f5ff] text-[#8e52ff] font-medium px-3 py-1 rounded-full text-sm">
             Mastered
           </div>
         );
@@ -54,7 +117,7 @@ function WordStatus( { wordMasteryScore } : { wordMasteryScore: number }) {
         );
     } else if (wordMasteryScore > 0){
         return (
-          <div className="bg-[#feffe9] text-[#f6ff80] font-medium px-3 py-1 rounded-full text-sm">
+        <div className="bg-[#eef8ff] text-[#52b4ff] font-medium px-3 py-1 rounded-full text-sm">
             Learning
           </div>
         );

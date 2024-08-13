@@ -98,6 +98,7 @@ export const getQuiz = cache(async (quizID: string) => {
     },
     include: {
       questions: true,
+      userWordsListProgress: true,
     },
   });
   if (!quiz) {

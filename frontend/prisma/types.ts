@@ -1,11 +1,8 @@
 import { Prisma } from "@prisma/client";
 
-export type QuizWithQuestions = Prisma.QuizGetPayload<{
+export type QuizWithQuestionsAndUserWordsList = Prisma.QuizGetPayload<{
     include: {
-      questions: {
-        orderBy: {
-          questionId: "asc";
-        };
-      };
+      questions: true,
+      userWordsListProgress: true,
     };
   }>;

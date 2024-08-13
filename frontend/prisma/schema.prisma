@@ -209,7 +209,7 @@ model Quiz {
 
   learnCompleted Boolean @default(false)
 
-  userWordsListProgress UserWordsListProgress @relation(fields: [userId, wordsListId], references: [userId, wordsListListId])
+  userWordsListProgress UserWordsListProgress @relation(fields: [userId, wordsListId], references: [userId, wordsListListId]) //TODO: Might be easier to just connect to class, not userwordslistprogress
 }
 
 // this can be the dynamic piece (word is static). only link to one quiz. this could 
