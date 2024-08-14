@@ -14,7 +14,7 @@ export async function WordAnalytics( { classID }: { classID: string} ) {
             <AllStatus userWordMasteries={userWordLists.flatMap((userWordList) => userWordList.userWordMasteries)} />
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+        <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-6">
         {userWordLists.map((userWordList, i) => (
             userWordList.userWordMasteries.length > 0 ?
             (
@@ -22,13 +22,17 @@ export async function WordAnalytics( { classID }: { classID: string} ) {
                 <CardContent className="p-6">
                     <div className="flex items-center justify-between mb-4">
                         <h2 className="text-xl font-bold text-[#ff6b6b]">{userWordList.wordsList.name}</h2>
-                        <ListStatus userWordMasteries={userWordList.userWordMasteries} />
+                        <h2 className="float-right">
+                            <ListStatus userWordMasteries={userWordList.userWordMasteries} />
+                        </h2>
                     </div>
                     <div className="space-y-4">
                         {userWordList.userWordMasteries.map((wordMastery, j) => (
-                            <div key={j} className="flex items-center gap-4">
-                                <div>{wordMastery.word.word}</div>
-                                <WordStatus wordMasteryScore={wordMastery.masteryScore} />
+                            <div key={j} className="flex items-center justify-between mb-4">
+                                <div className="float-left">{wordMastery.word.word}</div>
+                                <h2 className="float-right">
+                                    <WordStatus wordMasteryScore={wordMastery.masteryScore} />
+                                </h2>
                             </div>
                         ))}
                     </div>

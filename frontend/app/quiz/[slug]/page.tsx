@@ -20,7 +20,6 @@ const page = async ({ params }: { params: { slug: string } }) => {
   });
   return (
     <div>
-      <h1>Quiz</h1>
       <QuizPage quiz={quiz} />
     </div>
   );

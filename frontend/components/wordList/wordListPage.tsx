@@ -84,6 +84,8 @@ export default async function WordListPage({ classID, wordListID }: WordListPage
 
   const {miniQuizzes, masterQuiz} = await fetchQuizzes(wordListID, userId, classID);
 
+
+  // TODO: dangerous to create backup quizzes everytime the user refreshes the page, could lead to backlog of extra quizzes and it stops the logic working right.
   const {backupMiniQuizzes, backupMasterQuiz } = await createBackupQuizzes({ miniQuizzes, masterQuiz, wordListID, userId, classID });
   
   // filter only mini quizzes

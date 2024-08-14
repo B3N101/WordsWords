@@ -174,6 +174,7 @@ export const fetchQuizzes = async (wordListId: string, userId: string, classId: 
                 userId: userId,
                 quizType: QuizType.MINI,
                 miniSetNumber: miniSetNumber,
+                completed: true,
             },
             orderBy: {
                 createdAt: 'desc',
@@ -181,10 +182,12 @@ export const fetchQuizzes = async (wordListId: string, userId: string, classId: 
         });
 
         if (!latestQuiz) {
+            console.log("No latest quiz found for miniset", miniSetNumber);
             latestQuiz = await createMiniQuiz(wordListId, userId, classId, miniSetNumber, false);
         }
 
         if (latestQuiz) {
+            console.log("Found latest quiz");
             miniQuizzes.push(latestQuiz);
         }
     }
