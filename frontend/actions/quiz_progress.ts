@@ -79,3 +79,33 @@ export const upsertQuizCompleted = async (
   });
   return;
 };
+
+export const upsertRetakesRequested = async(userId: string, wordListId: string, miniSetId: number, requested: boolean) => {
+  const wordsListProgress = await prisma.userWordsListProgress.findFirst({
+    where:{
+      userId: userId,
+      wordsListListId: wordListId,
+    },
+    select:{
+      retakesRequested: true,
+    }
+  });
+  if(!wordsListProgress){
+    throw new Error("User Wordslist progress not found!");
+  }
+
+  const newRetakes = wordsListProgress.retakesRequested;
+  newRetakes[miniSetId] = requested;
+
+  await prisma.userWordsListProgress.update({
+    where:{
+      userWordsListProgressId: {
+        userId: userId,
+        wordsListListId: wordListId,
+      },
+    },
+    data:{
+      retakesRequested: newRetakes,
+    },
+  });
+}

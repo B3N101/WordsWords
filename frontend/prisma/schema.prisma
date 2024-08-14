@@ -133,6 +133,9 @@ model UserWordsListProgress {
   userWordMasteries UserWordMastery[]
 
   quizzes   Quiz[]
+  quizAttemptsRemaining Int[] @default([3, 3, 3, 3])
+  retakesRequested Boolean[] @default([false, false, false, false])
+
   completed Boolean @default(false)
 
   dueDate DateTime? @default(dbgenerated("NOW() + interval '1 week'"))
