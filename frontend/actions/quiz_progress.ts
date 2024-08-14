@@ -109,3 +109,38 @@ export const upsertRetakesRequested = async(userId: string, wordListId: string, 
     },
   });
 }
+
+export const upsertQuizAttempts = async(userId: string, wordListId: string, miniSetId: number, addAttempts: number) => {
+  const wordsListProgress = await prisma.userWordsListProgress.findFirst({
+    where:{
+      userId: userId,
+      wordsListListId: wordListId,
+    },
+    select:{
+      quizAttemptsRemaining: true,
+      retakesRequested: true,
+    }
+  });
+  if(!wordsListProgress){
+    throw new Error("User Wordslist progress not found!");
+  }
+
+  const newAttempts = wordsListProgress.quizAttemptsRemaining;
+  newAttempts[miniSetId] += addAttempts;
+
+  const newRetakes = wordsListProgress.retakesRequested;
+  newRetakes[miniSetId] = false;
+
+  await prisma.userWordsListProgress.update({
+    where:{
+      userWordsListProgressId: {
+        userId: userId,
+        wordsListListId: wordListId,
+      },
+    },
+    data:{
+      quizAttemptsRemaining: newAttempts,
+      retakesRequested: newRetakes,
+    },
+  });
+}
