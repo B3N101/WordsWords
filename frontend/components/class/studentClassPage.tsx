@@ -86,7 +86,7 @@ export default async function StudentClassPage({ classID }: ClassPageProps) {
             <Link
                 className="flex items-center justify-between border-2 border-[#ff6b6b] rounded-lg p-4"
                 key={index}
-                href={"/class/" + classID + "/" + eachList.wordListID} // TODO: Fix this link
+                href={"/class/" + classID + "/" + eachList.wordListID}
             >
                 <div>{eachList.name}</div>
                 <WordListStatus status={eachList.status} />

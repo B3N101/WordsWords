@@ -199,11 +199,21 @@ export default async function WordListPage({ classID, wordListID }: WordListPage
         </Card>
       </div>
       {masterQuiz ? (
+        masterQuiz.completed ? (
+          <MasterQuiz
+          quizID={backupMasterQuiz!.quizId}
+          available={true}
+          completed={backupMasterQuiz!.completed}
+          />
+        )
+        :
+        (
         <MasterQuiz
           quizID={masterQuiz.quizId}
           available={true}
-          completed={masterQuiz!.completed}
+          completed={false}
         />
+        )
       ) : (
         <MasterQuiz quizID={"NULL"} available={false} completed={false} />
       )}
@@ -331,9 +341,7 @@ async function createBackupQuizzes( { miniQuizzes, masterQuiz, wordListID, userI
   if (masterQuiz) {
     if (masterQuiz.completed) {
       const newMasterQuiz = await createMasterQuiz(wordListID, userId, classID);
-      if (newMasterQuiz) {
-        return { backupMiniQuizzes: backupMiniQuizzes, backupMasterQuiz: newMasterQuiz };
-      }
+      return { backupMiniQuizzes: backupMiniQuizzes, backupMasterQuiz: newMasterQuiz };
     }
   }
   return { backupMiniQuizzes: backupMiniQuizzes, backupMasterQuiz: null };

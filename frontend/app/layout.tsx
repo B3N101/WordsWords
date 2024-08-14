@@ -5,7 +5,7 @@ import { Poppins } from "next/font/google";
 import { cn } from "@/lib/utils";
 import { Analytics } from "@vercel/analytics/react";
 import { SpeedInsights } from "@vercel/speed-insights/next";
-import NavBar from "@/components/NavBar";
+import NavBar from "@/components/navBar";
 
 const inter = Inter({
   subsets: ["latin"],
