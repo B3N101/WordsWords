@@ -18,7 +18,7 @@ import {
 } from "@/components/ui/table";
 import { Card, CardContent } from "@/components/ui/card";
 import { AttemptsTable } from "./attemptsTable";
-import { createMasterQuiz, createMiniQuiz, fetchQuizzes } from "@/actions/quiz_creation";
+import { createMasterQuiz, createMiniQuiz, fetchQuizzes, fetchBackupMasterQuiz, fetchBackupMiniQuiz} from "@/actions/quiz_creation";
 import { auth } from "@/auth/auth";
 import { Quiz } from "@prisma/client";
 
@@ -334,7 +334,13 @@ async function createBackupQuizzes( { miniQuizzes, masterQuiz, wordListID, userI
   let backupMiniQuizzes = [];
   for (let i = 0; i < miniQuizzes.length; i++) {
     if (miniQuizzes[i].completed) {
-      backupMiniQuizzes.push(await createMiniQuiz(wordListID, userId, classID, i, true,));
+      const backupQuiz = await fetchBackupMiniQuiz(wordListID, userId, i);
+      if (backupQuiz){
+        backupMiniQuizzes.push(backupQuiz);
+      }
+      else{
+        backupMiniQuizzes.push(await createMiniQuiz(wordListID, userId, classID, i, true,));
+      }
 
     } else {
       backupMiniQuizzes.push(null);
@@ -342,8 +348,14 @@ async function createBackupQuizzes( { miniQuizzes, masterQuiz, wordListID, userI
   }
   if (masterQuiz) {
     if (masterQuiz.completed) {
-      const newMasterQuiz = await createMasterQuiz(wordListID, userId, classID);
-      return { backupMiniQuizzes: backupMiniQuizzes, backupMasterQuiz: newMasterQuiz };
+      const backupMasterQuiz = await fetchBackupMasterQuiz(wordListID, userId);
+      if (backupMasterQuiz){
+        return { backupMiniQuizzes: backupMiniQuizzes, backupMasterQuiz: backupMasterQuiz };
+      }
+      else{
+        const newMasterQuiz = await createMasterQuiz(wordListID, userId, classID);
+        return { backupMiniQuizzes: backupMiniQuizzes, backupMasterQuiz: newMasterQuiz };
+      }
     }
   }
   return { backupMiniQuizzes: backupMiniQuizzes, backupMasterQuiz: null };
