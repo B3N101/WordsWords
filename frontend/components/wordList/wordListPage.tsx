@@ -47,6 +47,7 @@ type LearnData = {
 };
 
 type WordListPageProps = {
+  classID: string
   wordListID: string;
 };
 
@@ -56,8 +57,10 @@ type MasterQuizProps = {
   completed: boolean;
 };
 
-export default async function WordListPage({ wordListID }: WordListPageProps) {
+export default async function WordListPage({ classID, wordListID }: WordListPageProps) {
+  console.log("Rendering wordlist page for", wordListID);
   // Make an example of below code
+
   const className = "WordsList " + wordListID;
   const classStatus: ClassStatusType = "active";
   const teacherId = "b6f7523b-f1a7-49d8-8543-93551ee30179";
@@ -79,9 +82,9 @@ export default async function WordListPage({ wordListID }: WordListPageProps) {
   //   userWordListProgressData,
   // ]);
 
-  const {miniQuizzes, masterQuiz} = await fetchQuizzes(wordListID, userId);
+  const {miniQuizzes, masterQuiz} = await fetchQuizzes(wordListID, userId, classID);
 
-  const {backupMiniQuizzes, backupMasterQuiz } = await createBackupQuizzes({ miniQuizzes, masterQuiz, wordListID, userId });
+  const {backupMiniQuizzes, backupMasterQuiz } = await createBackupQuizzes({ miniQuizzes, masterQuiz, wordListID, userId, classID });
   
   // filter only mini quizzes
   const quizData = miniQuizzes?.map((miniQuiz, i) => {
@@ -114,6 +117,7 @@ export default async function WordListPage({ wordListID }: WordListPageProps) {
       quizID: miniQuiz.quizId,
     };
   });
+
   return (
     <div className="flex-1 p-6">
       <div className="flex items-center justify-between mb-6">
@@ -195,11 +199,21 @@ export default async function WordListPage({ wordListID }: WordListPageProps) {
         </Card>
       </div>
       {masterQuiz ? (
+        masterQuiz.completed ? (
+          <MasterQuiz
+          quizID={backupMasterQuiz!.quizId}
+          available={true}
+          completed={backupMasterQuiz!.completed}
+          />
+        )
+        :
+        (
         <MasterQuiz
           quizID={masterQuiz.quizId}
           available={true}
-          completed={masterQuiz!.completed}
+          completed={false}
         />
+        )
       ) : (
         <MasterQuiz quizID={"NULL"} available={false} completed={false} />
       )}
@@ -245,13 +259,13 @@ async function MasterQuiz({ quizID, available, completed }: MasterQuizProps) {
 function QuizStatus({ status }: { status: QuizStatusType }) {
   if (status === "completed") {
     return (
-      <div className="bg-[#e6f7f2] text-[#1abc9c] font-medium px-3 py-1 rounded-full text-sm">
+      <div className="bg-[#e6f7f2] text-[#1abc9c] hover:text-[#e6f7f2] hover:bg-[#1abc9c] transition ease-in-out font-medium px-3 py-1 rounded-full text-sm">
         Completed - Retake
       </div>
     );
   } else if (status === "open") {
     return (
-      <div className="bg-[#f2f7fe] text-[#3498db] font-medium px-3 py-1 rounded-full text-sm">
+      <div className="bg-[#f2f7fe] text-[#3498db] hover:bg-[#3498db] hover:text-[#f2f7fe] transition ease-in-out font-medium px-3 py-1 rounded-full text-sm">
         Open
       </div>
     );
@@ -266,13 +280,13 @@ function QuizStatus({ status }: { status: QuizStatusType }) {
 function LearnStatus({ status }: { status: LearnStatusType }) {
   if (status === "completed") {
     return (
-      <div className="bg-[#e6f7f2] text-[#1abc9c] font-medium px-3 py-1 rounded-full text-sm">
+      <div className="bg-[#e6f7f2] text-[#1abc9c] hover:text-[#e6f7f2] hover:bg-[#1abc9c] transition ease-in-out font-medium px-3 py-1 rounded-full text-sm">
         Completed - Practice Again
       </div>
     );
   } else if (status === "open") {
     return (
-      <div className="bg-[#f2f7fe] text-[#3498db] font-medium px-3 py-1 rounded-full text-sm">
+      <div className="bg-[#f2f7fe] text-[#3498db] hover:bg-[#3498db] hover:text-[#f2f7fe] transition ease-in-out font-medium px-3 py-1 rounded-full text-sm">
         Open
       </div>
     );
@@ -312,12 +326,13 @@ type BackUpQuizProps = {
   masterQuiz: Quiz | null;
   wordListID: string;
   userId: string;
+  classID: string;
 }
-async function createBackupQuizzes( { miniQuizzes, masterQuiz, wordListID, userId }: BackUpQuizProps){
+async function createBackupQuizzes( { miniQuizzes, masterQuiz, wordListID, userId, classID}: BackUpQuizProps){
   let backupMiniQuizzes = [];
   for (let i = 0; i < miniQuizzes.length; i++) {
     if (miniQuizzes[i].completed) {
-      backupMiniQuizzes.push(await createMiniQuiz(wordListID, userId, i, true));
+      backupMiniQuizzes.push(await createMiniQuiz(wordListID, userId, classID, i, true,));
 
     } else {
       backupMiniQuizzes.push(null);
@@ -325,10 +340,8 @@ async function createBackupQuizzes( { miniQuizzes, masterQuiz, wordListID, userI
   }
   if (masterQuiz) {
     if (masterQuiz.completed) {
-      const newMasterQuiz = await createMasterQuiz(wordListID, userId);
-      if (newMasterQuiz) {
-        return { backupMiniQuizzes: backupMiniQuizzes, backupMasterQuiz: newMasterQuiz };
-      }
+      const newMasterQuiz = await createMasterQuiz(wordListID, userId, classID);
+      return { backupMiniQuizzes: backupMiniQuizzes, backupMasterQuiz: newMasterQuiz };
     }
   }
   return { backupMiniQuizzes: backupMiniQuizzes, backupMasterQuiz: null };

@@ -4,9 +4,36 @@ import { analytics } from "googleapis/build/src/apis/analytics";
 
 const prisma = new PrismaClient();
 
+export const getUserWordListsWithMasteries = cache(async (userID: string, classID: string) => {
+  const data = await prisma.userWordsListProgress.findMany({
+    where: { 
+      userId: userID ,
+      classId: classID,
+    },
+    include:{
+      userWordMasteries: {
+        orderBy: { masteryScore: 'desc'},
+        include: { word: true }
+      },
+      wordsList: true,
+      }
+    });
+  return data;
+})
 export const getUserWordLists = cache(async (userID: string) => {
   const data = await prisma.userWordsListProgress.findMany({
     where: { userId: userID },
+    include: { wordsList: true },
+  });
+  return data;
+});
+
+export const getUserClassWordLists = cache(async (userID: string, classID: string) => {
+  const data = await prisma.userWordsListProgress.findMany({
+    where: { 
+      userId: userID,
+      classId: classID,
+    },
     include: { wordsList: true },
   });
   return data;
@@ -71,6 +98,7 @@ export const getQuiz = cache(async (quizID: string) => {
     },
     include: {
       questions: true,
+      userWordsListProgress: true,
     },
   });
   if (!quiz) {

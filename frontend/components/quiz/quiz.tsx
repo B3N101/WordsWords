@@ -14,13 +14,16 @@ import {
 } from "@/actions/quiz_creation";
 
 import { upsertWordMastery } from "@/actions/word_progress";
-import { type QuizWithQuestions } from "@/prisma/types";
+import { type QuizWithQuestionsAndUserWordsList } from "@/prisma/types";
 type Props = {
-  quiz: QuizWithQuestions;
+  quiz: QuizWithQuestionsAndUserWordsList;
 };
 
 export default function QuizPage({ quiz }: Props) {
-  const questions = quiz.questions;  
+  const questions = quiz.questions; 
+  const classId = quiz.userWordsListProgress.classId; 
+  const wordListId = quiz.wordsListId;
+
   // TODO: shuffle questions here
   const [completed, setCompleted] = useState<boolean>(quiz.completed);
   const [selected, setSelected] = useState<string|null>(null);
@@ -83,7 +86,7 @@ export default function QuizPage({ quiz }: Props) {
         questions[currentIndex].questionId,
         true,
       );
-      upsertWordMastery(question.wordId, isCurrentCorrect!);
+      upsertWordMastery(question.wordId, isCurrentCorrect!, wordListId);
 
       setQuestionSubmitted(true);
     }
@@ -163,7 +166,7 @@ export default function QuizPage({ quiz }: Props) {
           <div>
             <Button
               onClick={async () => {
-                const newQuizData = createMiniQuiz(quiz.wordsListId, quiz.userId, quiz.miniSetNumber, true);
+                const newQuizData = createMiniQuiz(quiz.wordsListId, quiz.userId, classId, quiz.miniSetNumber, true);
                 // TODO: switch to updating react states, remove async
                 <div> Loading ... </div>
                 console.log("Making new quiz")
@@ -181,7 +184,7 @@ export default function QuizPage({ quiz }: Props) {
           <div>
           <Button
               onClick={async () => {
-                window.location.href = "/wordList/" + quiz.wordsListId;
+                window.location.href = "/class/" + classId + "/" + quiz.wordsListId;
               }}
             >
               {" "}

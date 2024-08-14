@@ -4,7 +4,8 @@ import { PrismaClient } from "@prisma/client";
 
 const prisma = new PrismaClient();
 
-export const upsertWordMastery = async (wordId: string, isCorrect: boolean) => {
+export const upsertWordMastery = async (wordId: string, isCorrect: boolean, wordListId: string) => {
+  console.log("Upserding word mastery");
   const session = await auth();
   const userId = session?.user?.id;
 
@@ -16,9 +17,12 @@ export const upsertWordMastery = async (wordId: string, isCorrect: boolean) => {
       wordId: wordId,
       userId: userId,
     },
+    include:{
+      attempts: true,
+    }
   });
   let masteryScore;
-  if (!currWordMastery) {
+  if (!currWordMastery || currWordMastery.attempts.length === 0) {
     if (isCorrect) {
       masteryScore = 0.75;
     } else {
@@ -28,7 +32,7 @@ export const upsertWordMastery = async (wordId: string, isCorrect: boolean) => {
     if (isCorrect) {
       masteryScore = Math.min(1, currWordMastery.masteryScore + 0.25);
     } else {
-      masteryScore = Math.max(0, currWordMastery.masteryScore - 0.25);
+      masteryScore = Math.max(0.25, currWordMastery.masteryScore - 0.25);
     }
   }
   await prisma.userWordMastery.upsert(
@@ -50,6 +54,7 @@ export const upsertWordMastery = async (wordId: string, isCorrect: boolean) => {
         wordId: wordId,
         userId: userId,
         masteryScore: masteryScore,
+        wordsListId: wordListId,
         attempts: {
           create: {
             userId: userId,
