@@ -34,7 +34,7 @@ export default function RequestRetakePage({ quiz }: Props) {
   return (
     <div className="flex flex-col">
         <h1 className="text-center text-xl font-bold pt-6">
-            You've ran out of attempts!
+            You have ran out of attempts!
         </h1>
         <main className="grid grid-cols-2 gap-6 m-12 align-middle">
             <Button
