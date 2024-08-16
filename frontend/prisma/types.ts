@@ -6,3 +6,10 @@ export type QuizWithQuestionsAndUserWordsList = Prisma.QuizGetPayload<{
       userWordsListProgress: true,
     };
   }>;
+
+export type WordsListWithWordsAndUserWordsList = Prisma.WordsListGetPayload<{
+    include: {
+      words: true,
+      UserWordsListProgress: true,
+    };
+  }>;

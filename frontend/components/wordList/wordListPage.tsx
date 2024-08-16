@@ -17,7 +17,7 @@ import {
   TableHeader,
 } from "@/components/ui/table";
 import { Card, CardContent } from "@/components/ui/card";
-import { AttemptsTable } from "./attemptsTable";
+import { AttemptsTable } from "../analytics/attemptsTable";
 import { createMasterQuiz, createMiniQuiz, fetchQuizzes, fetchBackupMasterQuiz, fetchBackupMiniQuiz} from "@/actions/quiz_creation";
 import { auth } from "@/auth/auth";
 import { Quiz } from "@prisma/client";

@@ -3,6 +3,15 @@ import { PrismaClient, Prisma, UserWordsListProgress } from "@prisma/client";
 import { analytics } from "googleapis/build/src/apis/analytics";
 
 const prisma = new PrismaClient();
+export const getAllWordsLists = cache(async () => {
+  const data = await prisma.wordsList.findMany({
+    include: { 
+      words: true,
+      UserWordsListProgress: true,
+    }
+  });
+  return data;
+})
 
 export const getUserWordListsWithMasteries = cache(async (userID: string, classID: string) => {
   const data = await prisma.userWordsListProgress.findMany({
