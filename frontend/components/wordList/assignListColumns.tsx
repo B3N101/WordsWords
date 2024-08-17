@@ -4,7 +4,7 @@ import { ColumnDef } from "@tanstack/react-table"
 import { Word } from "@prisma/client"
 import { WordsListWithWordsAndUserWordsList } from "@/prisma/types"
 
-import { MoreHorizontal } from "lucide-react"
+import { Link, MoreHorizontal } from "lucide-react"
 
 
 import { Button } from "@/components/ui/button"
@@ -36,10 +36,11 @@ export type WordListTableType = {
   status: WordsListStatus
   name: string
   words: Word[]
+  classId: string
 }
 
 
-export const columns: ColumnDef<WordsListWithWordsAndUserWordsList>[] = [
+export const columns: ColumnDef<WordListTableType>[] = [
   {
     id: "select",
     header: ({ table }) => (
@@ -62,7 +63,7 @@ export const columns: ColumnDef<WordsListWithWordsAndUserWordsList>[] = [
   },
   {
     accessorKey: "status",
-    header: "Status",
+    header: () => <div className="font-bold text-lg">Status</div>,
     cell: ({ row }) => {
       const status: WordsListStatus = row.getValue("status")
       return <ListStatusDisplay status={status} />
@@ -70,10 +71,11 @@ export const columns: ColumnDef<WordsListWithWordsAndUserWordsList>[] = [
   },
   {
     accessorKey: "name",
-    header: "Name",
+    header: () => <div className="font-bold text-lg">Name</div>,
   },
   {
     id: "actions",
+    header: () => <div className="font-bold text-lg">Actions</div>,
     cell: ({ row }) => {
       const wordslist = row.original;
       return (
@@ -86,28 +88,6 @@ export const columns: ColumnDef<WordsListWithWordsAndUserWordsList>[] = [
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end">
               <DropdownMenuLabel>Actions</DropdownMenuLabel>
-
-              <DropdownMenuSeparator />
-
-              <Dialog>
-                <DialogTrigger>
-                  <DropdownMenuItem onSelect={(e) => e.preventDefault()}>
-                    Assign Wordslist
-                  </DropdownMenuItem>
-                </DialogTrigger>
-                  <DialogContent>
-                    <DialogHeader>
-                      <DialogTitle>Assign {wordslist.name}</DialogTitle>
-                      <DialogDescription>
-                        <div>Select a due date to assign the list</div>
-                      </DialogDescription>
-                    </DialogHeader>
-                    {/* <form onSubmit={}>
-                      <input type="date" />
-                      <Button>Assign</Button>
-                    </form> */}
-                  </DialogContent>
-              </Dialog>
               <DropdownMenuSeparator />
               <Dialog>
                 <DialogTrigger>
@@ -130,13 +110,19 @@ export const columns: ColumnDef<WordsListWithWordsAndUserWordsList>[] = [
                       ))}
                   </DialogContent>
               </Dialog>
+              {
+                wordslist.status !== "Unassigned" ?
+              <DropdownMenuItem onClick={() => window.location.href = "/class/" + wordslist.classId + "/" + wordslist.id}>
+                Go to List Page
+              </DropdownMenuItem>
+              : null
+              }
             </DropdownMenuContent>
           </DropdownMenu>
       )
     },
   },
 ]
-
 function ListStatusDisplay({ status }: { status: WordsListStatus }) {
   if (status === "Completed") {
     return (

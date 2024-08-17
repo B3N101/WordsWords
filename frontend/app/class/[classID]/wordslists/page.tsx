@@ -1,11 +1,11 @@
-import { DataTable } from "@/components/wordList/dataTable";
+import { DataTable } from "@/components/wordList/assignListTable";
 import { WordsList } from "@prisma/client";
-import { columns, WordListTableType, WordsListStatus } from "@/components/wordList/dataColumns";
+import { columns, WordListTableType, WordsListStatus } from "@/components/wordList/assignListColumns";
 import { getAllWordsLists } from "@/prisma/queries";
 import { type WordsListWithWordsAndUserWordsList } from "@/prisma/types";
 import { auth } from "@/auth/auth";
 
-async function getData(): Promise<WordListTableType[]>{
+async function getData(classId: string): Promise<WordListTableType[]>{
     const today = new Date();
     const data: WordsListWithWordsAndUserWordsList[] = await getAllWordsLists();
 
@@ -16,13 +16,14 @@ async function getData(): Promise<WordListTableType[]>{
             status: status,
             name: wordList.name,
             words: wordList.words,
+            classId: classId
         }
     });
     return tabledata;
 }
 export default async function Page({ params }: { params: { classID: string } }) {
     const classString = params.classID;
-    const data: WordsListWithWordsAndUserWordsList[] = await getAllWordsLists();
+    const data = await getData(classString);
     const session = await auth();
     const userId = session?.user?.id;
   
@@ -31,12 +32,8 @@ export default async function Page({ params }: { params: { classID: string } }) 
     }
     return (
       <div>
-        Data Table Page
-        {/* Add your class page content here */}
         <DataTable columns={columns} data={data} userId={userId} classId={classString}/>
-        
       </div>
-      
     );
   }
   

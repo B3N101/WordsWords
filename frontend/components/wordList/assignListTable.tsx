@@ -18,13 +18,12 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table"
-
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { createUserWordsListForClass } from "@/actions/wordlist_assignment"
 import { WordsListWithWordsAndUserWordsList } from "@/prisma/types"
-
+import { WordListTableType } from "@/components/wordList/assignListColumns"
 
 interface DataTableProps<TData, TValue> {
   columns: ColumnDef<TData, TValue>[]
@@ -61,17 +60,34 @@ export function DataTable<TData, TValue>({
   })
   return (
     <div>
+      <div className="grid grid-cols-2 gap-2 w-full">
         <div className="flex items-center py-4">
-        <Input
-          placeholder="Filter WordsLists..."
-          value={(table.getColumn("name")?.getFilterValue() as string) ?? ""}
-          onChange={(event) =>
-            table.getColumn("name")?.setFilterValue(event.target.value)
-          }
-          className="max-w-sm"
-        />
-      </div>
+          <Input
+            placeholder="Filter WordsLists..."
+            value={(table.getColumn("name")?.getFilterValue() as string) ?? ""}
+            onChange={(event) =>
+              table.getColumn("name")?.setFilterValue(event.target.value)
+            }
+            className="max-w-sm"
+          />
+        </div>
+        <div className="flex items items-center p-4 gap-2 justify-end">
+          <Label>Filter by Status: </Label>
+          <select
 
+            value={(table.getColumn("status")?.getFilterValue() as string) ?? ""}
+            onChange={(event) =>
+              table.getColumn("status")?.setFilterValue(event.target.value)
+            }
+            className="max-w-sm bg-tan outline-black"
+          >
+            <option value="">All</option>
+            <option value="Active">Active</option>
+            <option value="Completed">Completed</option>
+            <option value="Unassigned">Unassigned</option>
+          </select>
+        </div>
+      </div>
       <div className="rounded-md border">
         <Table>
           <TableHeader>
@@ -137,13 +153,21 @@ export function DataTable<TData, TValue>({
       <div className="flex-1 text-sm text-muted-foreground">
         {table.getFilteredSelectedRowModel().rows.length} of{" "}
         {table.getFilteredRowModel().rows.length} row(s) selected.
+      </div>
+      <div className="flex items-center justify-center space-x">
         <AssignWordsListCard listIds={
           table.getFilteredSelectedRowModel().rows.map(row => {
-            const rowCasted = row.original as WordsListWithWordsAndUserWordsList
+            const rowCasted = row.original as WordsListWithWordsAndUserWordsList;
             return rowCasted.listId
           })} 
           userId={userId}
           classId={classId} 
+          statuses = {
+            table.getFilteredSelectedRowModel().rows.map(row => {
+              const rowCasted = row.original as WordListTableType;
+              return rowCasted.status
+            })
+          }
           />
       </div>
 
@@ -152,15 +176,15 @@ export function DataTable<TData, TValue>({
   )
 }
 
-function AssignWordsListCard({ listIds, userId, classId} : { listIds: string[], userId: string, classId: string }) {
+function AssignWordsListCard({ listIds, userId, classId, statuses} : { listIds: string[], userId: string, classId: string, statuses: string[] }) {
   console.log("ListIds", listIds)
   const [isLoading, setIsLoading] = React.useState(false);
   const [dueDate, setDueDate] = React.useState<string>("");
 
+  const anyActive = statuses.some(status => status === "Active" || status === "Completed");
   const handleWordsListAssignment = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setIsLoading(true);
-    console.log("submitting form with date " + dueDate)
     for (const wordsListId of listIds)
     {
       try {
@@ -173,9 +197,11 @@ function AssignWordsListCard({ listIds, userId, classId} : { listIds: string[], 
   }
   return (
     <form onSubmit={handleWordsListAssignment}>
-      <div className="grid gap-4">
-        <div className="grid gap-2"> 
-          <Label htmlFor="dueDate">Due Date</Label>
+      <div className="grid gap-4 m-4">
+        <div className="grid grid-cols-2 gap-2"> 
+          <h1 className="grid place-items-center">
+            Select Due Date
+          </h1>
           <Input type="date" 
           id="dueDate" 
           value={dueDate} 
@@ -184,8 +210,8 @@ function AssignWordsListCard({ listIds, userId, classId} : { listIds: string[], 
           }
           required />
         </div>
-        <Button disabled={isLoading}>
-          {isLoading ? "Assigning..." : "Assign"}
+        <Button disabled={isLoading || listIds.length === 0}>
+          {anyActive ? (isLoading ? "Reassigning..." : "Reassign") : (isLoading ? "Assigning..." : "Assign")}
         </Button>
       </div>
     </form>
