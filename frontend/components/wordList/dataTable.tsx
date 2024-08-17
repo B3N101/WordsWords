@@ -21,19 +21,29 @@ import {
 
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
+import { Label } from "@/components/ui/label"
+import { createUserWordsListForClass } from "@/actions/wordlist_assignment"
+import { WordsListWithWordsAndUserWordsList } from "@/prisma/types"
+
 
 interface DataTableProps<TData, TValue> {
   columns: ColumnDef<TData, TValue>[]
   data: TData[]
+  userId: string
+  classId: string
 }
 
 export function DataTable<TData, TValue>({
   columns,
   data,
+  userId,
+  classId
 }: DataTableProps<TData, TValue>) {
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(
     []
   )
+  const [rowSelection, setRowSelection] = React.useState({})
+
   const table = useReactTable({
     data,
     columns,
@@ -42,13 +52,13 @@ export function DataTable<TData, TValue>({
 
     onColumnFiltersChange: setColumnFilters,
     getFilteredRowModel: getFilteredRowModel(),
+    onRowSelectionChange: setRowSelection,
 
     state:{
       columnFilters,
+      rowSelection,
     }
-
   })
-
   return (
     <div>
         <div className="flex items-center py-4">
@@ -124,6 +134,60 @@ export function DataTable<TData, TValue>({
             Next
           </Button>
       </div>
+      <div className="flex-1 text-sm text-muted-foreground">
+        {table.getFilteredSelectedRowModel().rows.length} of{" "}
+        {table.getFilteredRowModel().rows.length} row(s) selected.
+        <AssignWordsListCard listIds={
+          table.getFilteredSelectedRowModel().rows.map(row => {
+            const rowCasted = row.original as WordsListWithWordsAndUserWordsList
+            return rowCasted.listId
+          })} 
+          userId={userId}
+          classId={classId} 
+          />
+      </div>
+
     </div>
+    
+  )
+}
+
+function AssignWordsListCard({ listIds, userId, classId} : { listIds: string[], userId: string, classId: string }) {
+  console.log("ListIds", listIds)
+  const [isLoading, setIsLoading] = React.useState(false);
+  const [dueDate, setDueDate] = React.useState<string>("");
+
+  const handleWordsListAssignment = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    setIsLoading(true);
+    console.log("submitting form with date " + dueDate)
+    for (const wordsListId of listIds)
+    {
+      try {
+        await createUserWordsListForClass(userId, wordsListId, classId, new Date(dueDate));
+      } catch (error) {
+        console.error(error);
+      } 
+    }
+    setIsLoading(false);
+  }
+  return (
+    <form onSubmit={handleWordsListAssignment}>
+      <div className="grid gap-4">
+        <div className="grid gap-2"> 
+          <Label htmlFor="dueDate">Due Date</Label>
+          <Input type="date" 
+          id="dueDate" 
+          value={dueDate} 
+          onChange={(e) =>
+            setDueDate(e.target.value)
+          }
+          required />
+        </div>
+        <Button disabled={isLoading}>
+          {isLoading ? "Assigning..." : "Assign"}
+        </Button>
+      </div>
+    </form>
   )
 }

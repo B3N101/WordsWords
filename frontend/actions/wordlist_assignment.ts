@@ -4,7 +4,8 @@ import { PrismaClient, QuizType } from "@prisma/client";
 
 const prisma = new PrismaClient();
 
-export const createUserWordsList = async (userId: string, wordsListId: string, classId: string) => {
+export const createUserWordsListForClass = async (userId: string, wordsListId: string, classId: string, dueDate: Date) => {
+    console.log("Fetching class")
     const currClass = await prisma.class.findFirst({
         where: {
             classId: classId,
@@ -13,6 +14,7 @@ export const createUserWordsList = async (userId: string, wordsListId: string, c
             students: true,
         }
     });
+    console.log("Class found")
     if (!currClass){
         throw new Error("Class not found");
     }
@@ -27,13 +29,24 @@ export const createUserWordsList = async (userId: string, wordsListId: string, c
     if (!wordsList){
         throw new Error("Words list not found");
     }
+    console.log("Creating user words list for class");
 
     for(const student of currClass.students){
-        await prisma.userWordsListProgress.create({
-            data:{
+        await prisma.userWordsListProgress.upsert({
+            where:{
+                userWordsListProgressId: {
+                    userId: student.id,
+                    wordsListListId: wordsListId,
+                }
+            },
+            update:{
+                dueDate: dueDate
+            },
+            create:{
                 user: { connect: { id: student.id }},
                 wordsList: { connect: { listId: wordsListId }},
                 class: { connect: { classId: classId }},
+                dueDate: dueDate,
             }
         });
     }

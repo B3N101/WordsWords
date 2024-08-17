@@ -1,9 +1,12 @@
 "use client"
 
 import { ColumnDef } from "@tanstack/react-table"
-import { WordsList } from "@prisma/client"
+import { Word } from "@prisma/client"
+import { WordsListWithWordsAndUserWordsList } from "@/prisma/types"
+
 import { MoreHorizontal } from "lucide-react"
- 
+
+
 import { Button } from "@/components/ui/button"
 import {
   DropdownMenu,
@@ -22,6 +25,8 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog"
 
+import { Checkbox } from "@/components/ui/checkbox"
+
 // This type is used to define the shape of our data.
 // You can use a Zod schema here if you want.
 export type WordsListStatus = "Unassigned" | "Completed" | "Active"
@@ -30,9 +35,31 @@ export type WordListTableType = {
   id: string
   status: WordsListStatus
   name: string
+  words: Word[]
 }
 
-export const columns: ColumnDef<WordsList>[] = [
+
+export const columns: ColumnDef<WordsListWithWordsAndUserWordsList>[] = [
+  {
+    id: "select",
+    header: ({ table }) => (
+      <Checkbox
+        checked={
+          table.getIsAllPageRowsSelected() ||
+          (table.getIsSomePageRowsSelected() && "indeterminate")
+        }
+        onCheckedChange={(value) => table.toggleAllPageRowsSelected(!!value)}
+        aria-label="Select all"
+      />
+    ),
+    cell: ({ row }) => (
+      <Checkbox
+        checked={row.getIsSelected()}
+        onCheckedChange={(value) => row.toggleSelected(!!value)}
+        aria-label="Select row"
+      />
+    ),
+  },
   {
     accessorKey: "status",
     header: "Status",
@@ -48,8 +75,7 @@ export const columns: ColumnDef<WordsList>[] = [
   {
     id: "actions",
     cell: ({ row }) => {
-      const payment = row.original
- 
+      const wordslist = row.original;
       return (
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
@@ -66,22 +92,42 @@ export const columns: ColumnDef<WordsList>[] = [
               <Dialog>
                 <DialogTrigger>
                   <DropdownMenuItem onSelect={(e) => e.preventDefault()}>
-                    Assign Wordslists
+                    Assign Wordslist
                   </DropdownMenuItem>
                 </DialogTrigger>
                   <DialogContent>
-                    Assign Wordslists box
+                    <DialogHeader>
+                      <DialogTitle>Assign {wordslist.name}</DialogTitle>
+                      <DialogDescription>
+                        <div>Select a due date to assign the list</div>
+                      </DialogDescription>
+                    </DialogHeader>
+                    {/* <form onSubmit={}>
+                      <input type="date" />
+                      <Button>Assign</Button>
+                    </form> */}
                   </DialogContent>
               </Dialog>
               <DropdownMenuSeparator />
               <Dialog>
                 <DialogTrigger>
                   <DropdownMenuItem onSelect={(e) => e.preventDefault()}>
-                    View Words
+                    <div>View Words</div>
                   </DropdownMenuItem>
                 </DialogTrigger>
                   <DialogContent>
-                    View Words box
+                    <DialogDescription>
+                    </DialogDescription>
+                    <DialogHeader>
+                      <DialogTitle>
+                        <div className="text-center ">Words</div>
+                      </DialogTitle>
+                    </DialogHeader>
+                      {wordslist.words.map((word, i) => (
+                          <div key={i} className="space-y-4 text-center items-center align-middle justify-between">
+                              {word.word}
+                          </div>
+                      ))}
                   </DialogContent>
               </Dialog>
             </DropdownMenuContent>
@@ -94,19 +140,19 @@ export const columns: ColumnDef<WordsList>[] = [
 function ListStatusDisplay({ status }: { status: WordsListStatus }) {
   if (status === "Completed") {
     return (
-      <div className="bg-[#e6f7f2] text-[#1abc9c] font-medium rounded-full text-right w-min">
+      <div className="bg-[#e6f7f2] text-[#1abc9c] font-medium text-right w-min">
         Finished
       </div>
     );
   } else if (status === "Active") {
     return (
-      <div className="bg-[#f2f7fe] text-[#3498db] font-medium rounded-full text-right w-min">
+      <div className="bg-[#f2f7fe] text-[#3498db] font-medium text-right w-min">
         Active
       </div>
     );
   } else {
     return (
-      <div className="bg-[#fafafa] text-[#6b6b6b] font-medium rounded-full text-right w-min">
+      <div className="bg-[#fafafa] text-[#6b6b6b] font-medium text-right w-min">
          Unassigned 
       </div>
     );
