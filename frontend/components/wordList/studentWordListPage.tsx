@@ -47,6 +47,7 @@ type LearnData = {
 };
 
 type WordListPageProps = {
+  userId: string
   classID: string
   wordListID: string;
 };
@@ -57,17 +58,13 @@ type MasterQuizProps = {
   completed: boolean;
 };
 
-export default async function WordListPage({ classID, wordListID }: WordListPageProps) {
+export default async function StudentWordListPage({ userId, classID, wordListID }: WordListPageProps) {
   console.log("Rendering wordlist page for", wordListID);
   // Make an example of below code
 
   const className = "WordsList " + wordListID;
   const classStatus: ClassStatusType = "active";
   const teacherId = "b6f7523b-f1a7-49d8-8543-93551ee30179";
-
-  // get userID
-  const session = await auth();
-  const userId = session?.user?.id!;
 
   let isTeacher = false;
   if (userId == teacherId) {

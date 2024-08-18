@@ -1,6 +1,6 @@
-import { DataTable } from "@/components/wordList/assignListTable";
+import { DataTable } from "@/components/wordList/dataTables/assignListTable";
 import { WordsList } from "@prisma/client";
-import { columns, WordListTableType, WordsListStatus } from "@/components/wordList/assignListColumns";
+import { columns, WordListTableType, WordsListStatus } from "@/components/wordList/dataTables/assignListColumns";
 import { getAllWordsLists } from "@/prisma/queries";
 import { type WordsListWithWordsAndUserWordsList } from "@/prisma/types";
 import { auth } from "@/auth/auth";
