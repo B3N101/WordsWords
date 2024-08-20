@@ -49,9 +49,10 @@ async function seedWords() {
       exampleSentence: row[4] ? row[4] : "",
       incorrectDefinitions: row.slice(5, 10) ? row.slice(5, 10) : [""],
       gradeLevel: getGrade(row[10]),
-      incorrectFillIns: row.slice(11, 14) ? row.slice(11, 14) : [""],
-      wordListNumber: row[14] ? parseInt(row[14]) : -1,
-      rankWithinList: row[15] ? parseInt(row[15]) : -1,
+      correctFillIn: row[11] ? row[11] : "",
+      incorrectFillIns: row.slice(12, 15) ? row.slice(12, 15) : [""],
+      wordListNumber: row[15] ? parseInt(row[14]) : -1,
+      rankWithinList: row[16] ? parseInt(row[15]) : -1,
     }));
     console.log(wordData);
     await prisma.word.createMany({

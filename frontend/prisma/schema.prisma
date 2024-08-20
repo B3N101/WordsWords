@@ -98,6 +98,8 @@ model Word {
   incorrectDefinitions String[]
 
   exampleSentence  String
+
+  correctFillIn    String
   incorrectFillIns String[]
 
   wordListNumber Int?

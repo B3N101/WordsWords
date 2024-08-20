@@ -37,16 +37,34 @@ export const createMiniQuiz = async (wordListId: string, userId: string, classId
         return null;
     }
     const questions = words.map((word, index) => {
-        // Take two of the incorrect definitions at random
-        const answerChoices = pickNRandom(word.incorrectDefinitions, 3)
-        // add the correct definition
-        answerChoices.push(word.definition)
-        return {
-            questionString: "What is the definition of " + word.word + "?",
-            rank: index,
-            allAnswers: answerChoices,
-            correctAnswer: word.definition,
-            wordId: word.wordId,
+        // get random number between 0 and 1
+        const random = Math.random();
+
+        // first type of question
+        if (random < 0.5)
+        {// Take two of the incorrect definitions at random
+            const answerChoices = pickNRandom(word.incorrectDefinitions, 3)
+            // add the correct definition
+            answerChoices.push(word.definition)
+            return {
+                questionString: "What is the definition of " + word.word + "?",
+                rank: index,
+                allAnswers: answerChoices,
+                correctAnswer: word.definition,
+                wordId: word.wordId,
+            }
+        }
+        // second type of question
+        else{
+            const answerChoices = word.incorrectFillIns;
+            answerChoices.push(word.correctFillIn);
+            return{
+                questionString: word.exampleSentence,
+                rank: index,
+                allAnswers: answerChoices,
+                correctAnswer: word.correctFillIn,
+                wordId: word.wordId,
+            }
         }
     })
 
@@ -117,18 +135,36 @@ export const createMasterQuiz = async (wordListId: string, userId: string, class
     const allWords = words.concat(oldWords.flatMap((word) => word.word));
 
     const questions = allWords.map((word, index) => {
-        // Take two of the incorrect definitions at random
-        const answerChoices = pickNRandom(word.incorrectDefinitions, 3)
-        // add the correct definition
-        answerChoices.push(word.definition)
-        return {
-            questionString: "What is the definition of " + word.word + "?",
-            rank: index,
-            allAnswers: answerChoices,
-            correctAnswer: word.definition,
-            wordId: word.wordId,
+        // get random number between 0 and 1
+        const random = Math.random();
+
+        // first type of question
+        if (random < 0.5)
+        {// Take two of the incorrect definitions at random
+            const answerChoices = pickNRandom(word.incorrectDefinitions, 3)
+            // add the correct definition
+            answerChoices.push(word.definition)
+            return {
+                questionString: "What is the definition of " + word.word + "?",
+                rank: index,
+                allAnswers: answerChoices,
+                correctAnswer: word.definition,
+                wordId: word.wordId,
+            }
         }
-    })
+        // second type of question
+        else{
+            const answerChoices = word.incorrectFillIns;
+            answerChoices.push(word.correctFillIn);
+            return{
+                questionString: word.exampleSentence,
+                rank: index,
+                allAnswers: answerChoices,
+                correctAnswer: word.correctFillIn,
+                wordId: word.wordId,
+            }
+        }
+    });
     const quiz = await prisma.quiz.create({
         data:{
             user: { connect: { id: userId } },

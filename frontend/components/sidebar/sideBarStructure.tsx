@@ -8,10 +8,11 @@
 import { useState } from "react"
 import { Button } from "@/components/ui/button"
 import { WordListSubMenu } from "./sideBarSubMenu"
-import { UserWordsListProgress } from "@prisma/client"
+import { UserWordsListProgressWithWordsList } from "@/prisma/types";
+
 import Link from "next/link"
 
-export default function SideBarStructure({ wordLists }: { wordLists: UserWordsListProgress[] }) {
+export default function SideBarStructure({ wordLists }: { wordLists: UserWordsListProgressWithWordsList[] }) {
 
   const [isExpanded, setIsExpanded] = useState(false);
   const [isSubMenuExpanded, setIsSubMenuExpanded] = useState(false);

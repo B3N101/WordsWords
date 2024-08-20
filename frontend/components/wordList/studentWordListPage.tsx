@@ -21,13 +21,7 @@ import { AttemptsTable } from "../analytics/attemptsTable";
 import { createMasterQuiz, createMiniQuiz, fetchQuizzes, fetchBackupMasterQuiz, fetchBackupMiniQuiz} from "@/actions/quiz_creation";
 import { auth } from "@/auth/auth";
 import { Quiz } from "@prisma/client";
-
-function getInitials(name: string) {
-  return name
-    .split(" ")
-    .map((n) => n[0])
-    .join("");
-}
+import { getWordListName } from "@/prisma/queries";
 
 type ClassStatusType = "active" | "upcoming" | "completed";
 type QuizStatusType = "completed" | "open" | "locked";
@@ -59,10 +53,12 @@ type MasterQuizProps = {
 };
 
 export default async function StudentWordListPage({ userId, classID, wordListID }: WordListPageProps) {
-  console.log("Rendering wordlist page for", wordListID);
   // Make an example of below code
 
-  const className = "WordsList " + wordListID;
+  const wordList = await getWordListName(wordListID);
+  if (!wordList) {
+    throw new Error("Wordlist not found");
+  }
   const classStatus: ClassStatusType = "active";
   const teacherId = "b6f7523b-f1a7-49d8-8543-93551ee30179";
 
@@ -71,18 +67,9 @@ export default async function StudentWordListPage({ userId, classID, wordListID 
     isTeacher = true;
   }
 
-  // get wordList, userWordListProgress from wordListID
-  // const wordListData = getWordList(wordListID);
-  // const userWordListProgressData = getUserWordListProgress(userId, wordListID);
-  // const [wordList, userWordListProgress] = await Promise.all([
-  //   wordListData,
-  //   userWordListProgressData,
-  // ]);
-
   const {miniQuizzes, masterQuiz} = await fetchQuizzes(wordListID, userId, classID);
 
 
-  // TODO: dangerous to create backup quizzes everytime the user refreshes the page, could lead to backlog of extra quizzes and it stops the logic working right.
   const {backupMiniQuizzes, backupMasterQuiz } = await createBackupQuizzes({ miniQuizzes, masterQuiz, wordListID, userId, classID });
   
   // filter only mini quizzes
@@ -96,7 +83,7 @@ export default async function StudentWordListPage({ userId, classID, wordListID 
       name: "Quiz " + (i + 1),
       status: status,
       quizID: miniQuiz.quizId,
-      dueDate: new Date("2022-09-15"),
+      dueDate: miniQuiz.dueDate,
     };
   });
   const learnData = miniQuizzes?.map((miniQuiz, i) => {
@@ -120,7 +107,7 @@ export default async function StudentWordListPage({ userId, classID, wordListID 
   return (
     <div className="flex-1 p-6">
       <div className="flex items-center justify-between mb-6">
-        <h1 className="text-2xl font-bold text-[#ff6b6b]">{className}</h1>
+        <h1 className="text-2xl font-bold text-[#ff6b6b]">{wordList.name}</h1>
         <ClassStatus status={classStatus} />
       </div>
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-6">

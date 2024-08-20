@@ -2,10 +2,10 @@
 
 import { auth } from "@/auth/auth";
 import { getUserWordLists } from "@/prisma/queries";
-import { UserWordsListProgress } from "@prisma/client";
+import { UserWordsListProgressWithWordsList } from "@/prisma/types";
 import Link from "next/link";
 
-export function WordListSubMenu( {wordLists} : {wordLists: UserWordsListProgress[]} ) {    
+export function WordListSubMenu( {wordLists} : {wordLists: UserWordsListProgressWithWordsList[]} ) {    
     return (
         <ul className="grid gap-2 pl-8 pt-2 overflow-auto max-h-32">
           {wordLists.map((wordlist, index) => (
@@ -16,7 +16,7 @@ export function WordListSubMenu( {wordLists} : {wordLists: UserWordsListProgress
                 prefetch={false}
               >
                 <BookIcon className="h-5 w-5" />
-                <span className={`text-sm font-medium`}>{wordlist.wordsListListId}</span>
+                <span className={`text-sm font-medium`}>{wordlist.wordsList.name}</span>
               </Link>
             </li>
           ))}

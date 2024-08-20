@@ -22,6 +22,13 @@ export const getAllWordsLists = cache(async () => {
   return data;
 })
 
+export const getWordListName = cache(async (wordListID: string) => {
+  const data = await prisma.wordsList.findFirst({
+    where: { listId: wordListID },
+    select: { name: true },
+  });
+  return data;
+});
 export const getAllUserWordsListProgresses = cache(async (classId: string, wordListId: string) => {
   const data = await prisma.userWordsListProgress.findMany({
     where: {
@@ -55,6 +62,7 @@ export const getUserWordLists = cache(async (userID: string) => {
   const data = await prisma.userWordsListProgress.findMany({
     where: { userId: userID },
     include: { wordsList: true },
+    orderBy: { dueDate: 'desc' }
   });
   return data;
 });
