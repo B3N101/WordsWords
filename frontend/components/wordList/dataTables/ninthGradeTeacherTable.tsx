@@ -56,6 +56,7 @@ export function DataTable<TData, TValue>({
   })
   return (
     <div>
+      <div className="grid grid-cols-2 gap-2 w-full">
         <div className="flex items-center py-4">
           <Input
             placeholder="Filter Students..."
@@ -65,7 +66,23 @@ export function DataTable<TData, TValue>({
             }
             className="max-w-sm"
           />
-        </div>      
+        </div>
+        <div className="flex items items-center p-4 gap-2 justify-end">
+          <Label>Filter by Status: </Label>
+          <select
+            value={(table.getColumn("status")?.getFilterValue() as string) ?? ""}
+            onChange={(event) =>
+              table.getColumn("status")?.setFilterValue(event.target.value)
+            }
+            className="max-w-sm bg-tan outline-black"
+          >
+            <option value="">All</option>
+            <option value="Active">Active</option>
+            <option value="Completed">Completed</option>
+            <option value="Overdue">Overdue</option>
+          </select>
+        </div>
+      </div>     
       <div className="rounded-md border">
         <Table>
           <TableHeader>

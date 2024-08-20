@@ -6,7 +6,7 @@
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
-import { StudentInfo, columns } from "./dataTables/ninthGradeTeacherColumns";
+import { StudentInfo, WordsListStatus, columns } from "./dataTables/ninthGradeTeacherColumns";
 import { DataTable } from "./dataTables/ninthGradeTeacherTable";
 
 import { getAllUserWordsListProgresses } from "@/prisma/queries";
@@ -38,13 +38,15 @@ async function getData(classId: string, wordListId: string): Promise<StudentInfo
         const allMasterQuizData: Quiz[] = listProgress.quizzes.filter(quiz => quiz.miniSetNumber === -1);
 
         const name = listProgress.user.name ? listProgress.user.name : "Unknown";
+        const status: WordsListStatus = listProgress.completed ? "Completed" : (listProgress.dueDate < new Date() ? "Overdue" : "Active");
         return {
             id: listProgress.userId,
             name: name,
             quiz1: allQuiz1Data,
             quiz2: allQuiz2Data,
             masterQuiz: allMasterQuizData,
-            studentListProgress: listProgress
+            studentListProgress: listProgress,
+            status: status,
         }
     });
     return tabledata;

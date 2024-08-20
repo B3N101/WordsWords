@@ -41,7 +41,7 @@ import {
 import { Badge } from "antd";
 // This type is used to define the shape of our data.
 // You can use a Zod schema here if you want.
-export type WordsListStatus = "Unassigned" | "Completed" | "Active"
+export type WordsListStatus = "Unassigned" | "Completed" | "Active" | "Overdue"
 
 export type StudentInfo = {
   id: string
@@ -50,6 +50,7 @@ export type StudentInfo = {
   quiz2: Quiz[]
   masterQuiz: Quiz[]
   studentListProgress: UserWordsListProgress
+  status: WordsListStatus
 }
 
 function StudentQuizDisplay({studentName, quizzes}: {studentName: string, quizzes: Quiz[]}) {
@@ -117,15 +118,15 @@ function StudentQuizDisplay({studentName, quizzes}: {studentName: string, quizze
     )
 }
 
-function RetakeForm( { studentListProgress }: { studentListProgress: UserWordsListProgress }) {
+function RetakeForm( { studentListProgress, quizRetakes, setQuizRetakes }: { studentListProgress: UserWordsListProgress, quizRetakes: number[], setQuizRetakes: (quizRetakes: number[]) => void }) {
   const [isLoading, setIsLoading] = useState(false);
   const [quiz1Retakes, setQuiz1Retakes] = useState<number>(0);
   const [quiz2Retakes, setQuiz2Retakes] = useState<number>(0);
   const [masterQuizRetakes, setMasterQuizRetakes] = useState<number>(0);
 
-  const [attemptsRemaining1, setAttemptsRemaining1] = useState<number>(studentListProgress.quizAttemptsRemaining[0]);
-  const [attemptsRemaining2, setAttemptsRemaining2] = useState<number>(studentListProgress.quizAttemptsRemaining[1]);
-  const [attemptsRemainingMastery, setAttemptsRemainingMastery] = useState<number>(studentListProgress.quizAttemptsRemaining[3]);
+  const [attemptsRemaining1, setAttemptsRemaining1] = useState<number>(quizRetakes[0]);
+  const [attemptsRemaining2, setAttemptsRemaining2] = useState<number>(quizRetakes[1]);
+  const [attemptsRemainingMastery, setAttemptsRemainingMastery] = useState<number>(quizRetakes[3]);
 
   const handleFormSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -137,9 +138,16 @@ function RetakeForm( { studentListProgress }: { studentListProgress: UserWordsLi
       console.error(error);
     } 
     setIsLoading(false);
+    const newAttemptsRemaining = [attemptsRemaining1+quiz1Retakes, attemptsRemaining2+quiz2Retakes, 0, attemptsRemainingMastery+masterQuizRetakes];
+    setQuizRetakes(newAttemptsRemaining);
+    
     setAttemptsRemaining1(attemptsRemaining1 + quiz1Retakes);
     setAttemptsRemaining2(attemptsRemaining2 + quiz2Retakes);
     setAttemptsRemainingMastery(attemptsRemainingMastery + masterQuizRetakes);
+
+    setQuiz1Retakes(0);
+    setQuiz2Retakes(0);
+    setMasterQuizRetakes(0);
   }
   
   return (
@@ -235,6 +243,15 @@ export const columns: ColumnDef<StudentInfo>[] = [
     header: () => <div className="font-bold text-lg">Student</div>,
   },
   {
+    accessorKey: "status",
+    header: () => <div className="font-bold text-lg">Status</div>,
+    cell: ({ row }) => {
+      const wordsListProgress: UserWordsListProgress = row.getValue("status");
+      const status: WordsListStatus = wordsListProgress.completed ? "Completed" : (wordsListProgress.dueDate < new Date() ? "Overdue" : "Active");
+      return <ListStatusDisplay status={status} />;
+    }, 
+  },
+  {
     accessorKey: "quiz1",
     header: () => <div className="font-bold text-lg">Quiz 1</div>,
     cell: ({ row }) => {
@@ -267,6 +284,9 @@ export const columns: ColumnDef<StudentInfo>[] = [
     cell: ({ row }) => {
       const studentListProgress = row.original.studentListProgress;
       const retakesRequested = studentListProgress.retakesRequested
+
+      const [attemptsRemaining, setAttemptsRemaining] = useState(studentListProgress.quizAttemptsRemaining)
+      
       return (
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
@@ -294,7 +314,7 @@ export const columns: ColumnDef<StudentInfo>[] = [
                 </DialogTrigger>
                   <DialogContent>
                     <DialogHeader>
-                      <RetakeForm studentListProgress={studentListProgress}/>
+                      <RetakeForm studentListProgress={studentListProgress} quizRetakes={attemptsRemaining} setQuizRetakes={setAttemptsRemaining}/>
                     </DialogHeader>
                   </DialogContent>
               </Dialog>
@@ -308,7 +328,7 @@ function ListStatusDisplay({ status }: { status: WordsListStatus }) {
   if (status === "Completed") {
     return (
       <div className="bg-[#e6f7f2] text-[#1abc9c] font-medium text-right w-min">
-        Finished
+        Completed
       </div>
     );
   } else if (status === "Active") {
@@ -319,8 +339,8 @@ function ListStatusDisplay({ status }: { status: WordsListStatus }) {
     );
   } else {
     return (
-      <div className="bg-[#fafafa] text-[#6b6b6b] font-medium text-right w-min">
-         Unassigned 
+      <div className="bg-[#f2f7fe] text-[#db3434] font-medium text-right w-min">
+         Overdue 
       </div>
     );
   }
