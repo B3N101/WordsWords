@@ -99,6 +99,7 @@ function StudentQuizDisplay({studentName, quizzes}: {studentName: string, quizze
                                 </TableRow>
                             </TableHeader>
                         <TableBody>
+                         {/* TODO: Make quizzes only display completed attempts. Make row action update state, use state to display attempts remaining. */}
                         {
                             quizzes.map((quiz, index) => (
                                 <TableRow key={index}>
@@ -122,6 +123,10 @@ function RetakeForm( { studentListProgress }: { studentListProgress: UserWordsLi
   const [quiz2Retakes, setQuiz2Retakes] = useState<number>(0);
   const [masterQuizRetakes, setMasterQuizRetakes] = useState<number>(0);
 
+  const [attemptsRemaining1, setAttemptsRemaining1] = useState<number>(studentListProgress.quizAttemptsRemaining[0]);
+  const [attemptsRemaining2, setAttemptsRemaining2] = useState<number>(studentListProgress.quizAttemptsRemaining[1]);
+  const [attemptsRemainingMastery, setAttemptsRemainingMastery] = useState<number>(studentListProgress.quizAttemptsRemaining[3]);
+
   const handleFormSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setIsLoading(true);
@@ -132,6 +137,9 @@ function RetakeForm( { studentListProgress }: { studentListProgress: UserWordsLi
       console.error(error);
     } 
     setIsLoading(false);
+    setAttemptsRemaining1(attemptsRemaining1 + quiz1Retakes);
+    setAttemptsRemaining2(attemptsRemaining2 + quiz2Retakes);
+    setAttemptsRemainingMastery(attemptsRemainingMastery + masterQuizRetakes);
   }
   
   return (
@@ -149,9 +157,9 @@ function RetakeForm( { studentListProgress }: { studentListProgress: UserWordsLi
               </TableHeader>
               <TableBody>
                 <TableRow>
-                  <TableCell>{studentListProgress.quizAttemptsRemaining[0]}</TableCell>
-                  <TableCell>{studentListProgress.quizAttemptsRemaining[1]}</TableCell>
-                  <TableCell>{studentListProgress.quizAttemptsRemaining[3]}</TableCell>
+                  <TableCell>{attemptsRemaining1}</TableCell>
+                  <TableCell>{attemptsRemaining2}</TableCell>
+                  <TableCell>{attemptsRemainingMastery}</TableCell>
                 </TableRow>
               </TableBody>
             </Table>
