@@ -17,8 +17,8 @@ import {
   TableHeader,
 } from "@/components/ui/table";
 import { Card, CardContent } from "@/components/ui/card";
-import { AttemptsTable } from "./attemptsTable";
-import { createMasterQuiz, createMiniQuiz, fetchQuizzes } from "@/actions/quiz_creation";
+import { AttemptsTable } from "../analytics/attemptsTable";
+import { createMasterQuiz, createMiniQuiz, fetchQuizzes, fetchBackupMasterQuiz, fetchBackupMiniQuiz} from "@/actions/quiz_creation";
 import { auth } from "@/auth/auth";
 import { Quiz } from "@prisma/client";
 
@@ -47,6 +47,7 @@ type LearnData = {
 };
 
 type WordListPageProps = {
+  userId: string
   classID: string
   wordListID: string;
 };
@@ -57,17 +58,13 @@ type MasterQuizProps = {
   completed: boolean;
 };
 
-export default async function WordListPage({ classID, wordListID }: WordListPageProps) {
+export default async function StudentWordListPage({ userId, classID, wordListID }: WordListPageProps) {
   console.log("Rendering wordlist page for", wordListID);
   // Make an example of below code
 
   const className = "WordsList " + wordListID;
   const classStatus: ClassStatusType = "active";
   const teacherId = "b6f7523b-f1a7-49d8-8543-93551ee30179";
-
-  // get userID
-  const session = await auth();
-  const userId = session?.user?.id!;
 
   let isTeacher = false;
   if (userId == teacherId) {
@@ -84,6 +81,8 @@ export default async function WordListPage({ classID, wordListID }: WordListPage
 
   const {miniQuizzes, masterQuiz} = await fetchQuizzes(wordListID, userId, classID);
 
+
+  // TODO: dangerous to create backup quizzes everytime the user refreshes the page, could lead to backlog of extra quizzes and it stops the logic working right.
   const {backupMiniQuizzes, backupMasterQuiz } = await createBackupQuizzes({ miniQuizzes, masterQuiz, wordListID, userId, classID });
   
   // filter only mini quizzes
@@ -332,7 +331,13 @@ async function createBackupQuizzes( { miniQuizzes, masterQuiz, wordListID, userI
   let backupMiniQuizzes = [];
   for (let i = 0; i < miniQuizzes.length; i++) {
     if (miniQuizzes[i].completed) {
-      backupMiniQuizzes.push(await createMiniQuiz(wordListID, userId, classID, i, true,));
+      const backupQuiz = await fetchBackupMiniQuiz(wordListID, userId, i);
+      if (backupQuiz){
+        backupMiniQuizzes.push(backupQuiz);
+      }
+      else{
+        backupMiniQuizzes.push(await createMiniQuiz(wordListID, userId, classID, i, true,));
+      }
 
     } else {
       backupMiniQuizzes.push(null);
@@ -340,8 +345,14 @@ async function createBackupQuizzes( { miniQuizzes, masterQuiz, wordListID, userI
   }
   if (masterQuiz) {
     if (masterQuiz.completed) {
-      const newMasterQuiz = await createMasterQuiz(wordListID, userId, classID);
-      return { backupMiniQuizzes: backupMiniQuizzes, backupMasterQuiz: newMasterQuiz };
+      const backupMasterQuiz = await fetchBackupMasterQuiz(wordListID, userId);
+      if (backupMasterQuiz){
+        return { backupMiniQuizzes: backupMiniQuizzes, backupMasterQuiz: backupMasterQuiz };
+      }
+      else{
+        const newMasterQuiz = await createMasterQuiz(wordListID, userId, classID);
+        return { backupMiniQuizzes: backupMiniQuizzes, backupMasterQuiz: newMasterQuiz };
+      }
     }
   }
   return { backupMiniQuizzes: backupMiniQuizzes, backupMasterQuiz: null };

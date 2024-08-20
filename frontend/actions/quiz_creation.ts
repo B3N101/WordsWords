@@ -161,7 +161,35 @@ export const createMasterQuiz = async (wordListId: string, userId: string, class
     })
     return quiz;
 }
-
+export const fetchBackupMiniQuiz = async (wordListId: string, userId: string, miniSetId: number) => {
+    const backupQuiz = await prisma.quiz.findFirst({
+        where: {
+            wordsListId: wordListId,
+            userId: userId,
+            quizType: QuizType.MINI,
+            miniSetNumber: miniSetId,
+            completed: false,
+        },
+        orderBy: {
+            createdAt: 'desc',
+        }
+    });
+    return backupQuiz;
+}
+export const fetchBackupMasterQuiz = async (wordListId: string, userId: string) => {
+    const backupQuiz = await prisma.quiz.findFirst({
+        where: {
+            wordsListId: wordListId,
+            userId: userId,
+            quizType: QuizType.MASTERY,
+            completed: false,
+        },
+        orderBy: {
+            createdAt: 'desc',
+        }
+    });
+    return backupQuiz;
+}
 // Fetchquizzes used in every wordlist page to get the active quiz
 export const fetchQuizzes = async (wordListId: string, userId: string, classId: string) => {
 
@@ -174,6 +202,7 @@ export const fetchQuizzes = async (wordListId: string, userId: string, classId: 
                 userId: userId,
                 quizType: QuizType.MINI,
                 miniSetNumber: miniSetNumber,
+                completed: true,
             },
             orderBy: {
                 createdAt: 'desc',
@@ -181,10 +210,12 @@ export const fetchQuizzes = async (wordListId: string, userId: string, classId: 
         });
 
         if (!latestQuiz) {
+            console.log("No latest quiz found for miniset", miniSetNumber);
             latestQuiz = await createMiniQuiz(wordListId, userId, classId, miniSetNumber, false);
         }
 
         if (latestQuiz) {
+            console.log("Found latest quiz");
             miniQuizzes.push(latestQuiz);
         }
     }

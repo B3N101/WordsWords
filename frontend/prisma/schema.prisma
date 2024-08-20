@@ -120,6 +120,7 @@ model WordsList {
   UserWordsListProgress UserWordsListProgress[]
 }
 
+
 model UserWordsListProgress {
   user   User   @relation(fields: [userId], references: [id])
   userId String
@@ -133,9 +134,11 @@ model UserWordsListProgress {
   userWordMasteries UserWordMastery[]
 
   quizzes   Quiz[]
-  completed Boolean @default(false)
+  quizAttemptsRemaining Int[] @default([3, 3, 3, 3])
+  retakesRequested Boolean[] @default([false, false, false, false])
 
-  dueDate DateTime? @default(dbgenerated("NOW() + interval '1 week'"))
+  completed Boolean @default(false)
+  dueDate   DateTime @default(dbgenerated("NOW() + interval '1 week'"))
 
   @@id(name: "userWordsListProgressId", [userId, wordsListListId])
 }

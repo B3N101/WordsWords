@@ -39,17 +39,17 @@ export default function ContextPage({ words, quizId }: Props) {
   return (
     <div>
       {!completed ? (
-        <div>
-          <h1 className="text-5xl font-extrabold">
+        <div className="flex flex-col gap-y-10 align-middle">
+          <h1 className="text-2xl font-bold text-center">
             {words[currentIndex].word}
           </h1>
-          <p>
+          <p className="w-3/4 align-middle text-center items-center m-auto">
             {onContext
               ? words[currentIndex].context
               : words[currentIndex].definition}
           </p>
-          <footer className="lg:-h[140px] h-[100px] border-t-2 flow-root pb-9 px-6 bottom mb-0">
-            <div className="float-right flex flex-col">
+          <footer className="flow-root position: absolute bottom-3 px-6 w-full items-center justify-center">
+            <div className="float-right position: absolute right-6 flex flex-col">
               <Button onClick={handleNext}>
                 {onContext
                   ? "See Definition"
@@ -69,10 +69,10 @@ export default function ContextPage({ words, quizId }: Props) {
         </div>
       ) : (
         <div>
-          <h1 className="text-5xl font-extrabold">
+          <h1 className="text-2xl font-bold text-center">
             You&apos;ve completed learning!
           </h1>
-          <footer className="lg:-h[140px] h-[100px] border-t-2 flow-root pb-9 px-6 bottom mb-0">
+          <footer className="flow-root position: absolute bottom-3 px-6 w-full items-center justify-center">
             <div className="float-right flex flex-col">
               <Button
                 onClick={async () => {

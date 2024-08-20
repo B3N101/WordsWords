@@ -1,10 +1,10 @@
 "use server";
 import { auth } from "@/auth/auth";
-import { PrismaClient } from "@prisma/client";
+import { PrismaClient, QuizType } from "@prisma/client";
 
 const prisma = new PrismaClient();
 
-export const upsertWordMastery = async (wordId: string, isCorrect: boolean, wordListId: string) => {
+export const upsertWordMastery = async (wordId: string, isCorrect: boolean, wordListId: string, quizType: QuizType) => {
   console.log("Upserding word mastery");
   const session = await auth();
   const userId = session?.user?.id;
@@ -30,7 +30,13 @@ export const upsertWordMastery = async (wordId: string, isCorrect: boolean, word
     }
   } else {
     if (isCorrect) {
-      masteryScore = Math.min(1, currWordMastery.masteryScore + 0.25);
+      // only allow mastery to be achieved on mastery quizzes
+      if (quizType === QuizType.MASTERY || currWordMastery.masteryScore === 1){
+        masteryScore = Math.min(1, currWordMastery.masteryScore + 0.25);
+      }
+      else{
+        masteryScore = Math.min(0.75, currWordMastery.masteryScore + 0.25);
+      }
     } else {
       masteryScore = Math.max(0.25, currWordMastery.masteryScore - 0.25);
     }
