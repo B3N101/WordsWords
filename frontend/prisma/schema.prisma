@@ -234,6 +234,7 @@ model Question {
   allAnswers    String[]
   correctAnswer String
   completed     Boolean  @default(false)
+  correctlyAnswered Boolean @default(false)
 }
 
 // ENUMS - ROLE, GRADE, PART OF SPEECH

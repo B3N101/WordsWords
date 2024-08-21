@@ -35,6 +35,8 @@ export const createMiniQuiz = async (wordListId: string, userId: string, classId
     if (words.length === 0){
         return null;
     }
+    // shuffle the words
+    words.sort(() => Math.random() - 0.5);
     const questions = words.map((word, index) => {
         // get random number between 0 and 1
         const random = Math.random();
@@ -133,7 +135,7 @@ export const createMasterQuiz = async (wordListId: string, userId: string, class
         take: 5,
     });
     const allWords = words.concat(oldWords.flatMap((word) => word.word));
-
+    allWords.sort(() => Math.random() - 0.5);
     const questions = allWords.map((word, index) => {
         // get random number between 0 and 1
         const random = Math.random();

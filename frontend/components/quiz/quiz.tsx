@@ -22,9 +22,10 @@ type Props = {
 
 export default function QuizPage({ quiz }: Props) {
   const questions = quiz.questions; 
+  // sort questions by their rank attribute:
+  questions.sort((a, b) => a.rank - b.rank);
   const classId = quiz.userWordsListProgress.classId; 
   const wordListId = quiz.wordsListId;
-
   // TODO: shuffle questions here
   const [completed, setCompleted] = useState<boolean>(quiz.completed);
   const [selected, setSelected] = useState<string|null>(null);
@@ -38,7 +39,15 @@ export default function QuizPage({ quiz }: Props) {
     );
     return uncompletedIndex === -1 ? 0 : uncompletedIndex;
   });
-  const [score, setScore] = useState<number>(0);
+  const [score, setScore] = useState<number>(() => {
+    let score = 0;
+    questions.forEach((question) => {
+      if (question.correctlyAnswered){
+        score++;
+      }
+    });
+    return score;
+  });
   const [isCurrentCorrect, setIsCurrentCorrect] = useState<boolean | null>(
     null,
   );
@@ -82,6 +91,8 @@ export default function QuizPage({ quiz }: Props) {
 
     // the user has just submitted an answer
     if (!questionSubmitted) {
+      let answeredCorrectly = isCurrentCorrect ? true : false;
+
       if (isCurrentCorrect)
       {
         setScore(score+1);
@@ -89,6 +100,7 @@ export default function QuizPage({ quiz }: Props) {
       upsertQuestionCompleted(
         questions[currentIndex].questionId,
         true,
+        answeredCorrectly,
       );
       upsertWordMastery(question.wordId, isCurrentCorrect!, wordListId, quiz.quizType);
 
@@ -133,9 +145,9 @@ export default function QuizPage({ quiz }: Props) {
               </div>
             </header>
             : null}
-          <main className="flex justify-center flex-1 align-middle">
+          <main className="flex justify-center flex-1 align-middle h-full">
             {!started ? (
-              <h1 className="text-3xl font-bold">={quiz.name}</h1>
+              <h1 className="text-3xl font-bold p-4">{quiz.name}</h1>
             ) : (
               <div className="w-full">
                 <h2 className="text-2xl font-bold text-center">{question.questionString}</h2>
@@ -157,7 +169,7 @@ export default function QuizPage({ quiz }: Props) {
               </div>
             )}
           </main>
-          <footer className="flow-root px-6 mb-0 items-center justify-center">
+          <footer className={started ? "flow-root px-6 mb-0 items-center justify-center" : "flow-root px-6 mb-0 position absolute bottom-10 right-2 items-center justify-center"}>
             {
               questionSubmitted ? (
               <div className="float-left">
@@ -193,15 +205,13 @@ export default function QuizPage({ quiz }: Props) {
                 });
               }}
             >
-              {" "}
               Retake Quiz
             </Button>
             <Button
-                onClick={async () => {
+                onClick={() => {
                   window.location.href = "/class/" + classId + "/" + quiz.wordsListId;
                 }}
               >
-                {" "}
                 Back to Dashboard
               </Button>
           </div>

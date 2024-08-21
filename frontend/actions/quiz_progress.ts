@@ -20,6 +20,7 @@ export const upsertLearnCompleted = async (
 export const upsertQuestionCompleted = async (
   questionId: string,
   completed: boolean,
+  correct: boolean,
 ) => {
   // if (quizQuestion.completed === completed) {
   //   throw new Error("Trying to update question with the same completed value");
@@ -30,6 +31,7 @@ export const upsertQuestionCompleted = async (
     },
     data: {
       completed: completed,
+      correctlyAnswered: correct,
     },
   });
   return;
