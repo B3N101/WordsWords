@@ -57,9 +57,10 @@ function StudentQuizDisplay({studentName, quizzes}: {studentName: string, quizze
     if(!quizzes || quizzes.length === 0) {
         return <div>Not started</div>
     }
-    const attempts = quizzes.length
-    const lastAttempt = quizzes[quizzes.length - 1]
-    const bestAttempt = quizzes.reduce((best, current) => {
+    const completedQuizzes = quizzes.filter(quiz => quiz.completed)
+    const attempts = completedQuizzes.length
+    const lastAttempt = completedQuizzes[completedQuizzes.length - 1]
+    const bestAttempt = completedQuizzes.reduce((best, current) => {
         if (current.score > best.score) {
             return current
         }
@@ -102,10 +103,10 @@ function StudentQuizDisplay({studentName, quizzes}: {studentName: string, quizze
                         <TableBody>
                          {/* TODO: Make quizzes only display completed attempts. Make row action update state, use state to display attempts remaining. */}
                         {
-                            quizzes.map((quiz, index) => (
+                            completedQuizzes.map((quiz, index) => (
                                 <TableRow key={index}>
                                     <TableCell>{quiz.createdAt.getMonth() + "/" + quiz.createdAt.getDate() + "/" + quiz.createdAt.getFullYear()}</TableCell>
-                                    <TableCell>{quiz.score} / {quiz.quizType === "MINI" ? "5" : "15"}</TableCell>
+                                    <TableCell>{quiz.score} / {quiz.length}</TableCell>
                                 </TableRow>
                             ))
                         }

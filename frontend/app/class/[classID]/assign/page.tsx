@@ -10,7 +10,7 @@ async function getData(classId: string): Promise<WordListTableType[]>{
     const data: WordsListWithWordsAndUserWordsList[] = await getAllWordsLists();
 
     const tabledata = data.map((wordList) => {
-      const status: WordsListStatus = wordList.UserWordsListProgress.length === 0 ? "Unassigned" : wordList.UserWordsListProgress[0].dueDate > today ? "Active" : "Completed";
+      const status: WordsListStatus = wordList.UserWordsListProgress.length === 0 ? "Unassigned" : wordList.UserWordsListProgress[0].dueDate >= today ? "Active" : "Completed";
         return {
             id: wordList.listId,
             status: status,

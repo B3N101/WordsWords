@@ -241,7 +241,6 @@ export const fetchQuizzes = async (wordListId: string, userId: string, classId: 
                 userId: userId,
                 quizType: QuizType.MINI,
                 miniSetNumber: miniSetNumber,
-                completed: true,
             },
             orderBy: {
                 createdAt: 'desc',

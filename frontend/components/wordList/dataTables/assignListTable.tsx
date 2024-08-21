@@ -18,6 +18,10 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table"
+
+import { ToastAction } from "@/components/ui/toast"
+import { useToast } from "@/components/ui/use-toast"
+
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
@@ -176,6 +180,7 @@ export function DataTable<TData, TValue>({
 }
 
 function AssignWordsListCard({ listIds, userId, classId, statuses} : { listIds: string[], userId: string, classId: string, statuses: string[] }) {
+  const { toast } = useToast();
   console.log("ListIds", listIds, " Statuses", statuses);
   const [isLoading, setIsLoading] = React.useState(false);
   const [dueDate, setDueDate] = React.useState<string>("");
@@ -193,6 +198,13 @@ function AssignWordsListCard({ listIds, userId, classId, statuses} : { listIds: 
       } 
     }
     setIsLoading(false);
+    return(
+      toast({
+        title: "Success!",
+        description: "Refresh to see updated changes.",
+        action: <ToastAction altText="Refresh" onClick={() => {window.location.reload()}}>Refresh</ToastAction>,
+      })
+    );
   }
   return (
     <form onSubmit={handleWordsListAssignment}>

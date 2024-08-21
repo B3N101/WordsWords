@@ -1,5 +1,7 @@
 import "@/app/globals.css";
 import { Inter } from "next/font/google";
+import { Toaster } from "@/components/ui/toaster"
+
 import { IBM_Plex_Mono } from "next/font/google";
 import { Poppins } from "next/font/google";
 import { cn } from "@/lib/utils";
@@ -43,6 +45,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
       >
         <NavBar />
         {children}
+        <Toaster />
       </body>
     </html>
   );
