@@ -12,7 +12,7 @@ import { DataTable } from "./dataTables/ninthGradeTeacherTable";
 import { getAllUserWordsListProgresses } from "@/prisma/queries";
 
 import { Card, CardContent } from "@/components/ui/card";
-import { AttemptsTable } from "../analytics/attemptsTable";
+import { AttemptsTable } from "./studentPage/attemptsTable";
 import { createMasterQuiz, createMiniQuiz, fetchQuizzes, fetchBackupMasterQuiz, fetchBackupMiniQuiz} from "@/actions/quiz_creation";
 import { Quiz } from "@prisma/client";
 

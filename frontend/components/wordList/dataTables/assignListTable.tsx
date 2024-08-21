@@ -22,7 +22,6 @@ import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { createUserWordsListForClass } from "@/actions/wordlist_assignment"
-import { WordsListWithWordsAndUserWordsList } from "@/prisma/types"
 import { WordListTableType } from "@/components/wordList/dataTables/assignListColumns"
 
 interface DataTableProps<TData, TValue> {
@@ -157,8 +156,8 @@ export function DataTable<TData, TValue>({
       <div className="flex items-center justify-center space-x">
         <AssignWordsListCard listIds={
           table.getFilteredSelectedRowModel().rows.map(row => {
-            const rowCasted = row.original as WordsListWithWordsAndUserWordsList;
-            return rowCasted.listId
+            const rowCasted = row.original as WordListTableType;
+            return rowCasted.id;
           })} 
           userId={userId}
           classId={classId} 
@@ -177,7 +176,7 @@ export function DataTable<TData, TValue>({
 }
 
 function AssignWordsListCard({ listIds, userId, classId, statuses} : { listIds: string[], userId: string, classId: string, statuses: string[] }) {
-  console.log("ListIds", listIds)
+  console.log("ListIds", listIds, " Statuses", statuses);
   const [isLoading, setIsLoading] = React.useState(false);
   const [dueDate, setDueDate] = React.useState<string>("");
 

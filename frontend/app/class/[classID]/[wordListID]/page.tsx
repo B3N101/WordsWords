@@ -1,4 +1,6 @@
-import StudentWordListPage from "@/components/wordList/studentWordListPage";
+import { StudentWordListQuizzes, StudentWordListHeader} from "@/components/wordList/studentPage/studentWordListPage";
+import { AttemptsTable } from "@/components/wordList/studentPage/attemptsTable";
+import { AttemptsTableSkeleton, QuizTableSkeleton, HeaderSkeleton} from "@/components/wordList/studentPage/skeletons";
 import TeacherWordListPage from "@/components/wordList/teacherWordListPage";
 import { Suspense } from "react";
 import { auth } from "@/auth/auth";
@@ -14,20 +16,29 @@ export default async function Page({ params }: { params: { classID: string, word
   if(!userId){
     throw new Error("User not found");
   }
-
-  console.log("Redering wordlist page for", wordListString);
-  console.log("Class is ", classString);
+  if(!thisClass){
+    throw new Error("Class not found");
+  }
   return (
     <div>
-      {/* Add your class page content here */}
-      <Suspense>
         {
           thisClass?.teacherId === userId ?
-          <TeacherWordListPage userId={userId} classID={classString} wordListID={wordListString}/>
+          (<TeacherWordListPage userId={userId} classID={classString} wordListID={wordListString}/>)
           :
-          <StudentWordListPage userId={userId} classID={classString} wordListID={wordListString}/>
+          (
+          <div className="flex-1 p-6">
+            <Suspense fallback={<HeaderSkeleton/>}>
+              <StudentWordListHeader userID={userId} wordListID={wordListString} />
+            </Suspense>
+            <Suspense fallback={<QuizTableSkeleton/>}>
+              <StudentWordListQuizzes userId={userId} classID={classString} wordListID={wordListString}/>
+            </Suspense>
+            <Suspense fallback={<AttemptsTableSkeleton/>}>
+              <AttemptsTable wordsListId={wordListString} userId={userId}/>
+            </Suspense>
+          </div>
+          )
         }
-      </Suspense>
     </div>
   );
 }

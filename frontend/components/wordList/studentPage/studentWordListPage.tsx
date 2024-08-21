@@ -4,41 +4,14 @@
  * Documentation: https://v0.dev/docs#integrating-generated-code-into-your-nextjs-app
  */
 import Link from "next/link";
-import { Button } from "@/components/ui/button";
-import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
-import {
-  Table,
-  TableCell,
-  TableBody,
-  TableHead,
-  TableRow,
-  TableFooter,
-  TableCaption,
-  TableHeader,
-} from "@/components/ui/table";
 import { Card, CardContent } from "@/components/ui/card";
-import { AttemptsTable } from "../analytics/attemptsTable";
 import { createMasterQuiz, createMiniQuiz, fetchQuizzes, fetchBackupMasterQuiz, fetchBackupMiniQuiz} from "@/actions/quiz_creation";
-import { auth } from "@/auth/auth";
 import { Quiz } from "@prisma/client";
-import { getWordListName } from "@/prisma/queries";
+import { getUserWordListProgressWithList } from "@/prisma/queries";
 
-type ClassStatusType = "active" | "upcoming" | "completed";
+export type WordListStatusType = "active" | "overdue" | "completed";
 type QuizStatusType = "completed" | "open" | "locked";
 type LearnStatusType = "completed" | "open" | "locked";
-
-type QuizData = {
-  name: string;
-  status: QuizStatusType;
-  dueDate: Date;
-  quizID: string;
-};
-
-type LearnData = {
-  name: string;
-  status: LearnStatusType;
-  quizID: string;
-};
 
 type WordListPageProps = {
   userId: string
@@ -51,25 +24,25 @@ type MasterQuizProps = {
   quizID: string;
   completed: boolean;
 };
-
-export default async function StudentWordListPage({ userId, classID, wordListID }: WordListPageProps) {
-  // Make an example of below code
-
-  const wordList = await getWordListName(wordListID);
-  if (!wordList) {
+export async function StudentWordListHeader( { userID, wordListID } : { userID: string, wordListID: string }) {
+  const userWordList = await getUserWordListProgressWithList(userID, wordListID);
+  if (!userWordList) {
     throw new Error("Wordlist not found");
   }
-  const classStatus: ClassStatusType = "active";
-  const teacherId = "b6f7523b-f1a7-49d8-8543-93551ee30179";
+  const status: WordListStatusType = userWordList.completed ? "completed" : userWordList.dueDate < new Date() ? "overdue" : "active";
 
-  let isTeacher = false;
-  if (userId == teacherId) {
-    isTeacher = true;
-  }
-
+  return (
+    <div className="flex flex-1 items-center justify-between">
+      <h1 className="text-2xl font-bold text-[#ff6b6b]">{userWordList.wordsList.name}</h1>
+      <div className="flex flex-col items-center justify-between gap-2">
+        <WordListStatus status={status} />
+        {"Due Date: " + userWordList.dueDate.toDateString()}
+      </div>
+    </div>
+  );
+}
+export async function StudentWordListQuizzes({ userId, classID, wordListID }: WordListPageProps) {
   const {miniQuizzes, masterQuiz} = await fetchQuizzes(wordListID, userId, classID);
-
-
   const {backupMiniQuizzes, backupMasterQuiz } = await createBackupQuizzes({ miniQuizzes, masterQuiz, wordListID, userId, classID });
   
   // filter only mini quizzes
@@ -106,10 +79,6 @@ export default async function StudentWordListPage({ userId, classID, wordListID 
 
   return (
     <div className="flex-1 p-6">
-      <div className="flex items-center justify-between mb-6">
-        <h1 className="text-2xl font-bold text-[#ff6b6b]">{wordList.name}</h1>
-        <ClassStatus status={classStatus} />
-      </div>
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-6">
         <Card className="bg-white rounded-lg shadow-md">
           <CardContent className="p-6">
@@ -189,7 +158,7 @@ export default async function StudentWordListPage({ userId, classID, wordListID 
           <MasterQuiz
           quizID={backupMasterQuiz!.quizId}
           available={true}
-          completed={backupMasterQuiz!.completed}
+          completed={true}
           />
         )
         :
@@ -203,7 +172,6 @@ export default async function StudentWordListPage({ userId, classID, wordListID 
       ) : (
         <MasterQuiz quizID={"NULL"} available={false} completed={false} />
       )}
-      <AttemptsTable wordsListId={wordListID} userId={userId} />
     </div>
   );
 }
@@ -285,23 +253,23 @@ function LearnStatus({ status }: { status: LearnStatusType }) {
   }
 }
 
-function ClassStatus({ status }: { status: ClassStatusType }) {
-  if (status === "active") {
+export function WordListStatus({ status }: { status: WordListStatusType }) {
+  if (status === "completed") {
     return (
-      <div className="bg-[#e6f7f2] text-[#1abc9c] font-medium px-3 py-1 rounded-full text-sm">
-        Active
+      <div className="bg-[#e6f7f2] text-[#1abc9c] font-medium px-3 py-1 rounded-lg text-sm w-full text-center">
+        Completed
       </div>
     );
-  } else if (status === "upcoming") {
+  } else if (status === "overdue") {
     return (
-      <div className="bg-[#fef7f2] text-[#e67e22] font-medium px-3 py-1 rounded-full text-sm">
-        Upcoming
+      <div className="bg-[#fef7f2] text-[#e67e22] font-medium px-3 py-1 rounded-lg text-sm text-center w-full">
+        Overdue
       </div>
     );
   } else {
     return (
-      <div className="bg-[#f2f7fe] text-[#3498db] font-medium px-3 py-1 rounded-full text-sm">
-        Completed
+      <div className="bg-[#f2f7fe] text-[#3498db] font-medium px-3 py-1 rounded-lg text-sm text-center w-full">
+        Active
       </div>
     );
   }

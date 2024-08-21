@@ -2,7 +2,7 @@ import { auth } from "@/auth/auth";
 import { getUserWordLists } from "@/prisma/queries";
 import { cn } from "@/lib/utils";
 import SideBarStructure  from "@/components/sidebar/sideBarStructure";
-export async function SideBar(){
+export async function SideBar( { classID } : { classID: string } ) {
     const session = await auth();
     const userId = session?.user?.id;
   
@@ -13,7 +13,7 @@ export async function SideBar(){
     
     return (
         <div>
-            <SideBarStructure wordLists={wordLists}/>
+            <SideBarStructure wordLists={wordLists} classID={classID}/>
         </div>
     );
 }

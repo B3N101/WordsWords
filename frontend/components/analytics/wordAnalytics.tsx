@@ -2,6 +2,18 @@ import { getUserWordListsWithMasteries } from "@/prisma/queries";
 import { Card, CardContent } from "@/components/ui/card";
 import { auth }  from "@/auth/auth";
 import { UserWordMastery } from "@prisma/client";
+import {
+    Dialog,
+    DialogContent,
+    DialogDescription,
+    DialogHeader,
+    DialogTitle,
+    DialogTrigger,
+} from "@/components/ui/dialog";
+
+import {
+    Button,
+} from "@/components/ui/button";
 
 export async function WordAnalytics( { classID }: { classID: string} ) {
     const session = await auth();
@@ -28,8 +40,29 @@ export async function WordAnalytics( { classID }: { classID: string} ) {
                     </div>
                     <div className="space-y-4">
                         {userWordList.userWordMasteries.map((wordMastery, j) => (
-                            <div key={j} className="flex items-center justify-between mb-4">
-                                <div className="float-left">{wordMastery.word.word}</div>
+                            <div key={j} className="flex items-center justify-between">
+                                <div className="float-left">
+                                    <Dialog>
+                                        <DialogTrigger asChild>
+                                        <Button variant="link" size="xs">
+                                            {wordMastery.word.word}
+                                        </Button>
+                                        </DialogTrigger>
+                                        <DialogContent>
+                                            <DialogDescription>
+                                                Definition of {wordMastery.word.word}
+                                            </DialogDescription>
+                                            <DialogHeader>
+                                            <DialogTitle>
+                                                <div className="text-center">{wordMastery.word.word}</div>
+                                            </DialogTitle>
+                                            </DialogHeader>
+                                                <div className="text-center items-center align-middle justify-between">
+                                                    {wordMastery.word.definition}
+                                                </div>
+                                        </DialogContent>
+                                    </Dialog>
+                                </div>
                                 <h2 className="float-right">
                                     <WordStatus wordMasteryScore={wordMastery.masteryScore} />
                                 </h2>
@@ -47,8 +80,8 @@ export async function WordAnalytics( { classID }: { classID: string} ) {
 }
 function ListStatus( { userWordMasteries } : { userWordMasteries: UserWordMastery[] }) {
     const masteredWords = userWordMasteries.filter((wordMastery) => wordMastery.masteryScore == 1).length;
-    const proficientWords = userWordMasteries.filter((wordMastery) => wordMastery.masteryScore >= 0.75).length;
-    const learningWords = userWordMasteries.filter((wordMastery) => wordMastery.masteryScore > 0).length;
+    const proficientWords = userWordMasteries.filter((wordMastery) => (wordMastery.masteryScore >= 0.75)).length;
+    const learningWords = userWordMasteries.filter((wordMastery) => (wordMastery.masteryScore > 0)).length;
 
     if (masteredWords == userWordMasteries.length) {
         return (
@@ -82,8 +115,8 @@ function ListStatus( { userWordMasteries } : { userWordMasteries: UserWordMaster
 
 function AllStatus( { userWordMasteries } : { userWordMasteries: UserWordMastery[] }) {
     const masteredWords = userWordMasteries.filter((wordMastery) => wordMastery.masteryScore == 1).length;
-    const proficientWords = userWordMasteries.filter((wordMastery) => wordMastery.masteryScore >= 0.75).length;
-    const learningWords = userWordMasteries.filter((wordMastery) => wordMastery.masteryScore > 0).length;
+    const proficientWords = userWordMasteries.filter((wordMastery) => (wordMastery.masteryScore >= 0.75 && wordMastery.masteryScore < 1)).length;
+    const learningWords = userWordMasteries.filter((wordMastery) => (wordMastery.masteryScore > 0 && wordMastery.masteryScore < 0.75)).length;
     const notStartedWords = userWordMasteries.filter((wordMastery) => wordMastery.masteryScore == 0).length;
 
     return (

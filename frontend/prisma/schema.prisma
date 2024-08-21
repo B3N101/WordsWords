@@ -204,6 +204,7 @@ model Quiz {
   wordsListId String
 
   questions Question[]
+  length   Int 
   completed Boolean    @default(false)
 
   score   Float     @default(0)

@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import { Loader2 } from "lucide-react";
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import ProgressBar from "@/components/progressBar";
@@ -42,6 +43,9 @@ export default function QuizPage({ quiz }: Props) {
     null,
   );
   const [questionSubmitted, setQuestionSubmitted] = useState<boolean>(false);
+  const [isLoadingResults, setIsLoadingResults] = useState<boolean>(false);
+  const [isLoadingNewQuiz, setIsLoadingNewQuiz] = useState<boolean>(false);
+
   if (!quiz.learnCompleted && quiz.quizType === "MINI"){
     return (
       <div>
@@ -99,15 +103,27 @@ export default function QuizPage({ quiz }: Props) {
         setIsCurrentCorrect(null);
       }
       else{
+        setIsLoadingResults(true);
         await upsertQuizCompleted(quiz.quizId, true, score);
         setCompleted(true);
+        setIsLoadingResults(false);
         return;
       }
     }
   };
   return (
     <div>
-      {!completed ? (
+      {
+        (isLoadingResults || isLoadingNewQuiz) ? (
+        <div className="flex flex-col items-center justify-center min-h-screen bg-background">
+            <Loader2 className="h-8 w-8 animate-spin text-primary" />
+            <p className="mt-4 text-lg font-medium text-muted-foreground animate-pulse">
+              {isLoadingNewQuiz ? "Creating New Quiz ..." : "Compiling Results ..."}
+            </p>
+        </div>
+        ) :
+        (
+          !completed ? (
         <div className="flex flex-col">
             {started ? 
             <header className="pb-10 pt-5 flex-col items-center align-middle">
@@ -119,11 +135,11 @@ export default function QuizPage({ quiz }: Props) {
             : null}
           <main className="flex justify-center flex-1 align-middle">
             {!started ? (
-              <h1 className="text-3xl font-bold">Quiz {quiz.quizId}</h1>
+              <h1 className="text-3xl font-bold">={quiz.name}</h1>
             ) : (
-              <div>
+              <div className="w-full">
                 <h2 className="text-2xl font-bold text-center">{question.questionString}</h2>
-                <div className="grid grid-cols1 gap-6 m-12">
+                <div className="grid grid-cols1 gap-6 m-12 max-w-[100%] items-center justify-center">
                   {options.map((answer, index) => (
                     <Button
                       key={index}
@@ -167,10 +183,9 @@ export default function QuizPage({ quiz }: Props) {
           <div className="grid grid-cols-2 gap-6 m-12">
             <Button
               onClick={async () => {
+                setIsLoadingNewQuiz(true);
                 const newQuizData = createMiniQuiz(quiz.wordsListId, quiz.userId, classId, quiz.miniSetNumber, true);
                 // TODO: switch to updating react states, remove async
-                <div> Loading ... </div>
-                console.log("Making new quiz")
                 newQuizData.then((newQuiz) => {
                   if (newQuiz) {
                     window.location.href = "/quiz/" + newQuiz.quizId;
@@ -191,7 +206,7 @@ export default function QuizPage({ quiz }: Props) {
               </Button>
           </div>
         </div>
-      )}
+      ))}
     </div>
   );
 }

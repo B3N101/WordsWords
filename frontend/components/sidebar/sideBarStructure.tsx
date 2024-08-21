@@ -12,7 +12,7 @@ import { UserWordsListProgressWithWordsList } from "@/prisma/types";
 
 import Link from "next/link"
 
-export default function SideBarStructure({ wordLists }: { wordLists: UserWordsListProgressWithWordsList[] }) {
+export default function SideBarStructure({ wordLists, classID}: { wordLists: UserWordsListProgressWithWordsList[], classID: string }) {
 
   const [isExpanded, setIsExpanded] = useState(false);
   const [isSubMenuExpanded, setIsSubMenuExpanded] = useState(false);
@@ -44,7 +44,7 @@ export default function SideBarStructure({ wordLists }: { wordLists: UserWordsLi
         <ul className="grid gap-y-2 gap-x-0 p-0">
           <li>
             <Link
-              href={"/class/" + wordLists[0].classId}
+              href={"/class/" + classID}
               className={`flex items-center gap-3 rounded-md px-3 py-2 text-muted-foreground transition-colors hover:bg-accent hover:text-accent-foreground ${
                 isExpanded ? "justify-start" : "justify-center"
               }`}
@@ -89,7 +89,7 @@ export default function SideBarStructure({ wordLists }: { wordLists: UserWordsLi
           </li>
           <li>
             <Link
-              href={"/class/" + wordLists[0].classId + "/wordAnalytics"}
+              href={"/class/" + classID + "/wordAnalytics"}
               className={`flex items-center gap-3 rounded-md px-3 py-2 text-muted-foreground transition-colors hover:bg-accent hover:text-accent-foreground ${
                 isExpanded ? "justify-start" : "justify-center"
               }`}

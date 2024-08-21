@@ -1,6 +1,5 @@
 "use server";
 import { PrismaClient, QuizType, Question } from "@prisma/client";
-import { create } from "domain";
 const prisma = new PrismaClient();
 
 function pickNRandom(arr: string[], n: number){
@@ -73,7 +72,8 @@ export const createMiniQuiz = async (wordListId: string, userId: string, classId
             user: { connect: { id: userId } },
             wordsList: { connect: { listId: wordListId } },
             quizType: QuizType.MINI,
-            name: wordListId + "_mini_quiz_" + miniSetId,
+            name: "Mini Quiz " + (miniSetId+1),
+            length: questions.length,
             miniSetNumber: miniSetId,
             learnCompleted: learnCompleted,
             userWordsListProgress: { 
@@ -169,8 +169,9 @@ export const createMasterQuiz = async (wordListId: string, userId: string, class
         data:{
             user: { connect: { id: userId } },
             wordsList: { connect: { listId: wordListId } },
-            name: wordListId + "_master_quiz",
+            name: "Master Quiz",
             quizType: QuizType.MASTERY,
+            length: questions.length,
             miniSetNumber: -1,
             learnCompleted: true,
             userWordsListProgress: { 
