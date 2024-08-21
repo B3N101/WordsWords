@@ -150,6 +150,7 @@ export const columns: ColumnDef<WordListTableType>[] = [
                             title: "Success!",
                             description: "Wordslist reset"
                           })
+                          window.location.reload();
                         }
                       }>
                         {isDeleting ? "Resetting ..." : "Reset"}

@@ -3,6 +3,7 @@
 import { ColumnDef } from "@tanstack/react-table"
 import { Quiz, UserWordsListProgress } from "@prisma/client"
 import { upsertRetakesGranted } from "@/actions/quiz_progress"
+import { updateUserListDueDate } from "@/actions/wordlist_assignment"
 
 import { MoreHorizontal } from "lucide-react"
 import { useState } from "react"
@@ -238,7 +239,56 @@ function RetakeForm( { studentListProgress, quizRetakes, setQuizRetakes }: { stu
     </div>
   )
 }
+
+function ChangeDueDateForm( { studentListProgress, quizRetakes, setQuizRetakes }: { studentListProgress: UserWordsListProgress, quizRetakes: number[], setQuizRetakes: (quizRetakes: number[]) => void }) {
+  const [isLoading, setIsLoading] = useState(false);
+  const [dueDate, setDueDate] = useState<string>("");
+
+  const handleFormSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    setIsLoading(true);
+
+    try {
+      await updateUserListDueDate(studentListProgress.userId, studentListProgress.wordsListListId, new Date(dueDate));
+    } catch (error) {
+      console.error(error);
+    } 
+    setIsLoading(false);
+  }
+  
+  return (
+      <div>
+        <h1 className="font-bold">{"Current Due Date: " + studentListProgress.dueDate.toDateString()}</h1>
+      <hr className="border-t-2 border-gray-300 my-4"/>
+
+      <form onSubmit={handleFormSubmit}>
+        <div className="flex flex-col m-4">
+          <div> 
+            <h1 className="grid place-items-center pb-4 font-bold">
+              Set new due date
+            </h1>
+            <Label htmlFor="dueDate">Quiz 1</Label>
+            <Input type="date" 
+              id="dueDate" 
+              value={dueDate}
+              onChange={(e) =>
+                setDueDate(e.target.value)
+              }
+              required 
+            />
+          </div>
+          <Button disabled={isLoading}>
+            {!isLoading ? "Change Due Date" :  "Changing..." }
+          </Button>
+        </div>
+      </form>
+    </div>
+  )
+}
+
+
 export const columns: ColumnDef<StudentInfo>[] = [
+  
   {
     accessorKey: "name",
     header: () => <div className="font-bold text-lg">Student</div>,
