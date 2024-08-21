@@ -26,18 +26,18 @@ import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { createUserWordsListForClass } from "@/actions/wordlist_assignment"
-import { WordListTableType } from "@/components/wordList/dataTables/assignListColumns"
+import { WordListTableType, WordsListStatus } from "@/components/wordList/dataTables/assignListColumns"
 
 interface DataTableProps<TData, TValue> {
   columns: ColumnDef<TData, TValue>[]
-  data: TData[]
+  initial_data: TData[]
   userId: string
   classId: string
 }
 
 export function DataTable<TData, TValue>({
   columns,
-  data,
+  initial_data,
   userId,
   classId
 }: DataTableProps<TData, TValue>) {
@@ -45,7 +45,7 @@ export function DataTable<TData, TValue>({
     []
   )
   const [rowSelection, setRowSelection] = React.useState({})
-
+  const [data, setData] = React.useState<TData[]>(initial_data);
   const table = useReactTable({
     data,
     columns,
@@ -55,6 +55,7 @@ export function DataTable<TData, TValue>({
     onColumnFiltersChange: setColumnFilters,
     getFilteredRowModel: getFilteredRowModel(),
     onRowSelectionChange: setRowSelection,
+    autoResetPageIndex: false,
 
     state:{
       columnFilters,
@@ -171,6 +172,8 @@ export function DataTable<TData, TValue>({
               return rowCasted.status
             })
           }
+          tableData={data as WordListTableType[]}
+          setTableData={setData as React.Dispatch<React.SetStateAction<WordListTableType[]>>}
           />
       </div>
 
@@ -179,7 +182,15 @@ export function DataTable<TData, TValue>({
   )
 }
 
-function AssignWordsListCard({ listIds, userId, classId, statuses} : { listIds: string[], userId: string, classId: string, statuses: string[] }) {
+type AssignWordsListCardProps = {
+  listIds: string[];
+  userId: string;
+  classId: string;
+  statuses: string[];
+  tableData: WordListTableType[];
+  setTableData: React.Dispatch<React.SetStateAction<WordListTableType[]>>;
+}
+function AssignWordsListCard({ listIds, userId, classId, statuses, tableData, setTableData} : AssignWordsListCardProps) {
   const { toast } = useToast();
   console.log("ListIds", listIds, " Statuses", statuses);
   const [isLoading, setIsLoading] = React.useState(false);
@@ -197,12 +208,23 @@ function AssignWordsListCard({ listIds, userId, classId, statuses} : { listIds: 
         console.error(error);
       } 
     }
+    const newData = tableData.map(row => {
+      for (const wordsListId of listIds)
+      {
+        if (row.id === wordsListId)
+        {
+          return {...row, status: "Active" as WordsListStatus};
+        }
+      }
+      return row;
+    });
+    setTableData(newData);
     setIsLoading(false);
     return(
       toast({
         title: "Success!",
-        description: "Refresh to see updated changes.",
-        action: <ToastAction altText="Refresh" onClick={() => {window.location.reload()}}>Refresh</ToastAction>,
+        description: "Wordslists assigned.",
+        // action: <ToastAction altText="Refresh" onClick={() => {window.location.reload()}}>Refresh</ToastAction>,
       })
     );
   }
@@ -221,8 +243,8 @@ function AssignWordsListCard({ listIds, userId, classId, statuses} : { listIds: 
           }
           required />
         </div>
-        <Button disabled={isLoading || listIds.length === 0}>
-          {anyActive ? (isLoading ? "Reassigning..." : "Reassign") : (isLoading ? "Assigning..." : "Assign")}
+        <Button type="submit" disabled={isLoading || listIds.length === 0}>
+          {anyActive ? (isLoading ? "Changing due date..." : "Change Due Date") : (isLoading ? "Assigning..." : "Assign")}
         </Button>
       </div>
     </form>

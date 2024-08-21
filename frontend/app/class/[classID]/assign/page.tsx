@@ -10,7 +10,7 @@ async function getData(classId: string): Promise<WordListTableType[]>{
     const data: WordsListWithWordsAndUserWordsList[] = await getAllWordsLists();
 
     const tabledata = data.map((wordList) => {
-      const status: WordsListStatus = wordList.UserWordsListProgress.length === 0 ? "Unassigned" : wordList.UserWordsListProgress[0].dueDate >= today ? "Active" : "Completed";
+      const status: WordsListStatus = wordList.UserWordsListProgress.length === 0 ? "Unassigned" : today.getTime() > wordList.UserWordsListProgress[0].dueDate.getTime() ? "Completed" : "Active";
         return {
             id: wordList.listId,
             status: status,
@@ -32,7 +32,7 @@ export default async function Page({ params }: { params: { classID: string } }) 
     }
     return (
       <div>
-        <DataTable columns={columns} data={data} userId={userId} classId={classString}/>
+        <DataTable columns={columns} initial_data={data} userId={userId} classId={classString}/>
       </div>
     );
   }

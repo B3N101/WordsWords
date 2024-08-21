@@ -3,6 +3,15 @@ import { auth } from "@/auth/auth";
 import { PrismaClient, QuizType } from "@prisma/client";
 
 const prisma = new PrismaClient();
+export const deleteUserWordsListForClass = async (wordsListId: string, classId: string) => {
+    console.log("Deleting user words list for class");
+    const deleteWordsList = await prisma.userWordsListProgress.deleteMany({
+        where:{
+            wordsListListId: wordsListId,
+            classId: classId,
+        }
+    });
+}
 
 export const createUserWordsListForClass = async (userId: string, wordsListId: string, classId: string, dueDate: Date) => {
     console.log("Fetching class")

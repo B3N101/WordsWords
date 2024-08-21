@@ -3,9 +3,9 @@
 import { ColumnDef } from "@tanstack/react-table"
 import { Word } from "@prisma/client"
 import { WordsListWithWordsAndUserWordsList } from "@/prisma/types"
-
+import { deleteUserWordsListForClass } from "@/actions/wordlist_assignment"
 import { Link, MoreHorizontal } from "lucide-react"
-
+import { useState } from "react"
 
 import { Button } from "@/components/ui/button"
 import {
@@ -26,6 +26,7 @@ import {
 } from "@/components/ui/dialog"
 
 import { Checkbox } from "@/components/ui/checkbox"
+import { toast } from "@/components/ui/use-toast"
 
 // This type is used to define the shape of our data.
 // You can use a Zod schema here if you want.
@@ -77,6 +78,7 @@ export const columns: ColumnDef<WordListTableType>[] = [
     id: "actions",
     header: () => <div className="font-bold text-lg">Actions</div>,
     cell: ({ row }) => {
+      const [isDeleting, setIsDeleting] = useState(false)
       const wordslist = row.original;
       return (
           <DropdownMenu>
@@ -116,6 +118,45 @@ export const columns: ColumnDef<WordListTableType>[] = [
                 Go to List Page
               </DropdownMenuItem>
               : null
+              }              
+              {
+                wordslist.status !== "Unassigned" ?
+                <Dialog>
+                  <DialogTrigger>
+                    <DropdownMenuItem onSelect={(e) => e.preventDefault()}>
+                      <div>Reset List</div>
+                    </DropdownMenuItem>
+                  </DialogTrigger>
+                    <DialogContent>
+                      <DialogDescription>
+                        Reset this wordslist for all students
+                      </DialogDescription>
+                      <DialogHeader>
+                        <DialogTitle>
+                          <div className="text-center ">{"Reset " + wordslist.name}</div>
+                        </DialogTitle>
+                      </DialogHeader>
+                      <div className="text-center">
+                        <p>Are you sure you want to reset this list?</p>
+                        <p className="font-bold">This action cannot be undone!</p>
+                        </div>
+                      <Button variant="destructive" disabled={isDeleting} onClick={async () =>
+                        {
+                          setIsDeleting(true);
+                          await deleteUserWordsListForClass(wordslist.id, wordslist.classId);
+                          setIsDeleting(false);
+                          
+                          toast({
+                            title: "Success!",
+                            description: "Wordslist reset"
+                          })
+                        }
+                      }>
+                        {isDeleting ? "Resetting ..." : "Reset"}
+                      </Button>
+                    </DialogContent>
+                </Dialog>
+              : null
               }
             </DropdownMenuContent>
           </DropdownMenu>
@@ -123,11 +164,12 @@ export const columns: ColumnDef<WordListTableType>[] = [
     },
   },
 ]
+
 function ListStatusDisplay({ status }: { status: WordsListStatus }) {
   if (status === "Completed") {
     return (
       <div className="bg-[#e6f7f2] text-[#1abc9c] font-medium text-right w-min">
-        Finished
+        Completed
       </div>
     );
   } else if (status === "Active") {
