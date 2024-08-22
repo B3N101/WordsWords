@@ -4,7 +4,7 @@ import { ColumnDef } from "@tanstack/react-table"
 import { Quiz, UserWordsListProgress } from "@prisma/client"
 import { upsertRetakesGranted } from "@/actions/quiz_progress"
 import { updateUserListDueDate } from "@/actions/wordlist_assignment"
-
+import { dateFormatter } from "@/lib/utils"
 import { MoreHorizontal } from "lucide-react"
 import { useState } from "react"
 
@@ -55,10 +55,11 @@ export type StudentInfo = {
 }
 
 function StudentQuizDisplay({studentName, quizzes}: {studentName: string, quizzes: Quiz[]}) {
-    if(!quizzes || quizzes.length === 0) {
+    const completedQuizzes = quizzes.filter(quiz => quiz.completed)
+    if(!completedQuizzes || completedQuizzes.length === 0) {
         return <div>Not started</div>
     }
-    const completedQuizzes = quizzes.filter(quiz => quiz.completed)
+
     const attempts = completedQuizzes.length
     const lastAttempt = completedQuizzes[completedQuizzes.length - 1]
     const bestAttempt = completedQuizzes.reduce((best, current) => {
@@ -66,8 +67,8 @@ function StudentQuizDisplay({studentName, quizzes}: {studentName: string, quizze
             return current
         }
         return best
-    }, quizzes[0])
-    const numQuestions = quizzes[0].quizType === "MINI" ? 5 : 15
+    }, completedQuizzes[0])
+    const numQuestions = completedQuizzes[0].length
 
     return (
         <div className="flex flex-col space-y-2">
@@ -106,7 +107,7 @@ function StudentQuizDisplay({studentName, quizzes}: {studentName: string, quizze
                         {
                             completedQuizzes.map((quiz, index) => (
                                 <TableRow key={index}>
-                                    <TableCell>{quiz.createdAt.getMonth() + "/" + quiz.createdAt.getDate() + "/" + quiz.createdAt.getFullYear()}</TableCell>
+                                    <TableCell>{(quiz.createdAt.getMonth()+1) + "/" + quiz.createdAt.getDate() + "/" + quiz.createdAt.getFullYear()}</TableCell>
                                     <TableCell>{quiz.score} / {quiz.length}</TableCell>
                                 </TableRow>
                             ))
@@ -240,7 +241,7 @@ function RetakeForm( { studentListProgress, quizRetakes, setQuizRetakes }: { stu
   )
 }
 
-function ChangeDueDateForm( { studentListProgress, quizRetakes, setQuizRetakes }: { studentListProgress: UserWordsListProgress, quizRetakes: number[], setQuizRetakes: (quizRetakes: number[]) => void }) {
+function ChangeDueDateForm( { studentListProgress }: { studentListProgress: UserWordsListProgress }) {
   const [isLoading, setIsLoading] = useState(false);
   const [dueDate, setDueDate] = useState<string>("");
 
@@ -254,11 +255,12 @@ function ChangeDueDateForm( { studentListProgress, quizRetakes, setQuizRetakes }
       console.error(error);
     } 
     setIsLoading(false);
+    window.location.reload();
   }
   
   return (
       <div>
-        <h1 className="font-bold">{"Current Due Date: " + studentListProgress.dueDate.toDateString()}</h1>
+        <h1 className="font-bold">{"Current Due Date: " + dateFormatter(studentListProgress.dueDate)}</h1>
       <hr className="border-t-2 border-gray-300 my-4"/>
 
       <form onSubmit={handleFormSubmit}>
@@ -267,7 +269,7 @@ function ChangeDueDateForm( { studentListProgress, quizRetakes, setQuizRetakes }
             <h1 className="grid place-items-center pb-4 font-bold">
               Set new due date
             </h1>
-            <Label htmlFor="dueDate">Quiz 1</Label>
+            <Label htmlFor="dueDate">New Date</Label>
             <Input type="date" 
               id="dueDate" 
               value={dueDate}
@@ -297,8 +299,9 @@ export const columns: ColumnDef<StudentInfo>[] = [
     accessorKey: "status",
     header: () => <div className="font-bold text-lg">Status</div>,
     cell: ({ row }) => {
-      const wordsListProgress: UserWordsListProgress = row.getValue("status");
-      const status: WordsListStatus = wordsListProgress.completed ? "Completed" : (wordsListProgress.dueDate < new Date() ? "Overdue" : "Active");
+      // const wordsListProgress: UserWordsListProgress = row.getValue("status");
+      // const status: WordsListStatus = wordsListProgress.completed ? "Completed" : (wordsListProgress.dueDate < new Date() ? "Overdue" : "Active");
+      const status: WordsListStatus = row.getValue("status");
       return <ListStatusDisplay status={status} />;
     }, 
   },
@@ -360,12 +363,25 @@ export const columns: ColumnDef<StudentInfo>[] = [
               <Dialog>
                 <DialogTrigger>
                   <DropdownMenuItem onSelect={(e) => e.preventDefault()}>
-                    <div>Grant Additional Attempts</div>
+                    <div>Grant Additional Quiz Attempts</div>
                   </DropdownMenuItem>
                 </DialogTrigger>
                   <DialogContent>
                     <DialogHeader>
                       <RetakeForm studentListProgress={studentListProgress} quizRetakes={attemptsRemaining} setQuizRetakes={setAttemptsRemaining}/>
+                    </DialogHeader>
+                  </DialogContent>
+              </Dialog>
+              <DropdownMenuSeparator />
+              <Dialog>
+                <DialogTrigger>
+                  <DropdownMenuItem onSelect={(e) => e.preventDefault()}>
+                    <div>Change Due Date</div>
+                  </DropdownMenuItem>
+                </DialogTrigger>
+                  <DialogContent>
+                    <DialogHeader>
+                      <ChangeDueDateForm studentListProgress={studentListProgress}/>
                     </DialogHeader>
                   </DialogContent>
               </Dialog>

@@ -149,6 +149,7 @@ export const getQuizzesFromWordsList = cache(async (wordListID: string, userId: 
       userId: userId,
       completed: true,
     },
+    //TODO: Add a completed at field to quizzes
     orderBy:{
       createdAt: 'desc'
     }

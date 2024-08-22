@@ -9,6 +9,7 @@ import { useState } from "react"
 import { Button } from "@/components/ui/button"
 import { WordListSubMenu } from "./sideBarSubMenu"
 import { UserWordsListProgressWithWordsList } from "@/prisma/types";
+import { ClipboardList } from 'lucide-react'
 
 import Link from "next/link"
 
@@ -96,7 +97,7 @@ export default function SideBarStructure({ wordLists, classID, isTeacher}: { wor
                 }`}
                 prefetch={false}
               >
-                <AssignIcon className="h-5 w-5" />
+                <ClipboardList className="h-5 w-5" />
                 <span className={`text-sm font-medium ${isExpanded ? "block" : "hidden"}`}>Assign Lists</span>
               </Link>
             )
@@ -265,6 +266,7 @@ function AssignIcon(props: React.SVGProps<SVGSVGElement>) {
     </svg>
   )
 }
+
 function UsersIcon(props: React.SVGProps<SVGSVGElement>) {
   return (
     <svg

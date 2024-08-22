@@ -209,6 +209,7 @@ model Quiz {
 
   score   Float     @default(0)
   dueDate DateTime?
+  completedAt DateTime?
 
   createdAt     DateTime @default(now())
   miniSetNumber Int // -1 for masterQuiz

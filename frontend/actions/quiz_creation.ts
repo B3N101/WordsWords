@@ -36,8 +36,8 @@ export const createMiniQuiz = async (wordListId: string, userId: string, classId
         return null;
     }
     // shuffle the words
-    words.sort(() => Math.random() - 0.5);
-    const questions = words.map((word, index) => {
+    const shuffledWords = words.sort(() => Math.random() - 0.5);
+    const questions = shuffledWords.map((word, index) => {
         // get random number between 0 and 1
         const random = Math.random();
 
@@ -135,8 +135,8 @@ export const createMasterQuiz = async (wordListId: string, userId: string, class
         take: 5,
     });
     const allWords = words.concat(oldWords.flatMap((word) => word.word));
-    allWords.sort(() => Math.random() - 0.5);
-    const questions = allWords.map((word, index) => {
+    const allShuffledWords = allWords.sort(() => Math.random() - 0.5);
+    const questions = allShuffledWords.map((word, index) => {
         // get random number between 0 and 1
         const random = Math.random();
 
@@ -235,12 +235,14 @@ export const fetchQuizzes = async (wordListId: string, userId: string, classId: 
     let miniQuizzes = [];
 
     for (let miniSetNumber = 0; miniSetNumber < 3; miniSetNumber++) {
+        // First look for a completed quiz, then an uncompleted quiz.
         let latestQuiz = await prisma.quiz.findFirst({
             where: {
                 wordsListId: wordListId,
                 userId: userId,
                 quizType: QuizType.MINI,
                 miniSetNumber: miniSetNumber,
+                completed: true,
             },
             orderBy: {
                 createdAt: 'desc',
@@ -248,8 +250,21 @@ export const fetchQuizzes = async (wordListId: string, userId: string, classId: 
         });
 
         if (!latestQuiz) {
-            console.log("No latest quiz found for miniset", miniSetNumber);
-            latestQuiz = await createMiniQuiz(wordListId, userId, classId, miniSetNumber, false);
+            let latestQuiz = await prisma.quiz.findFirst({
+                where: {
+                    wordsListId: wordListId,
+                    userId: userId,
+                    quizType: QuizType.MINI,
+                    miniSetNumber: miniSetNumber,
+                },
+                orderBy: {
+                    createdAt: 'desc',
+                }
+            })
+            if (!latestQuiz){
+                console.log("No latest quiz found for miniset", miniSetNumber);
+                latestQuiz = await createMiniQuiz(wordListId, userId, classId, miniSetNumber, false);    
+            }
         }
 
         if (latestQuiz) {

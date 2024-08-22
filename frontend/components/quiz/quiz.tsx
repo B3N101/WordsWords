@@ -14,13 +14,14 @@ import {
   createMiniQuiz,
 } from "@/actions/quiz_creation";
 
-import { upsertWordMastery } from "@/actions/word_progress";
+import { upsertWordMastery, updateWordListProgress} from "@/actions/word_progress";
 import { type QuizWithQuestionsAndUserWordsList } from "@/prisma/types";
 type Props = {
   quiz: QuizWithQuestionsAndUserWordsList;
+  userID: string;
 };
 
-export default function QuizPage({ quiz }: Props) {
+export default function QuizPage({ quiz, userID }: Props) {
   const questions = quiz.questions; 
   // sort questions by their rank attribute:
   questions.sort((a, b) => a.rank - b.rank);
@@ -117,6 +118,11 @@ export default function QuizPage({ quiz }: Props) {
       else{
         setIsLoadingResults(true);
         await upsertQuizCompleted(quiz.quizId, true, score);
+        if (quiz.quizType === "MASTERY"){
+          if(score >= questions.length*0.8){
+            await updateWordListProgress(wordListId, userID, true);
+          }
+        }
         setCompleted(true);
         setIsLoadingResults(false);
         return;

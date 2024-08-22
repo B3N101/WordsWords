@@ -6,15 +6,16 @@
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
-import { StudentInfo, WordsListStatus, columns } from "./dataTables/ninthGradeTeacherColumns";
-import { DataTable } from "./dataTables/ninthGradeTeacherTable";
+import { StudentInfo, WordsListStatus, columns } from "../dataTables/ninthGradeTeacherColumns";
+import { DataTable } from "../dataTables/ninthGradeTeacherTable";
 
 import { getAllUserWordsListProgresses } from "@/prisma/queries";
 
 import { Card, CardContent } from "@/components/ui/card";
-import { AttemptsTable } from "./studentPage/attemptsTable";
+import { AttemptsTable } from "../studentPage/attemptsTable";
 import { createMasterQuiz, createMiniQuiz, fetchQuizzes, fetchBackupMasterQuiz, fetchBackupMiniQuiz} from "@/actions/quiz_creation";
 import { Quiz } from "@prisma/client";
+import { isOverdue } from "@/lib/utils";
 
 
 type ClassStatusType = "active" | "upcoming" | "completed";
@@ -38,7 +39,8 @@ async function getData(classId: string, wordListId: string): Promise<StudentInfo
         const allMasterQuizData: Quiz[] = listProgress.quizzes.filter(quiz => quiz.miniSetNumber === -1);
 
         const name = listProgress.user.name ? listProgress.user.name : "Unknown";
-        const status: WordsListStatus = listProgress.completed ? "Completed" : (listProgress.dueDate < new Date() ? "Overdue" : "Active");
+        const overDue = isOverdue(listProgress.dueDate);
+        const status: WordsListStatus = listProgress.completed ? "Completed" : (overDue ? "Overdue" : "Active");
         return {
             id: listProgress.userId,
             name: name,

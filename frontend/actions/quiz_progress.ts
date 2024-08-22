@@ -79,6 +79,7 @@ export const upsertQuizCompleted = async (
       score: score,
     },
   });
+  await upsertQuizAttempts(userId, quiz.wordsListId, quiz.miniSetNumber, -1);
   return;
 };
 

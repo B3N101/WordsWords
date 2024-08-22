@@ -25,7 +25,7 @@ const page = async ({ params }: { params: { slug: string } }) => {
   return (
     <div>
       {hasAttemptsRemaining ? 
-      <QuizPage quiz={quiz} />
+      <QuizPage quiz={quiz} userID={userId}/>
       :
       <RequestRetakePage quiz={quiz} />
     }
