@@ -1,13 +1,13 @@
 import "@/app/globals.css";
 import { Inter } from "next/font/google";
-import { Toaster } from "@/components/ui/toaster"
-
 import { IBM_Plex_Mono } from "next/font/google";
 import { Poppins } from "next/font/google";
 import { cn } from "@/lib/utils";
 import { Analytics } from "@vercel/analytics/react";
-import { SpeedInsights } from "@vercel/speed-insights/next";
-import NavBar from "@/components/navBar";
+import NavBar from "@/components/NavBar";
+import { Toaster } from "@/components/ui/toaster";
+import Footer from "@/components/Footer";
+import { Metadata } from "next";
 
 const inter = Inter({
   subsets: ["latin"],
@@ -24,6 +24,11 @@ const poppins = Poppins({
   display: "swap",
 });
 
+export const metadata: Metadata = {
+  title: "MX Words Words",
+  description: "Middlesex School's Vocab Trainer",
+};
+
 export default function Layout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="en" suppressHydrationWarning>
@@ -34,7 +39,6 @@ export default function Layout({ children }: { children: React.ReactNode }) {
         <link rel="icon" href="/favicon.ico" />
       </head>
       <Analytics />
-      <SpeedInsights />
       <body
         className={cn(
           "min-h-screen bg-background bg-tan dark:bg-red-950 font-sans antialiased",
@@ -44,7 +48,8 @@ export default function Layout({ children }: { children: React.ReactNode }) {
         )}
       >
         <NavBar />
-        {children}
+        <main>{children}</main>
+        <Footer />
         <Toaster />
       </body>
     </html>

@@ -5,7 +5,13 @@
  */
 import Link from "next/link";
 import { Card, CardContent } from "@/components/ui/card";
-import { createMasterQuiz, createMiniQuiz, fetchQuizzes, fetchBackupMasterQuiz, fetchBackupMiniQuiz} from "@/actions/quiz_creation";
+import {
+  createMasterQuiz,
+  createMiniQuiz,
+  fetchQuizzes,
+  fetchBackupMasterQuiz,
+  fetchBackupMiniQuiz,
+} from "@/actions/quiz_creation";
 import { Quiz } from "@prisma/client";
 import { getUserWordListProgressWithList } from "@/prisma/queries";
 
@@ -14,8 +20,8 @@ type QuizStatusType = "completed" | "open" | "locked";
 type LearnStatusType = "completed" | "open" | "locked";
 
 type WordListPageProps = {
-  userId: string
-  classID: string
+  userId: string;
+  classID: string;
   wordListID: string;
 };
 
@@ -24,16 +30,31 @@ type MasterQuizProps = {
   quizID: string;
   completed: boolean;
 };
-export async function StudentWordListHeader( { userID, wordListID } : { userID: string, wordListID: string }) {
-  const userWordList = await getUserWordListProgressWithList(userID, wordListID);
+export async function StudentWordListHeader({
+  userID,
+  wordListID,
+}: {
+  userID: string;
+  wordListID: string;
+}) {
+  const userWordList = await getUserWordListProgressWithList(
+    userID,
+    wordListID,
+  );
   if (!userWordList) {
     throw new Error("Wordlist not found");
   }
-  const status: WordListStatusType = userWordList.completed ? "completed" : userWordList.dueDate < new Date() ? "overdue" : "active";
+  const status: WordListStatusType = userWordList.completed
+    ? "completed"
+    : userWordList.dueDate < new Date()
+      ? "overdue"
+      : "active";
 
   return (
     <div className="flex flex-1 items-center justify-between">
-      <h1 className="text-2xl font-bold text-[#ff6b6b]">{userWordList.wordsList.name}</h1>
+      <h1 className="text-2xl font-bold text-[#ff6b6b]">
+        {userWordList.wordsList.name}
+      </h1>
       <div className="flex flex-col items-center justify-between gap-2">
         <WordListStatus status={status} />
         {"Due Date: " + userWordList.dueDate.toDateString()}
@@ -41,10 +62,24 @@ export async function StudentWordListHeader( { userID, wordListID } : { userID: 
     </div>
   );
 }
-export async function StudentWordListQuizzes({ userId, classID, wordListID }: WordListPageProps) {
-  const {miniQuizzes, masterQuiz} = await fetchQuizzes(wordListID, userId, classID);
-  const {backupMiniQuizzes, backupMasterQuiz } = await createBackupQuizzes({ miniQuizzes, masterQuiz, wordListID, userId, classID });
-  
+export async function StudentWordListQuizzes({
+  userId,
+  classID,
+  wordListID,
+}: WordListPageProps) {
+  const { miniQuizzes, masterQuiz } = await fetchQuizzes(
+    wordListID,
+    userId,
+    classID,
+  );
+  const { backupMiniQuizzes, backupMasterQuiz } = await createBackupQuizzes({
+    miniQuizzes,
+    masterQuiz,
+    wordListID,
+    userId,
+    classID,
+  });
+
   // filter only mini quizzes
   const quizData = miniQuizzes?.map((miniQuiz, i) => {
     const status: QuizStatusType = miniQuiz.learnCompleted
@@ -88,27 +123,24 @@ export async function StudentWordListQuizzes({ userId, classID, wordListID }: Wo
             <div className="space-y-4">
               {quizData?.map((quizData, i) =>
                 quizData.status !== "locked" ? (
-                  quizData.status === "completed" ?
-                  (
+                  quizData.status === "completed" ? (
                     <Link
-                    className="flex items-center justify-between border-2 border-[#ff6b6b] rounded-lg p-4"
-                    key={quizData.name}
-                    href={`/quiz/${backupMiniQuizzes[i]!.quizId}`}
-                  >
-                    <div>{quizData.name}</div>
-                    <QuizStatus status={quizData.status} />
-                  </Link>
-                  )
-                  :
-                  (
-                  <Link
-                    className="flex items-center justify-between border-2 border-[#ff6b6b] rounded-lg p-4"
-                    key={quizData.name}
-                    href={`/quiz/${quizData.quizID}`}
-                  >
-                    <div>{quizData.name}</div>
-                    <QuizStatus status={quizData.status} />
-                  </Link>
+                      className="flex items-center justify-between border-2 border-[#ff6b6b] rounded-lg p-4"
+                      key={quizData.name}
+                      href={`/quiz/${backupMiniQuizzes[i]!.quizId}`}
+                    >
+                      <div>{quizData.name}</div>
+                      <QuizStatus status={quizData.status} />
+                    </Link>
+                  ) : (
+                    <Link
+                      className="flex items-center justify-between border-2 border-[#ff6b6b] rounded-lg p-4"
+                      key={quizData.name}
+                      href={`/quiz/${quizData.quizID}`}
+                    >
+                      <div>{quizData.name}</div>
+                      <QuizStatus status={quizData.status} />
+                    </Link>
                   )
                 ) : (
                   <div
@@ -156,18 +188,16 @@ export async function StudentWordListQuizzes({ userId, classID, wordListID }: Wo
       {masterQuiz ? (
         masterQuiz.completed ? (
           <MasterQuiz
-          quizID={backupMasterQuiz!.quizId}
-          available={true}
-          completed={true}
+            quizID={backupMasterQuiz!.quizId}
+            available={true}
+            completed={true}
           />
-        )
-        :
-        (
-        <MasterQuiz
-          quizID={masterQuiz.quizId}
-          available={true}
-          completed={false}
-        />
+        ) : (
+          <MasterQuiz
+            quizID={masterQuiz.quizId}
+            available={true}
+            completed={false}
+          />
         )
       ) : (
         <MasterQuiz quizID={"NULL"} available={false} completed={false} />
@@ -186,14 +216,14 @@ async function MasterQuiz({ quizID, available, completed }: MasterQuizProps) {
               Master Quiz
             </h2>
             {available ? (
-              (<Link
+              <Link
                 className="flex flex-auto items-center justify-between border-2 border-[#ff6b6b] rounded-lg p-4"
                 key={quizID}
                 href={`/quiz/${quizID}`}
               >
                 <div>{"Master Quiz"}</div>
-                <QuizStatus status={completed ? "completed": "open"} />
-              </Link>)
+                <QuizStatus status={completed ? "completed" : "open"} />
+              </Link>
             ) : (
               <div
                 className="flex flex-auto items-center justify-between border-2 border-[#ff6b6b] rounded-lg p-4"
@@ -281,19 +311,25 @@ type BackUpQuizProps = {
   wordListID: string;
   userId: string;
   classID: string;
-}
-async function createBackupQuizzes( { miniQuizzes, masterQuiz, wordListID, userId, classID}: BackUpQuizProps){
+};
+async function createBackupQuizzes({
+  miniQuizzes,
+  masterQuiz,
+  wordListID,
+  userId,
+  classID,
+}: BackUpQuizProps) {
   let backupMiniQuizzes = [];
   for (let i = 0; i < miniQuizzes.length; i++) {
     if (miniQuizzes[i].completed) {
       const backupQuiz = await fetchBackupMiniQuiz(wordListID, userId, i);
-      if (backupQuiz){
+      if (backupQuiz) {
         backupMiniQuizzes.push(backupQuiz);
+      } else {
+        backupMiniQuizzes.push(
+          await createMiniQuiz(wordListID, userId, classID, i, true),
+        );
       }
-      else{
-        backupMiniQuizzes.push(await createMiniQuiz(wordListID, userId, classID, i, true,));
-      }
-
     } else {
       backupMiniQuizzes.push(null);
     }
@@ -301,12 +337,21 @@ async function createBackupQuizzes( { miniQuizzes, masterQuiz, wordListID, userI
   if (masterQuiz) {
     if (masterQuiz.completed) {
       const backupMasterQuiz = await fetchBackupMasterQuiz(wordListID, userId);
-      if (backupMasterQuiz){
-        return { backupMiniQuizzes: backupMiniQuizzes, backupMasterQuiz: backupMasterQuiz };
-      }
-      else{
-        const newMasterQuiz = await createMasterQuiz(wordListID, userId, classID);
-        return { backupMiniQuizzes: backupMiniQuizzes, backupMasterQuiz: newMasterQuiz };
+      if (backupMasterQuiz) {
+        return {
+          backupMiniQuizzes: backupMiniQuizzes,
+          backupMasterQuiz: backupMasterQuiz,
+        };
+      } else {
+        const newMasterQuiz = await createMasterQuiz(
+          wordListID,
+          userId,
+          classID,
+        );
+        return {
+          backupMiniQuizzes: backupMiniQuizzes,
+          backupMasterQuiz: newMasterQuiz,
+        };
       }
     }
   }

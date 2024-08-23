@@ -12,7 +12,7 @@ const page = async ({ params }: { params: { slug: string } }) => {
     throw new Error("User not found");
   }
   const quiz = await getQuiz(quizId);
-  if(!quiz){
+  if (!quiz) {
     throw new Error("Quiz not found");
   }
   // shuffle the answers in all questions
@@ -20,15 +20,16 @@ const page = async ({ params }: { params: { slug: string } }) => {
     question.allAnswers = question.allAnswers.sort(() => Math.random() - 0.5);
   });
 
-  const miniSet = (quiz.miniSetNumber === -1) ? 3 : quiz.miniSetNumber; // masterQuizzes have setnumber -1
-  const hasAttemptsRemaining = quiz.userWordsListProgress.quizAttemptsRemaining[miniSet];
+  const miniSet = quiz.miniSetNumber === -1 ? 3 : quiz.miniSetNumber; // masterQuizzes have setnumber -1
+  const hasAttemptsRemaining =
+    quiz.userWordsListProgress.quizAttemptsRemaining[miniSet];
   return (
     <div>
-      {hasAttemptsRemaining ? 
-      <QuizPage quiz={quiz} />
-      :
-      <RequestRetakePage quiz={quiz} />
-    }
+      {hasAttemptsRemaining ? (
+        <QuizPage quiz={quiz} />
+      ) : (
+        <RequestRetakePage quiz={quiz} />
+      )}
     </div>
   );
 };
