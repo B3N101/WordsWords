@@ -18,7 +18,6 @@ const page = async ({ params }: { params: { slug: string } }) => {
 
   return (
     <div>
-      <h1>Learn!</h1>
       <ContextPage words={words} quizId={quizId} />
     </div>
   );

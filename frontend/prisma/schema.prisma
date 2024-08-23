@@ -98,6 +98,8 @@ model Word {
   incorrectDefinitions String[]
 
   exampleSentence  String
+
+  correctFillIn    String
   incorrectFillIns String[]
 
   wordListNumber Int?
@@ -120,6 +122,7 @@ model WordsList {
   UserWordsListProgress UserWordsListProgress[]
 }
 
+
 model UserWordsListProgress {
   user   User   @relation(fields: [userId], references: [id])
   userId String
@@ -133,9 +136,11 @@ model UserWordsListProgress {
   userWordMasteries UserWordMastery[]
 
   quizzes   Quiz[]
-  completed Boolean @default(false)
+  quizAttemptsRemaining Int[] @default([3, 3, 3, 3])
+  retakesRequested Boolean[] @default([false, false, false, false])
 
-  dueDate DateTime? @default(dbgenerated("NOW() + interval '1 week'"))
+  completed Boolean @default(false)
+  dueDate   DateTime @default(dbgenerated("NOW() + interval '1 week'"))
 
   @@id(name: "userWordsListProgressId", [userId, wordsListListId])
 }
@@ -167,7 +172,7 @@ model UserWordMastery {
   wordsListId  String
   masteryScore Float  @default(0)
 
-  userWordsListProgress UserWordsListProgress @relation(fields: [userId, wordsListId], references: [userId, wordsListListId])
+  userWordsListProgress UserWordsListProgress @relation(fields: [userId, wordsListId], references: [userId, wordsListListId], onDelete: Cascade)
 
   attempts UserQuestionAttempt[]
 
@@ -179,7 +184,7 @@ model UserQuestionAttempt {
   questionAttemptId String          @id @default(cuid())
   wordId            String
   userId            String
-  wordMastery       UserWordMastery @relation(fields: [wordId], references: [wordId])
+  wordMastery       UserWordMastery @relation(fields: [wordId], references: [wordId], onDelete: Cascade)
   correct           Boolean
   timeSpent         Int?
   questionAttempt   DateTime        @default(now())
@@ -199,17 +204,19 @@ model Quiz {
   wordsListId String
 
   questions Question[]
+  length   Int 
   completed Boolean    @default(false)
 
   score   Float     @default(0)
   dueDate DateTime?
+  completedAt DateTime?
 
   createdAt     DateTime @default(now())
   miniSetNumber Int // -1 for masterQuiz
 
   learnCompleted Boolean @default(false)
 
-  userWordsListProgress UserWordsListProgress @relation(fields: [userId, wordsListId], references: [userId, wordsListListId]) //TODO: Might be easier to just connect to class, not userwordslistprogress
+  userWordsListProgress UserWordsListProgress @relation(fields: [userId, wordsListId], references: [userId, wordsListListId], onDelete: Cascade ) //TODO: Might be easier to just connect to class, not userwordslistprogress
 }
 
 // this can be the dynamic piece (word is static). only link to one quiz. this could 
@@ -228,6 +235,7 @@ model Question {
   allAnswers    String[]
   correctAnswer String
   completed     Boolean  @default(false)
+  correctlyAnswered Boolean @default(false)
 }
 
 // ENUMS - ROLE, GRADE, PART OF SPEECH

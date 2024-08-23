@@ -11,12 +11,17 @@ const buttonVariants = cva(
   {
     variants: {
       variant: {
-        answer_choice:"bg-gray-100 text-black hover:bg-gray-100/90 border-white-500 border-2 border-b-[3px]",
-        answer_selected: "bg-gray-200 text-black border-white-500 border-2 border-b-[3px]",
-        correct: "bg-green-200 text-black hover:bg-green-200/90 border-green-500 border-2 border-b-[3px]",
-        incorrect: "bg-red-200 text-black hover:bg-red-200/90 border-red-500 border-2 border-b-[3px]",
-        
-        default: "bg-gray-100 text-black hover:bg-gray-100/90 border-black border-2 border-b-[3px]",
+        answer_choice:
+          "bg-gray-100 text-black hover:bg-gray-100/90 border-white-500 border-2 border-b-[3px]",
+        answer_selected:
+          "bg-gray-200 text-black border-white-500 border-2 border-b-[3px]",
+        correct:
+          "bg-green-200 text-black hover:bg-green-200/90 border-green-500 border-2 border-b-[3px]",
+        incorrect:
+          "bg-red-200 text-black hover:bg-red-200/90 border-red-500 border-2 border-b-[3px]",
+
+        default:
+          "bg-gray-100 text-black hover:bg-gray-100/90 border-black border-2 border-b-[3px]",
         destructive:
           "bg-destructive text-destructive-foreground hover:bg-destructive/90",
         outline:
@@ -32,6 +37,7 @@ const buttonVariants = cva(
         sm: "h-9 rounded-md px-3",
         lg: "h-11 rounded-md px-8",
         icon: "h-10 w-10",
+        xs: "h-6 p-0 rounded-md",
       },
     },
     defaultVariants: {
