@@ -12,5 +12,6 @@ backend/target/*
 # google secrets
 sheets_secrets.json
 
-
+# DS_Store files
+.DS_Store
 
