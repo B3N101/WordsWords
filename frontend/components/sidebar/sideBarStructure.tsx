@@ -13,7 +13,7 @@ import { ClipboardList } from 'lucide-react'
 
 import Link from "next/link"
 
-export default function SideBarStructure({ wordLists, classID, isTeacher}: { wordLists: UserWordsListProgressWithWordsList[], classID: string, isTeacher: boolean }) {
+export default function SideBarStructure({ wordLists, classID, isTeacher, className}: { wordLists: UserWordsListProgressWithWordsList[], classID: string, isTeacher: boolean, className: string}) {
 
   const [isExpanded, setIsExpanded] = useState(false);
   const [isSubMenuExpanded, setIsSubMenuExpanded] = useState(false);
@@ -26,7 +26,7 @@ export default function SideBarStructure({ wordLists, classID, isTeacher}: { wor
     >
       <div className="flex h-16 items-center justify-between border-b bg-background px-3">
         <div className="flex items-center gap-2">
-          <span className={`text-lg font-semibold ${isExpanded ? "block" : "hidden"}`}>WordsWords</span>
+          <span className={`text-lg font-semibold ${isExpanded ? "block" : "hidden"}`}>{className}</span>
         </div>
         <Button
           size="icon"

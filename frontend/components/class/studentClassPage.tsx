@@ -38,11 +38,11 @@ type wordListData = {
 
 interface ClassPageProps {
   classID: string;
+  className: string;
 }
 
-export default async function StudentClassPage({ classID }: ClassPageProps) {
+export default async function StudentClassPage({ classID, className }: ClassPageProps) {
   // Make an example of below code
-  const className = "Math 101";
   const classStatus: ClassStatusType = "active";
   const students = [
     "John Doe",
@@ -50,18 +50,11 @@ export default async function StudentClassPage({ classID }: ClassPageProps) {
     "Michael Johnson",
     "Death Row Records",
   ];
-  const teacherName = "Mr. Smith";
-  const teacherId = "b6f7523b-f1a7-49d8-8543-93551ee30179";
 
   // get userID
   const session = await auth();
   const userId = session?.user?.id!;
   const today = new Date();
-    
-  let isTeacher = false;
-  if (userId == teacherId) {
-    isTeacher = true;
-  }
 
   const wordLists = await getUserClassWordLists(userId, classID);
   const wordListData = wordLists.map((wordList) => {
@@ -72,19 +65,23 @@ export default async function StudentClassPage({ classID }: ClassPageProps) {
       wordListID: wordList.wordsListListId,
     };
   });
+
+  const completedLists = wordListData.filter((wordList) => wordList.status === "completed");
+  const activeLists = wordListData.filter((wordList) => wordList.status === "active");
+  const overdueLists = wordListData.filter((wordList) => wordList.status === "overdue");
+
   return (
     <div className="flex-1 p-6">
       <div className="flex items-center justify-between mb-6">
-        <h1 className="text-2xl font-bold text-[#ff6b6b]">{className}</h1>
-        <ClassStatus status={classStatus} />
+        <h1 className="text-3xl font-bold text-[#ff6b6b]">{className}</h1>
       </div>
       <div className="flex items-center justify-between mb-4">
-              <h2 className="text-xl font-bold text-[#ff6b6b]">Word Lists</h2>
-            </div>
-        <div className="space-y-4">
-            {wordListData.map((eachList, index) => (
+          <h2 className="text-xl text-[#ff6b6b]">Overdue</h2>
+      </div>
+      <div className="space-y-4 pb-10">
+            {overdueLists.map((eachList, index) => (
             <Link
-                className="flex items-center justify-between border-2 border-[#ff6b6b] rounded-lg p-4"
+                className="flex group items-center justify-between border-2 border-[#ff6b6b] rounded-lg p-4"
                 key={index}
                 href={"/class/" + classID + "/" + eachList.wordListID}
             >
@@ -92,55 +89,37 @@ export default async function StudentClassPage({ classID }: ClassPageProps) {
                 <WordListStatus status={eachList.status} />
             </Link>
             ))}
-        </div>
-    </div>
-  );
-}
-
-function Stats() {
-  return (
-    <div className="mt-8">
-      <Card className="bg-white rounded-lg shadow-md">
-        <CardContent className="p-6">
-          <div className="flex items-center justify-between mb-4">
-            <h2 className="text-xl font-bold text-[#ff6b6b]">Student Grades</h2>
-          </div>
-          <Table>
-            <TableHeader>
-              <TableRow>
-                <TableHead>Student</TableHead>
-                <TableHead>Quiz 1</TableHead>
-                <TableHead>Quiz 2</TableHead>
-                <TableHead>Quiz 3</TableHead>
-                <TableHead>Average</TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              <TableRow>
-                <TableCell>John Doe</TableCell>
-                <TableCell>90</TableCell>
-                <TableCell>85</TableCell>
-                <TableCell>92</TableCell>
-                <TableCell>89</TableCell>
-              </TableRow>
-              <TableRow>
-                <TableCell>Jane Smith</TableCell>
-                <TableCell>88</TableCell>
-                <TableCell>92</TableCell>
-                <TableCell>87</TableCell>
-                <TableCell>89</TableCell>
-              </TableRow>
-              <TableRow>
-                <TableCell>Michael Johnson</TableCell>
-                <TableCell>82</TableCell>
-                <TableCell>90</TableCell>
-                <TableCell>88</TableCell>
-                <TableCell>87</TableCell>
-              </TableRow>
-            </TableBody>
-          </Table>
-        </CardContent>
-      </Card>
+      </div>
+      <div className="flex items-center justify-between mb-4">
+          <h2 className="text-xl text-[#ff6b6b]">Completed</h2>
+      </div>
+      <div className="space-y-4 pb-10">
+            {completedLists.map((eachList, index) => (
+            <Link
+                className="flex group items-center justify-between border-2 border-[#ff6b6b] rounded-lg p-4"
+                key={index}
+                href={"/class/" + classID + "/" + eachList.wordListID}
+            >
+                <div>{eachList.name}</div>
+                <WordListStatus status={eachList.status} />
+            </Link>
+            ))}
+      </div>      
+      <div className="flex items-center justify-between mb-4">
+          <h2 className="text-xl text-[#ff6b6b]">Active</h2>
+      </div>
+      <div className="space-y-4 pb-10">
+            {activeLists.map((eachList, index) => (
+            <Link
+                className="flex group items-center justify-between border-2 border-[#ff6b6b] rounded-lg p-4"
+                key={index}
+                href={"/class/" + classID + "/" + eachList.wordListID}
+            >
+                <div>{eachList.name}</div>
+                <WordListStatus status={eachList.status} />
+            </Link>
+            ))}
+      </div>
     </div>
   );
 }
@@ -148,217 +127,21 @@ function Stats() {
 function WordListStatus({ status }: { status: WordListStatusType }) {
   if (status === "completed") {
     return (
-      <div className="bg-[#e6f7f2] text-[#1abc9c] font-medium px-3 py-1 rounded-full text-sm">
+      <div className="bg-[#e6f7f2] text-[#1abc9c] group-hover:text-[#e6f7f2] group-hover:bg-[#1abc9c] transition ease-in-out font-medium px-3 py-1 rounded-full text-sm">
         Completed
       </div>
     );
   } else if (status === "active") {
     return (
-      <div className="bg-[#f2f7fe] text-[#3498db] font-medium px-3 py-1 rounded-full text-sm">
+      <div className="bg-[#f2f7fe] text-[#3498db] group-hover:bg-[#3498db] group-hover:text-[#f2f7fe] transition ease-in-out font-medium px-3 py-1 rounded-full text-sm">
         Active
       </div>
     );
   } else {
     return (
-      <div className="bg-[#f2f7fe] text-[#db3434] font-medium px-3 py-1 rounded-full text-sm">
+      <div className="bg-[#fef2f2] text-[#db3434] group-hover:bg-[#db3434] group-hover:text-[#fef2f2] font-medium px-3 py-1 rounded-full text-sm">
         Overdue
       </div>
     );
   }
 }
-
-function ClassStatus({ status }: { status: ClassStatusType }) {
-  if (status === "active") {
-    return (
-      <div className="bg-[#e6f7f2] text-[#1abc9c] font-medium px-3 py-1 rounded-full text-sm">
-        Active
-      </div>
-    );
-  } else if (status === "upcoming") {
-    return (
-      <div className="bg-[#fef7f2] text-[#e67e22] font-medium px-3 py-1 rounded-full text-sm">
-        Upcoming
-      </div>
-    );
-  } else {
-    return (
-      <div className="bg-[#f2f7fe] text-[#3498db] font-medium px-3 py-1 rounded-full text-sm">
-        Completed
-      </div>
-    );
-  }
-}
-
-// /**
-//  * v0 by Vercel.
-//  * @see https://v0.dev/t/LQBMKWfv1iW
-//  * Documentation: https://v0.dev/docs#integrating-generated-code-into-your-nextjs-app
-//  */
-// import Link from "next/link";
-// import { Button } from "@/components/ui/button";
-// import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
-// import { Card, CardContent } from "@/components/ui/card";
-// import {
-//   getClassStartDate,
-//   getClassEndDate,
-//   getClassStudents,
-//   getClassNameFromClassId,
-//   getTeacherNameFromClassId,
-// } from "@/lib/userSettings";
-
-// function getInitials(name: string) {
-//   return name
-//     .split(" ")
-//     .map((n) => n[0])
-//     .join("");
-// }
-
-// // type classStatus = "active" | "upcoming" | "completed";
-// // type QuizStatus = "completed" | "upcoming" | "ongoing";
-
-// export default async function ClassPage({ classID }: { classID: string }) {
-//   // make an example of below code
-//   const className = "Math 101";
-//   const classStatus = "active";
-//   const startDate = new Date("2022-09-01");
-//   const endDate = new Date("2022-12-01");
-//   const students = [
-//     "John Doe",
-//     "Jane Smith",
-//     "Michael Johnson",
-//     "Death Row Records",
-//   ];
-//   const teacherName = "Mr. Smith";
-
-//   // get className, teacherName, startDate, endDate from classID
-//   // const className = await getClassNameFromClassId(classID);
-//   // const startDate = await getClassStartDate(classID);
-//   // const endDate = await getClassEndDate(classID);
-//   // const students = await getClassStudents(classID);
-//   // const teacherName = await getTeacherNameFromClassId(classID);
-//   // // active, upcoming, completed
-//   // const classStatus = startDate < new Date() && endDate > new Date() ? "active" : startDate > new Date() ? "upcoming" : "completed";
-
-//   // get userID
-
-//   return (
-//     <div className="flex-1 p-6">
-//       <div className="flex items-center justify-between mb-6">
-//         <h1 className="text-2xl font-bold text-[#ff6b6b]">{className}</h1>
-//         {/* <div className="bg-[#e6f7f2] text-[#1abc9c] font-medium px-3 py-1 rounded-full text-sm">
-//           {classStatus}
-//         </div> */}
-//         <classStatus status={classStatus} />
-//       </div>
-//       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-//         <Card className="bg-white rounded-lg shadow-md">
-//           <CardContent className="p-6">
-//             <div className="flex items-center justify-between mb-4">
-//               <h2 className="text-xl font-bold text-[#ff6b6b]">Quizzes</h2>
-//             </div>
-//             <div className="space-y-4">
-//               <div className="flex items-center justify-between">
-//                 <div>Quiz 1</div>
-//                 <div className="bg-[#e6f7f2] text-[#1abc9c] font-medium px-3 py-1 rounded-full text-sm">
-//                   Completed
-//                 </div>
-//               </div>
-//               <div className="flex items-center justify-between">
-//                 <div>Quiz 2</div>
-//                 <div className="bg-[#f2f7fe] text-[#3498db] font-medium px-3 py-1 rounded-full text-sm">
-//                   Upcoming
-//                 </div>
-//               </div>
-//               <div className="flex items-center justify-between">
-//                 <div>Quiz 3</div>
-//                 <div className="bg-[#e6f7f2] text-[#1abc9c] font-medium px-3 py-1 rounded-full text-sm">
-//                   Completed
-//                 </div>
-//               </div>
-//             </div>
-//           </CardContent>
-//         </Card>
-//         <Card className="bg-white rounded-lg shadow-md">
-//           <CardContent className="p-6">
-//             <div className="flex items-center justify-between mb-4">
-//               <h2 className="text-xl font-bold text-[#ff6b6b]">Students</h2>
-//             </div>
-//             <div className="space-y-4">
-//               {students.map((student) => (
-//                 <div key={student} className="flex items-center gap-4">
-//                   <Avatar className="border-2 border-[#ff6b6b]">
-//                     <AvatarImage src="/placeholder-user.jpg" />
-//                     <AvatarFallback>{getInitials(student)}</AvatarFallback>
-//                   </Avatar>
-//                   <div>{student}</div>
-//                 </div>
-//               ))}
-//             </div>
-//           </CardContent>
-//         </Card>
-//         <Card className="bg-white rounded-lg shadow-md">
-//           <CardContent className="p-6">
-//             <div className="flex items-center justify-between mb-4">
-//               <h2 className="text-xl font-bold text-[#ff6b6b]">Teacher</h2>
-//             </div>
-//             <div className="flex items-center gap-4">
-//               <Avatar className="border-2 border-[#ff6b6b]">
-//                 <AvatarImage src="/placeholder-user.jpg" />
-//                 <AvatarFallback>{getInitials(teacherName)}</AvatarFallback>
-//               </Avatar>
-//               <div>{teacherName}</div>
-//             </div>
-//           </CardContent>
-//         </Card>
-//       </div>
-//     </div>
-//   );
-// }
-
-// function QuizStatus({
-//   status,
-// }: {
-//   status: "completed" | "upcoming" | "ongoing";
-// }) {
-//   if (status === "completed") {
-//     return (
-//       <div className="bg-[#e6f7f2] text-[#1abc9c] font-medium px-3 py-1 rounded-full text-sm">
-//         Completed
-//       </div>
-//     );
-//   } else if (status === "ongoing") {
-//     return (
-//       <div className="bg-[#f2f7fe] text-[#3498db] font-medium px-3 py-1 rounded-full text-sm">
-//         Ongoing
-//       </div>
-//     );
-//   } else {
-//     return (
-//       <div className="bg-[#f2f7fe] text-[#3498db] font-medium px-3 py-1 rounded-full text-sm">
-//         Upcoming
-//       </div>
-//     );
-//   }
-// }
-
-// function classStatus({ status }: { status: "active" | "upcoming" | "completed" }) {
-//   if (status === "active") {
-//     return (
-//       <div className="bg-[#e6f7f2] text-[#1abc9c] font-medium px-3 py-1 rounded-full text-sm">
-//         Active
-//       </div>
-//     );
-//   } else if (status === "upcoming") {
-//     return (
-//       <div className="bg-[#fef7f2] text-[#e67e22] font-medium px-3 py-1 rounded-full text-sm">
-//         Upcoming
-//       </div>
-//     );
-//   } else {
-//     return (
-//       <div className="bg-[#f2f7fe] text-[#3498db] font-medium px-3 py-1 rounded-full text-sm">
-//         Completed
-//       </div>
-//     );
-//   }
-// }

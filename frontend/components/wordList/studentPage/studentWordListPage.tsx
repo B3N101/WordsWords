@@ -93,7 +93,7 @@ export async function StudentWordListQuizzes({ userId, classID, wordListID }: Wo
                   quizData.status === "completed" ?
                   (
                     <Link
-                    className="flex items-center justify-between border-2 border-[#ff6b6b] rounded-lg p-4"
+                    className="flex items-center group justify-between border-2 border-[#ff6b6b] rounded-lg p-4"
                     key={quizData.name}
                     href={`/quiz/${backupMiniQuizzes[i]!.quizId}`}
                   >
@@ -104,7 +104,7 @@ export async function StudentWordListQuizzes({ userId, classID, wordListID }: Wo
                   :
                   (
                   <Link
-                    className="flex items-center justify-between border-2 border-[#ff6b6b] rounded-lg p-4"
+                    className="flex items-center group justify-between border-2 border-[#ff6b6b] rounded-lg p-4"
                     key={quizData.name}
                     href={`/quiz/${quizData.quizID}`}
                   >
@@ -134,7 +134,7 @@ export async function StudentWordListQuizzes({ userId, classID, wordListID }: Wo
               {learnData?.map((learnData) =>
                 learnData.status !== "locked" ? (
                   <Link
-                    className="flex items-center justify-between border-2 border-[#ff6b6b] rounded-lg p-4"
+                    className="flex items-center group justify-between border-2 border-[#ff6b6b] rounded-lg p-4"
                     key={learnData.name}
                     href={`/learn/${learnData.quizID}`}
                   >
@@ -184,12 +184,12 @@ async function MasterQuiz({ quizID, available, completed }: MasterQuizProps) {
       <Card className="bg-white rounded-lg shadow-md">
         <CardContent className="p-6">
           <div className="flex items-center justify-between mb-4">
-            <h2 className="text-xl font-bold text-[#ff6b6b] p-10">
+            <h2 className="text-xl font-bold text-[#ff6b6b] pr-10 ">
               Master Quiz
             </h2>
             {available ? (
               (<Link
-                className="flex flex-auto items-center justify-between border-2 border-[#ff6b6b] rounded-lg p-4"
+                className="flex flex-auto items-center group justify-between border-2 border-[#ff6b6b] rounded-lg p-4"
                 key={quizID}
                 href={`/quiz/${quizID}`}
               >
@@ -215,19 +215,19 @@ async function MasterQuiz({ quizID, available, completed }: MasterQuizProps) {
 function QuizStatus({ status }: { status: QuizStatusType }) {
   if (status === "completed") {
     return (
-      <div className="bg-[#e6f7f2] text-[#1abc9c] hover:text-[#e6f7f2] hover:bg-[#1abc9c] transition ease-in-out font-medium px-3 py-1 rounded-full text-sm">
+      <div className="bg-[#e6f7f2] text-[#1abc9c] group-hover:text-[#e6f7f2] group-hover:bg-[#1abc9c] transition ease-in-out font-medium px-3 py-1 rounded-full text-sm">
         Completed - Retake
       </div>
     );
   } else if (status === "open") {
     return (
-      <div className="bg-[#f2f7fe] text-[#3498db] hover:bg-[#3498db] hover:text-[#f2f7fe] transition ease-in-out font-medium px-3 py-1 rounded-full text-sm">
+      <div className="bg-[#f2f7fe] text-[#3498db] group-hover:bg-[#3498db] group-hover:text-[#f2f7fe] transition ease-in-out font-medium px-3 py-1 rounded-full text-sm">
         Open
       </div>
     );
   } else {
     return (
-      <div className="bg-[#f2f7fe] text-[#db3434] font-medium px-3 py-1 rounded-full text-sm">
+      <div className="bg-[#fef2f2] text-[#db3434] font-medium px-3 py-1 rounded-full text-sm">
         Locked
       </div>
     );
@@ -236,19 +236,19 @@ function QuizStatus({ status }: { status: QuizStatusType }) {
 function LearnStatus({ status }: { status: LearnStatusType }) {
   if (status === "completed") {
     return (
-      <div className="bg-[#e6f7f2] text-[#1abc9c] hover:text-[#e6f7f2] hover:bg-[#1abc9c] transition ease-in-out font-medium px-3 py-1 rounded-full text-sm">
+      <div className="bg-[#e6f7f2] text-[#1abc9c] group-hover:text-[#e6f7f2] group-hover:bg-[#1abc9c] transition ease-in-out font-medium px-3 py-1 rounded-full text-sm">
         Completed - Practice Again
       </div>
     );
   } else if (status === "open") {
     return (
-      <div className="bg-[#f2f7fe] text-[#3498db] hover:bg-[#3498db] hover:text-[#f2f7fe] transition ease-in-out font-medium px-3 py-1 rounded-full text-sm">
+      <div className="bg-[#f2f7fe] text-[#3498db] group-hover:bg-[#3498db] group-hover:text-[#f2f7fe] transition ease-in-out font-medium px-3 py-1 rounded-full text-sm">
         Open
       </div>
     );
   } else {
     return (
-      <div className="bg-[#f2f7fe] text-[#db3434] font-medium px-3 py-1 rounded-full text-sm">
+      <div className="bg-[#fef2f2] text-[#db3434] font-medium px-3 py-1 rounded-full text-sm">
         Locked
       </div>
     );
@@ -264,7 +264,7 @@ export function WordListStatus({ status }: { status: WordListStatusType }) {
     );
   } else if (status === "overdue") {
     return (
-      <div className="bg-[#fef7f2] text-[#e67e22] font-medium px-3 py-1 rounded-lg text-sm text-center w-full">
+      <div className="bg-[#fef2f2] text-[#db3434] font-medium px-3 py-1 rounded-lg text-sm text-center w-full">
         Overdue
       </div>
     );
