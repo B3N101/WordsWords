@@ -1,4 +1,5 @@
 import { WordAnalytics } from "@/components/analytics/wordAnalytics";
+import WordAnalyticSkeleton  from "@/components/analytics/skeleton";
 import { Suspense } from "react";
 
 export default function Page({ params }: { params: { classID: string } }) {
@@ -6,8 +7,7 @@ export default function Page({ params }: { params: { classID: string } }) {
   console.log("Class is ", classString);
   return (
     <div>
-      {/* Add your class page content here */}
-      <Suspense>
+      <Suspense fallback={<WordAnalyticSkeleton/>}>
         <WordAnalytics classID={classString}/>
       </Suspense>
     </div>

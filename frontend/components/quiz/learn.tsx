@@ -8,8 +8,10 @@ import { upsertLearnCompleted } from "@/actions/quiz_progress";
 type Props = {
   words: Word[];
   quizId: string;
+  classId: string;
+  wordsListId: string;
 };
-export default function ContextPage({ words, quizId }: Props) {
+export default function ContextPage({ words, quizId, classId, wordsListId }: Props) {
   const [onContext, setOnContext] = useState<boolean>(true);
   const [currentIndex, setCurrentIndex] = useState<number>(0);
   const [completed, setCompleted] = useState<boolean>(false);
@@ -81,8 +83,8 @@ export default function ContextPage({ words, quizId }: Props) {
           </footer>
         </div>
       ) : (
-        <div>
-          <h1 className="text-2xl font-bold text-center">
+        <div className="flex h-dvh">
+          <h1 className="text-2xl font-bold text-center m-auto">
             You&apos;ve completed learning!
           </h1>
           <footer className="flow-root position: absolute bottom-3 px-6 w-full items-center justify-center">
@@ -103,6 +105,7 @@ export default function ContextPage({ words, quizId }: Props) {
                 onClick={async () => {
                   await upsertLearnCompleted(quizId, true);
                   window.location.href = `/quiz`;
+                  window.location.href = "/class/" + classId + "/" + wordsListId;
                 }}
               >
                 Back to dashboard

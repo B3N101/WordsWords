@@ -26,6 +26,7 @@ export async function AttemptsTable({ wordsListId, userId} : { wordsListId: stri
                     <TableRow>
                         <TableHead>Quiz</TableHead>
                         <TableHead>Score</TableHead>
+                        <TableHead>Completed At</TableHead>
                     </TableRow>
                     </TableHeader>
                     <TableBody>
@@ -34,6 +35,7 @@ export async function AttemptsTable({ wordsListId, userId} : { wordsListId: stri
                             <TableRow key={index}>
                                 <TableCell>{quiz.name}</TableCell>
                                 <TableCell>{quiz.score} / {quiz.length}</TableCell>
+                                <TableCell>{quiz.completedAt?.toLocaleString()}</TableCell>
                             </TableRow>
                         ))
                     }

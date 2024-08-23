@@ -8,7 +8,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { createMasterQuiz, createMiniQuiz, fetchQuizzes, fetchBackupMasterQuiz, fetchBackupMiniQuiz} from "@/actions/quiz_creation";
 import { Quiz } from "@prisma/client";
 import { getUserWordListProgressWithList } from "@/prisma/queries";
-import { isOverdue } from "@/lib/utils";
+import { isOverdue, dateFormatter } from "@/lib/utils";
 
 export type WordListStatusType = "active" | "overdue" | "completed";
 type QuizStatusType = "completed" | "open" | "locked";
@@ -38,7 +38,7 @@ export async function StudentWordListHeader( { userID, wordListID } : { userID: 
       <h1 className="text-2xl font-bold text-[#ff6b6b]">{userWordList.wordsList.name}</h1>
       <div className="flex flex-col items-center justify-between gap-2">
         <WordListStatus status={status} />
-        {"Due Date: " + userWordList.dueDate.toDateString()}
+        {"Due Date: " + dateFormatter(userWordList.dueDate)}
       </div>
     </div>
   );
@@ -46,7 +46,7 @@ export async function StudentWordListHeader( { userID, wordListID } : { userID: 
 export async function StudentWordListQuizzes({ userId, classID, wordListID }: WordListPageProps) {
   const {miniQuizzes, masterQuiz} = await fetchQuizzes(wordListID, userId, classID);
   const {backupMiniQuizzes, backupMasterQuiz } = await createBackupQuizzes({ miniQuizzes, masterQuiz, wordListID, userId, classID });
-  
+  console.log("Mini quizzes are ", miniQuizzes);
   // filter only mini quizzes
   const quizData = miniQuizzes?.map((miniQuiz, i) => {
     const status: QuizStatusType = miniQuiz.learnCompleted
@@ -78,7 +78,7 @@ export async function StudentWordListQuizzes({ userId, classID, wordListID }: Wo
       quizID: miniQuiz.quizId,
     };
   });
-
+  console.log("Quiz data is ", quizData);
   return (
     <div className="flex-1 p-6">
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-6">

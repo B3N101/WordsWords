@@ -31,7 +31,6 @@ export const createMiniQuiz = async (wordListId: string, userId: string, classId
     // get the words associated with the correct miniquiz
     const allwords = wordList.words;
     const words = allwords.slice(miniSetId*5, (miniSetId+1)*5);
-    console.log(allwords, words);
     if (words.length === 0){
         return null;
     }
@@ -250,7 +249,7 @@ export const fetchQuizzes = async (wordListId: string, userId: string, classId: 
         });
 
         if (!latestQuiz) {
-            let latestQuiz = await prisma.quiz.findFirst({
+            latestQuiz = await prisma.quiz.findFirst({
                 where: {
                     wordsListId: wordListId,
                     userId: userId,
@@ -285,13 +284,26 @@ export const fetchQuizzes = async (wordListId: string, userId: string, classId: 
             wordsListId: wordListId,
             userId: userId,
             quizType: QuizType.MASTERY,
+            completed: true,
         },
         orderBy: {
             createdAt: 'desc',
         }
     });
     if (!masterQuiz){
-        masterQuiz = await createMasterQuiz(wordListId, userId, classId);
+        masterQuiz = await prisma.quiz.findFirst({
+            where: {
+                wordsListId: wordListId,
+                userId: userId,
+                quizType: QuizType.MASTERY,
+            },
+            orderBy: {
+                createdAt: 'desc',
+            }
+        })
+        if (!masterQuiz){
+            masterQuiz = await createMasterQuiz(wordListId, userId, classId);
+        }
     }
     return { miniQuizzes, masterQuiz };
 }

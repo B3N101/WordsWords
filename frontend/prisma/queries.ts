@@ -151,13 +151,13 @@ export const getQuizzesFromWordsList = cache(async (wordListID: string, userId: 
     },
     //TODO: Add a completed at field to quizzes
     orderBy:{
-      createdAt: 'desc'
+      completedAt: 'desc'
     }
   });
   return quizzes;
 });
 
-export const getQuizWords = cache(async (quizID: string) => {
+export const getLearnQuiz = cache(async (quizID: string) => {
   const quiz = await prisma.quiz.findFirst({
     where: {
       quizId: quizID,
@@ -167,6 +167,12 @@ export const getQuizWords = cache(async (quizID: string) => {
         select:{
           word: true
         }
+      },
+      userWordsListProgress:{
+        select:{
+          classId: true,
+          wordsListListId: true,
+        }
       }
     },
   });
@@ -174,5 +180,5 @@ export const getQuizWords = cache(async (quizID: string) => {
   if (!quiz) {
     throw new Error("Quiz not found");
   }
-  return quiz.questions.map((question) => question.word);
+  return { words: quiz.questions.map((question) => question.word), classId: quiz.userWordsListProgress.classId, wordListId: quiz.userWordsListProgress.wordsListListId };
 });

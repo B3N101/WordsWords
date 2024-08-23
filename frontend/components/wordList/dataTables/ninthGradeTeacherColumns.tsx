@@ -98,7 +98,7 @@ function StudentQuizDisplay({studentName, quizzes}: {studentName: string, quizze
                         <Table>
                             <TableHeader>
                                 <TableRow>
-                                    <TableHead>Date</TableHead>
+                                    <TableHead>Completed At</TableHead>
                                     <TableHead>Score</TableHead>
                                 </TableRow>
                             </TableHeader>
@@ -107,7 +107,7 @@ function StudentQuizDisplay({studentName, quizzes}: {studentName: string, quizze
                         {
                             completedQuizzes.map((quiz, index) => (
                                 <TableRow key={index}>
-                                    <TableCell>{(quiz.createdAt.getMonth()+1) + "/" + quiz.createdAt.getDate() + "/" + quiz.createdAt.getFullYear()}</TableCell>
+                                    <TableCell>{quiz.completedAt?.toLocaleString()}</TableCell>
                                     <TableCell>{quiz.score} / {quiz.length}</TableCell>
                                 </TableRow>
                             ))

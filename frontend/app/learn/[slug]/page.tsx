@@ -1,6 +1,6 @@
 import { auth } from "@/auth/auth";
 import ContextPage from "@/components/quiz/learn";
-import { getQuizWords } from "@/prisma/queries";
+import { getLearnQuiz } from "@/prisma/queries";
 
 const page = async ({ params }: { params: { slug: string } }) => {
   const quizId = params.slug;
@@ -10,15 +10,15 @@ const page = async ({ params }: { params: { slug: string } }) => {
   if (!userId) {
     throw new Error("User not found");
   }
-  const words = await getQuizWords(quizId);
-  if (!words) {
-    throw new Error("Words not found");
+  const {words, classId, wordListId} = await getLearnQuiz(quizId);
+
+  if (!words || !classId || !wordListId) {
+    throw new Error("Error retreiving data");
   }
-  console.log(words);
 
   return (
     <div>
-      <ContextPage words={words} quizId={quizId} />
+      <ContextPage words={words} quizId={quizId} classId={classId} wordsListId={wordListId} />
     </div>
   );
 };
