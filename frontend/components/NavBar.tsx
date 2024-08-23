@@ -20,6 +20,8 @@ To read more about using these font, please visit the Next.js documentation:
 import Link from "next/link";
 import { Sheet, SheetTrigger, SheetContent } from "@/components/ui/sheet";
 import { Button } from "@/components/ui/button";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
+
 import {
   DropdownMenu,
   DropdownMenuTrigger,
@@ -32,10 +34,10 @@ import Image from "next/image";
 
 export default async function Navbar() {
   const session = await auth();
-
+  const imageURL = session?.user?.image ? session.user.image : null;
   return (
-    <header className="flex h-16 w-full mb-0 py-0 items-center justify-between border bg-background px-4 sm:px-6">
-      <div className="flex items-center justify-center flex-1">
+    <header className="flex h-16 w-full items-center justify-between bg-background px-4 sm:px-6">
+      <div className="flex max-w-fit max-h-16 mx-auto mt-4 items-center justify-center flex-1">
         <Link
           href="/"
           className="flex items-center gap-2 justify-center"
@@ -45,8 +47,8 @@ export default async function Navbar() {
           <Image
             src="/icon.png"
             alt="icon"
-            width={124}
-            height={124}
+            width={250}
+            height={250}
             className="no-drag"
           />
           {/* <Image src="/icon.png" alt="icon" width={124} height={124} /> */}
@@ -67,69 +69,28 @@ export default async function Navbar() {
           <SheetContent side="right" className="sm:max-w-xs">
             <nav className="grid gap-4 p-4">
               <Link
-                href="/quiz"
-                className="text-sm font-medium hover:underline hover:underline-offset-4"
-                prefetch={false}
-              >
-                Quizzes
-              </Link>
-              <Link
-                href="/words"
-                className="text-sm font-medium hover:underline hover:underline-offset-4"
-                prefetch={false}
-              >
-                Words
-              </Link>
-              <Link
                 href="#"
-                className="text-sm font-medium hover:underline hover:underline-offset-4"
+                className="text-sm font-medium text-white hover:underline hover:underline-offset-4"
                 prefetch={false}
               >
-                Class
-              </Link>
-              <Link
-                href="/dashboard"
-                className="text-sm font-medium hover:underline hover:underline-offset-4"
-                prefetch={false}
-              >
-                Dashboard
-              </Link>
-              <Link
-                href="/dashboard"
-                className="text-sm font-medium hover:underline hover:underline-offset-4"
-                prefetch={false}
-              >
-                Dashboard
+                Classes
               </Link>
             </nav>
           </SheetContent>
         </Sheet>
         <nav className="hidden gap-4 md:flex">
           <Link
-            href="/quiz"
-            className="text-sm font-medium hover:underline hover:underline-offset-4"
-            prefetch={false}
-          >
-            Quizzes
-          </Link>
-          <Link
-            href="/words"
-            className="text-sm font-medium hover:underline hover:underline-offset-4"
-            prefetch={false}
-          >
-            Words
-          </Link>
-          <Link
             href="#"
             className="text-sm font-medium hover:underline hover:underline-offset-4"
             prefetch={false}
           >
-            Class
+            Classes
           </Link>
         </nav>
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
             <Button variant="ghost" size="icon" className="rounded-full">
+              <Image src={imageURL ? imageURL : "/icon.png"} alt="avatar" width={128} height={128} className="rounded-[50%]"/>
               <SettingsIcon className="h-6 w-6" />
               <span className="sr-only">Open settings menu</span>
             </Button>
