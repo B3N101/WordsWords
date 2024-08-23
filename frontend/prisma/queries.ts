@@ -4,7 +4,7 @@ import { analytics } from "googleapis/build/src/apis/analytics";
 
 const prisma = new PrismaClient();
 
-export const getClass = cache(async(classId: string) => {
+export const getClass = cache(async (classId: string) => {
   const data = await prisma.class.findFirst({
     where: {
       classId: classId,
@@ -14,61 +14,75 @@ export const getClass = cache(async(classId: string) => {
 });
 export const getAllWordsLists = cache(async () => {
   const data = await prisma.wordsList.findMany({
-    include: { 
+    include: {
       words: true,
       UserWordsListProgress: true,
-    }
+    },
   });
   return data;
-})
+});
 
-export const getAllUserWordsListProgresses = cache(async (classId: string, wordListId: string) => {
-  const data = await prisma.userWordsListProgress.findMany({
-    where: {
-      classId: classId,
-      wordsListListId: wordListId,
-    },
-    include: { 
-      quizzes: true,
-      user: true,
-    }
+export const getWordListName = cache(async (wordListID: string) => {
+  const data = await prisma.wordsList.findFirst({
+    where: { listId: wordListID },
+    select: { name: true },
   });
   return data;
-})
-export const getUserWordListsWithMasteries = cache(async (userID: string, classID: string) => {
-  const data = await prisma.userWordsListProgress.findMany({
-    where: { 
-      userId: userID ,
-      classId: classID,
-    },
-    include:{
-      userWordMasteries: {
-        orderBy: { masteryScore: 'desc'},
-        include: { word: true }
+});
+export const getAllUserWordsListProgresses = cache(
+  async (classId: string, wordListId: string) => {
+    const data = await prisma.userWordsListProgress.findMany({
+      where: {
+        classId: classId,
+        wordsListListId: wordListId,
       },
-      wordsList: true,
-      }
+      include: {
+        quizzes: true,
+        user: true,
+      },
     });
-  return data;
-})
+    return data;
+  },
+);
+export const getUserWordListsWithMasteries = cache(
+  async (userID: string, classID: string) => {
+    const data = await prisma.userWordsListProgress.findMany({
+      where: {
+        userId: userID,
+        classId: classID,
+      },
+      include: {
+        userWordMasteries: {
+          orderBy: { masteryScore: "desc" },
+          include: { word: true },
+        },
+        wordsList: true,
+      },
+    });
+    return data;
+  },
+);
 export const getUserWordLists = cache(async (userID: string) => {
   const data = await prisma.userWordsListProgress.findMany({
     where: { userId: userID },
     include: { wordsList: true },
+    orderBy: { dueDate: "desc" },
   });
   return data;
 });
 
-export const getUserClassWordLists = cache(async (userID: string, classID: string) => {
-  const data = await prisma.userWordsListProgress.findMany({
-    where: { 
-      userId: userID,
-      classId: classID,
-    },
-    include: { wordsList: true },
-  });
-  return data;
-});
+export const getUserClassWordLists = cache(
+  async (userID: string, classID: string) => {
+    const data = await prisma.userWordsListProgress.findMany({
+      where: {
+        userId: userID,
+        classId: classID,
+      },
+      include: { wordsList: true },
+    });
+    return data;
+  },
+);
 export const getWordList = cache(async (wordListID: string) => {
   const data = await prisma.wordsList.findFirst({
     where: { listId: wordListID },
@@ -78,15 +92,11 @@ export const getWordList = cache(async (wordListID: string) => {
   return data;
 });
 
-export const getUserWordListProgress = cache(
+export const getUserWordListProgressWithList = cache(
   async (userID: string, wordListID: string) => {
     const data = await prisma.userWordsListProgress.findFirst({
       where: { userId: userID, wordsListListId: wordListID },
-      include: { quizzes: 
-        {
-          orderBy: { quizId: 'asc'},
-        },
-      },
+      include: { wordsList: true },
     });
     return data;
   },
@@ -145,6 +155,7 @@ export const getQuizzesFromWordsList = cache(async (wordListID: string, userId: 
       userId: userId,
       completed: true,
     },
+    //TODO: Add a completed at field to quizzes
     orderBy:{
       createdAt: 'desc'
     }
@@ -158,11 +169,11 @@ export const getQuizWords = cache(async (quizID: string) => {
       quizId: quizID,
     },
     select: {
-      questions:{
-        select:{
-          word: true
-        }
-      }
+      questions: {
+        select: {
+          word: true,
+        },
+      },
     },
   });
 

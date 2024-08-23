@@ -1,20 +1,25 @@
 import { auth } from "@/auth/auth";
-import { getUserWordLists } from "@/prisma/queries";
+import { getUserWordLists, getClass } from "@/prisma/queries";
 import { cn } from "@/lib/utils";
-import SideBarStructure  from "@/components/sidebar/sideBarStructure";
+import SideBarStructure from "@/components/sidebar/sideBarStructure";
+export async function SideBar({ classID }: { classID: string }) {
+  const session = await auth();
+  const userId = session?.user?.id;
 
-export async function SideBar(){
-    const session = await auth();
-    const userId = session?.user?.id;
-  
-    if (!userId) {
-      throw new Error("User not found");
-    }
-    const wordLists = await getUserWordLists(userId);
-    
-    return (
-        <div>
-            <SideBarStructure wordLists={wordLists}/>
-        </div>
-    );
+  if (!userId) {
+    throw new Error("User not found");
+  }
+
+  const thisClass = await getClass(classID);
+  const wordLists = await getUserWordLists(userId);
+
+  return (
+    <div>
+      <SideBarStructure
+        wordLists={wordLists}
+        classID={classID}
+        isTeacher={thisClass?.teacherId === userId}
+      />
+    </div>
+  );
 }

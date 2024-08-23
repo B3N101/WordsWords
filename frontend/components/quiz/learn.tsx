@@ -2,6 +2,7 @@
 
 import { type Word } from "@prisma/client";
 import { Button } from "@/components/ui/button";
+import { Loader2 } from "lucide-react";
 import { useState } from "react";
 import { upsertLearnCompleted } from "@/actions/quiz_progress";
 type Props = {
@@ -12,6 +13,7 @@ export default function ContextPage({ words, quizId }: Props) {
   const [onContext, setOnContext] = useState<boolean>(true);
   const [currentIndex, setCurrentIndex] = useState<number>(0);
   const [completed, setCompleted] = useState<boolean>(false);
+  const [isLoading, setIsLoading] = useState<boolean>(false);
   const handleNext = () => {
     if (onContext) {
       setOnContext(false);
@@ -38,7 +40,14 @@ export default function ContextPage({ words, quizId }: Props) {
   };
   return (
     <div>
-      {!completed ? (
+      {isLoading ? (
+        <div className="flex flex-col items-center justify-center min-h-screen bg-background">
+          <Loader2 className="h-8 w-8 animate-spin text-primary" />
+          <p className="mt-4 text-lg font-medium text-muted-foreground animate-pulse">
+            Loading Quiz ...
+          </p>
+        </div>
+      ) : !completed ? (
         <div className="flex flex-col gap-y-10 align-middle">
           <h1 className="text-2xl font-bold text-center">
             {words[currentIndex].word}
@@ -76,11 +85,13 @@ export default function ContextPage({ words, quizId }: Props) {
             <div className="float-right flex flex-col">
               <Button
                 onClick={async () => {
+                  setIsLoading(true);
                   await upsertLearnCompleted(quizId, true);
                   window.location.href = `/quiz/${quizId}`;
                 }}
+                disabled={isLoading}
               >
-                Go to Quiz
+                {!isLoading ? "Go to Quiz" : "Loading Quiz..."}
               </Button>
             </div>
             <div className="float-left flex flex-col">

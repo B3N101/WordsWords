@@ -20,6 +20,7 @@ export const upsertLearnCompleted = async (
 export const upsertQuestionCompleted = async (
   questionId: string,
   completed: boolean,
+  correct: boolean,
 ) => {
   // if (quizQuestion.completed === completed) {
   //   throw new Error("Trying to update question with the same completed value");
@@ -30,6 +31,7 @@ export const upsertQuestionCompleted = async (
     },
     data: {
       completed: completed,
+      correctlyAnswered: correct,
     },
   });
   return;
@@ -77,22 +79,27 @@ export const upsertQuizCompleted = async (
       score: score,
     },
   });
+  await upsertQuizAttempts(userId, quiz.wordsListId, quiz.miniSetNumber, -1);
   return;
 };
 
-
-export const upsertQuizAttempts = async(userId: string, wordListId: string, miniSetId: number, addAttempts: number) => {
+export const upsertQuizAttempts = async (
+  userId: string,
+  wordListId: string,
+  miniSetId: number,
+  addAttempts: number,
+) => {
   const wordsListProgress = await prisma.userWordsListProgress.findFirst({
-    where:{
+    where: {
       userId: userId,
       wordsListListId: wordListId,
     },
-    select:{
+    select: {
       quizAttemptsRemaining: true,
       retakesRequested: true,
-    }
+    },
   });
-  if(!wordsListProgress){
+  if (!wordsListProgress) {
     throw new Error("User Wordslist progress not found!");
   }
 
@@ -103,30 +110,35 @@ export const upsertQuizAttempts = async(userId: string, wordListId: string, mini
   newRetakes[miniSetId] = false;
 
   await prisma.userWordsListProgress.update({
-    where:{
+    where: {
       userWordsListProgressId: {
         userId: userId,
         wordsListListId: wordListId,
       },
     },
-    data:{
+    data: {
       quizAttemptsRemaining: newAttempts,
       retakesRequested: newRetakes,
     },
   });
-}
+};
 
-export const upsertRetakesRequested = async(userId: string, wordListId: string, miniSetId: number, requested: boolean) => {
+export const upsertRetakesRequested = async (
+  userId: string,
+  wordListId: string,
+  miniSetId: number,
+  requested: boolean,
+) => {
   const wordsListProgress = await prisma.userWordsListProgress.findFirst({
-    where:{
+    where: {
       userId: userId,
       wordsListListId: wordListId,
     },
-    select:{
+    select: {
       retakesRequested: true,
-    }
+    },
   });
-  if(!wordsListProgress){
+  if (!wordsListProgress) {
     throw new Error("User Wordslist progress not found!");
   }
 
@@ -134,42 +146,45 @@ export const upsertRetakesRequested = async(userId: string, wordListId: string, 
   newRetakes[miniSetId] = requested;
 
   await prisma.userWordsListProgress.update({
-    where:{
+    where: {
       userWordsListProgressId: {
         userId: userId,
         wordsListListId: wordListId,
       },
     },
-    data:{
+    data: {
       retakesRequested: newRetakes,
     },
   });
-}
+};
 
-export const upsertRetakesGranted = async(wordsListProgress: UserWordsListProgress, changedRetakes: number[]) => {
+export const upsertRetakesGranted = async (
+  wordsListProgress: UserWordsListProgress,
+  changedRetakes: number[],
+) => {
   const newAttempts = wordsListProgress.quizAttemptsRemaining;
   const newRetakesRequested = wordsListProgress.retakesRequested;
-  for(let i = 0; i < changedRetakes.length; i++){
+  for (let i = 0; i < changedRetakes.length; i++) {
     newAttempts[i] += changedRetakes[i];
-    if (newAttempts[i] < 0){
+    if (newAttempts[i] < 0) {
       newAttempts[i] = 0;
     }
 
-    if (changedRetakes[i] > 0){
+    if (changedRetakes[i] > 0) {
       newRetakesRequested[i] = false;
     }
   }
 
   await prisma.userWordsListProgress.update({
-    where:{
+    where: {
       userWordsListProgressId: {
         userId: wordsListProgress.userId,
         wordsListListId: wordsListProgress.wordsListListId,
       },
     },
-    data:{
+    data: {
       quizAttemptsRemaining: newAttempts,
       retakesRequested: newRetakesRequested,
     },
   });
-}
+};
