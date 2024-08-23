@@ -26,7 +26,7 @@ export default async function Page({ params }: { params: { classID: string, word
           thisClass?.teacherId === userId ?
           (
           <Suspense fallback={<TeacherDataTableSkeleton/>}>
-            <TeacherWordListPage userId={userId} classID={classString} wordListID={wordListString}/>
+            <TeacherWordListPage classID={classString} wordListID={wordListString}/>
           </Suspense>
           )
           :

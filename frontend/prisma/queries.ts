@@ -12,9 +12,34 @@ export const getClass = cache(async(classId: string) => {
   });
   return data;
 });
-export const getAllWordsLists = cache(async () => {
+
+export const getAllWordsListsAssigned = cache(async (classId: string) => {
   const data = await prisma.wordsList.findMany({
-    include: { 
+    where: {
+      UserWordsListProgress: {
+        some: {
+          classId: classId
+        }
+      }
+    },
+    include: {
+      words: true,
+      UserWordsListProgress: true,
+    }
+  });
+  return data;
+})
+
+export const getAllWordListsNotAssigned = cache(async (classId: string) =>{
+  const data = await prisma.wordsList.findMany({
+    where: {
+      UserWordsListProgress: {
+        none: {
+          classId: classId
+        }
+      }
+    },
+    include: {
       words: true,
       UserWordsListProgress: true,
     }
@@ -29,6 +54,16 @@ export const getWordListName = cache(async (wordListID: string) => {
   });
   return data;
 });
+export const getListNameAndDueDate = cache(async (classId: string, wordListID: string) => {
+  const data = await prisma.userWordsListProgress.findFirst({
+    where: {
+      classId: classId,
+      wordsListListId: wordListID,
+    },
+    include: { wordsList: true },
+  });
+  return {name: data?.wordsList.name, dueDate: data?.dueDate};
+})
 export const getAllUserWordsListProgresses = cache(async (classId: string, wordListId: string) => {
   const data = await prisma.userWordsListProgress.findMany({
     where: {
