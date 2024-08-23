@@ -14,6 +14,7 @@ import {
 } from "@/actions/quiz_creation";
 import { Quiz } from "@prisma/client";
 import { getUserWordListProgressWithList } from "@/prisma/queries";
+import { isOverdue } from "@/lib/utils";
 
 export type WordListStatusType = "active" | "overdue" | "completed";
 type QuizStatusType = "completed" | "open" | "locked";
@@ -44,11 +45,8 @@ export async function StudentWordListHeader({
   if (!userWordList) {
     throw new Error("Wordlist not found");
   }
-  const status: WordListStatusType = userWordList.completed
-    ? "completed"
-    : userWordList.dueDate < new Date()
-      ? "overdue"
-      : "active";
+  const overdue = isOverdue(userWordList.dueDate); 
+  const status: WordListStatusType = userWordList.completed ? "completed" : overdue ? "overdue" : "active";
 
   return (
     <div className="flex flex-1 items-center justify-between">

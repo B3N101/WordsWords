@@ -3,18 +3,31 @@ import { auth } from "@/auth/auth";
 import { PrismaClient, QuizType } from "@prisma/client";
 
 const prisma = new PrismaClient();
-export const deleteUserWordsListForClass = async (
-  wordsListId: string,
-  classId: string,
-) => {
-  console.log("Deleting user words list for class");
-  const deleteWordsList = await prisma.userWordsListProgress.deleteMany({
-    where: {
-      wordsListListId: wordsListId,
-      classId: classId,
-    },
-  });
-};
+
+export const updateUserListDueDate = async (userId: string, wordsListId: string, dueDate: Date) => {
+    console.log("Changing date to ", dueDate);
+    console.log("Time is ", dueDate.toUTCString(), "string is ", dueDate.toString());
+    await prisma.userWordsListProgress.update({
+        where:{
+            userWordsListProgressId: {
+                userId: userId,
+                wordsListListId: wordsListId,
+            }
+        },
+        data:{
+            dueDate: dueDate,
+        }
+    });
+}
+export const deleteUserWordsListForClass = async (wordsListId: string, classId: string) => {
+    console.log("Deleting user words list for class");
+    const deleteWordsList = await prisma.userWordsListProgress.deleteMany({
+        where:{
+            wordsListListId: wordsListId,
+            classId: classId,
+        }
+    });
+}
 
 export const createUserWordsListForClass = async (
   userId: string,

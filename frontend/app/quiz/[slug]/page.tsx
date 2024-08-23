@@ -25,11 +25,11 @@ const page = async ({ params }: { params: { slug: string } }) => {
     quiz.userWordsListProgress.quizAttemptsRemaining[miniSet];
   return (
     <div>
-      {hasAttemptsRemaining ? (
-        <QuizPage quiz={quiz} />
-      ) : (
-        <RequestRetakePage quiz={quiz} />
-      )}
+      {hasAttemptsRemaining ? 
+      <QuizPage quiz={quiz} userID={userId}/>
+      :
+      <RequestRetakePage quiz={quiz} />
+    }
     </div>
   );
 };
