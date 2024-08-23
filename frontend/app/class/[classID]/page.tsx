@@ -3,6 +3,7 @@ import StudentClassPage from "@/components/class/studentClassPage"
 import { auth } from "@/auth/auth";
 import { getClass } from "@/prisma/queries";
 import { Suspense } from "react";
+import TeacherClassPage from "@/components/class/teacherClassPage";
 
 export default async function Page({ params }: { params: { classID: string } }) {
   const classString = params.classID;
@@ -22,10 +23,9 @@ export default async function Page({ params }: { params: { classID: string } }) 
     {
       thisClass?.teacherId === userId ?
       (
-      // <Suspense fallback={<TeacherDataTableSkeleton/>}>
-      //   <TeacherWordListPage userId={userId} classID={classString} wordListID={wordListString}/>
-      // </Suspense>
-      null
+        <Suspense fallback={null}>
+          <TeacherClassPage classID={classString} className={thisClass.className}/>
+        </Suspense>
       )
       :
       (

@@ -77,6 +77,30 @@ export const getUserClassWordLists = cache(async (userID: string, classID: strin
   });
   return data;
 });
+
+export const getClassWordLists = cache(async ( classID: string) => {
+  const currClass = await prisma.class.findFirst({
+    where: {
+      classId: classID,
+    },
+    select:{
+      students: true,
+    }
+  });
+  if(!currClass){
+    throw new Error("Class not found");
+  }
+  if(currClass.students.length === 0){
+    return [];
+  }
+  const studentId = currClass.students[0].id;
+  const data = await prisma.userWordsListProgress.findMany({
+    where: { userId: studentId, classId: classID },
+    include: { wordsList: true },
+    orderBy: { dueDate: 'desc' }
+  });
+  return data;
+});
 export const getWordList = cache(async (wordListID: string) => {
   const data = await prisma.wordsList.findFirst({
     where: { listId: wordListID },

@@ -7,7 +7,7 @@ import { auth } from "@/auth/auth";
 
 async function getData(classId: string): Promise<WordListTableType[]>{
     const today = new Date();
-    const data: WordsListWithWordsAndUserWordsList[] = await getAllWordsLists();
+    const data: WordsListWithWordsAndUserWordsList[] = await getAllWordsLists(); // TODO: make this class specific
 
     const tabledata = data.map((wordList) => {
       const status: WordsListStatus = wordList.UserWordsListProgress.length === 0 ? "Unassigned" : today.getTime() > wordList.UserWordsListProgress[0].dueDate.getTime() ? "Completed" : "Active";
