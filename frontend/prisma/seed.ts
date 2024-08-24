@@ -89,21 +89,20 @@ async function seedWords() {
 //   }
 //   console.log("WordMasteries seeded");
 // }
-async function seedClass(userID: string){
+async function seedClass(userID: string) {
   const createdClass = await prisma.class.create({
-      data:{
-        className: "Testing Class",
-        teacherId: "TEACHERID",
-        SemesterStart: new Date(),
-        SemesterEnd: new Date(),
-        students:{
-          connect: {
-            id: userID
-          },
-        }
-      }
-    }
-  );
+    data: {
+      className: "Testing Class",
+      teacherId: "TEACHERID",
+      SemesterStart: new Date(),
+      SemesterEnd: new Date(),
+      students: {
+        connect: {
+          id: userID,
+        },
+      },
+    },
+  });
   console.log("Class Seeded");
   return createdClass;
 }
@@ -116,10 +115,10 @@ async function seedWordLists(userID: string, classID: string | null) {
       where: {
         students: {
           some: {
-            id: userID
-          }
-        }
-      }
+            id: userID,
+          },
+        },
+      },
     });
 
     if (studentClass) {
@@ -129,7 +128,7 @@ async function seedWordLists(userID: string, classID: string | null) {
       return;
     }
   }
-  console.log("Class found, finding words")
+  console.log("Class found, finding words");
   const words = await prisma.word.findMany({
     where: {
       wordListNumber: {
@@ -155,7 +154,7 @@ async function seedWordLists(userID: string, classID: string | null) {
       console.log("Current words list number is " + prevWordListID);
       await prisma.wordsList.create({
         data: {
-          listId: "grade_" + words[0].gradeLevel + "_list_" + prevWordListID, 
+          listId: "grade_" + words[0].gradeLevel + "_list_" + prevWordListID,
           words: {
             connect: currWords.map((word) => ({ wordId: word.wordId })),
           },

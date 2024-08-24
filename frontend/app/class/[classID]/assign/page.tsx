@@ -34,19 +34,27 @@ async function getData(classId: string): Promise<WordListTableType[]>{
     const tableData = tableData1.concat(tableData2);
     return tableData;
 }
-export default async function Page({ params }: { params: { classID: string } }) {
-    const classString = params.classID;
-    const data = await getData(classString);
-    const session = await auth();
-    const userId = session?.user?.id;
-  
-    if (!userId) {
-      throw new Error("User not found");
-    }
-    return (
-      <div>
-        <DataTable columns={columns} initial_data={data} userId={userId} classId={classString}/>
-      </div>
-    );
+export default async function Page({
+  params,
+}: {
+  params: { classID: string };
+}) {
+  const classString = params.classID;
+  const data = await getData(classString);
+  const session = await auth();
+  const userId = session?.user?.id;
+
+  if (!userId) {
+    throw new Error("User not found");
   }
-  
+  return (
+    <div>
+      <DataTable
+        columns={columns}
+        initial_data={data}
+        userId={userId}
+        classId={classString}
+      />
+    </div>
+  );
+}

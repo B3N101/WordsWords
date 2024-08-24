@@ -6,7 +6,11 @@ import { Suspense } from "react";
 import TeacherClassPage from "@/components/class/teacherClassPage";
 import ClassSkeleton from "@/components/class/skeleton";
 
-export default async function Page({ params }: { params: { classID: string } }) {
+export default async function Page({
+  params,
+}: {
+  params: { classID: string };
+}) {
   const classString = params.classID;
 
   const thisClass = await getClass(classString);

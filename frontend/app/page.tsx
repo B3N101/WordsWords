@@ -1,6 +1,5 @@
 import { auth } from "@/auth/auth";
 import { redirect } from "next/navigation";
-import Profile from "@/components/profile";
 import ClassDashboard from "@/components/class/classBoard";
 import {
   getTeacherNameFromUserId,
@@ -10,6 +9,9 @@ import {
   getUserRoleFromId,
 } from "@/lib/userSettings";
 import { getUserClassIdsFromId } from "@/lib/userSettings";
+import CreateClassCard from "@/components/createClass";
+import JoinClassCard from "@/components/joinClass";
+import Link from "next/link";
 
 // type classData to be used to get custom classDashboard
 type classData = {
@@ -53,44 +55,20 @@ export default async function Home() {
     });
   }
 
-  classData.push({
-    className: "Math",
-    teacherName: "Mr. Smith",
-    // make sure to change the date to a valid date
-    startDate: new Date("2022-09-01"),
-    endDate: new Date("2022-12-01"),
-    classID: "1234",
-  });
-
-  classData.push({
-    className: "Math",
-    teacherName: "Mr. Smith",
-    // make sure to change the date to a valid date
-    startDate: new Date("2024-09-01"),
-    endDate: new Date("2027-12-01"),
-    classID: "1234",
-  });
-
   const role = await getUserRoleFromId(userId);
 
   return (
     <div>
       <ClassDashboard data={classData} />
-
-      {/* {If Role is teacher or admin then add teacherDashboard where a teacher can add students} */}
-      {( role == "TEACHER" || role == "ADMIN") ? (
-        <p>Is A Teacher</p>
-      ) : (
-        <p>Is Not A Teacher</p>
-      )
-    }
-      <footer>
-        {/* horizontal line*/}
-        <hr />
-        <p className="text-green-600 font-extrabold text-xl">Home</p>
-        <Profile user={User} />
-        <pre>{JSON.stringify(session, null, 2)}</pre>
-      </footer>
+      {ClassAddition(role, userId)}
     </div>
+  );
+}
+
+function ClassAddition(role: string, userId: string): JSX.Element {
+  return role == "TEACHER" || role == "ADMIN" ? (
+    <CreateClassCard teacherId={userId} />
+  ) : (
+    <JoinClassCard userId={userId} />
   );
 }

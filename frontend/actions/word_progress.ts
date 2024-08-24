@@ -16,7 +16,12 @@ export const updateWordListProgress = async (wordListId: string, userId: string,
     }
   });
 }
-export const upsertWordMastery = async (wordId: string, isCorrect: boolean, wordListId: string, quizType: QuizType) => {
+export const upsertWordMastery = async (
+  wordId: string,
+  isCorrect: boolean,
+  wordListId: string,
+  quizType: QuizType,
+) => {
   console.log("Upserding word mastery");
   const session = await auth();
   const userId = session?.user?.id;
@@ -29,9 +34,9 @@ export const upsertWordMastery = async (wordId: string, isCorrect: boolean, word
       wordId: wordId,
       userId: userId,
     },
-    include:{
+    include: {
       attempts: true,
-    }
+    },
   });
   let masteryScore;
   if (!currWordMastery || currWordMastery.attempts.length === 0) {
@@ -43,44 +48,41 @@ export const upsertWordMastery = async (wordId: string, isCorrect: boolean, word
   } else {
     if (isCorrect) {
       // only allow mastery to be achieved on mastery quizzes
-      if (quizType === QuizType.MASTERY || currWordMastery.masteryScore === 1){
+      if (quizType === QuizType.MASTERY || currWordMastery.masteryScore === 1) {
         masteryScore = Math.min(1, currWordMastery.masteryScore + 0.25);
-      }
-      else{
+      } else {
         masteryScore = Math.min(0.75, currWordMastery.masteryScore + 0.25);
       }
     } else {
       masteryScore = Math.max(0.25, currWordMastery.masteryScore - 0.25);
     }
   }
-  await prisma.userWordMastery.upsert(
-    {
-      where: {
-        userId: userId,
-        wordId: wordId,
-      },
-      update: {
-        masteryScore: masteryScore,
-        attempts: {
-          create: {
-            userId: userId,
-            correct: isCorrect,
-          },
-        },
-      },
-      create: {
-        wordId: wordId,
-        userId: userId,
-        masteryScore: masteryScore,
-        wordsListId: wordListId,
-        attempts: {
-          create: {
-            userId: userId,
-            correct: isCorrect,
-          },
+  await prisma.userWordMastery.upsert({
+    where: {
+      userId: userId,
+      wordId: wordId,
+    },
+    update: {
+      masteryScore: masteryScore,
+      attempts: {
+        create: {
+          userId: userId,
+          correct: isCorrect,
         },
       },
     },
-  );
+    create: {
+      wordId: wordId,
+      userId: userId,
+      masteryScore: masteryScore,
+      wordsListId: wordListId,
+      attempts: {
+        create: {
+          userId: userId,
+          correct: isCorrect,
+        },
+      },
+    },
+  });
   return;
 };

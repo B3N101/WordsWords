@@ -1,14 +1,14 @@
 import { getQuizzesFromWordsList } from "@/prisma/queries";
 import {
-    Table,
-    TableCell,
-    TableBody,
-    TableHead,
-    TableRow,
-    TableFooter,
-    TableCaption,
-    TableHeader,
-  } from "@/components/ui/table";
+  Table,
+  TableCell,
+  TableBody,
+  TableHead,
+  TableRow,
+  TableFooter,
+  TableCaption,
+  TableHeader,
+} from "@/components/ui/table";
 
 import { Card, CardContent } from "@/components/ui/card";
 

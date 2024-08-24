@@ -21,6 +21,11 @@ import {
 import { Card, CardContent } from "@/components/ui/card";
 import { getUserClassWordLists } from "@/prisma/queries";
 import { auth } from "@/auth/auth";
+import {
+  getClassNameFromClassId,
+  getClassTeacherId,
+  getTeacherNameFromClassId,
+} from "@/lib/userSettings";
 
 function getInitials(name: string) {
   return name

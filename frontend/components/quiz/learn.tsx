@@ -42,14 +42,12 @@ export default function ContextPage({ words, quizId, classId, wordsListId }: Pro
   };
   return (
     <div>
-      {
-      isLoading ?
-      (
+      {isLoading ? (
         <div className="flex flex-col items-center justify-center min-h-screen bg-background">
-            <Loader2 className="h-8 w-8 animate-spin text-primary" />
-            <p className="mt-4 text-lg font-medium text-muted-foreground animate-pulse">
-              Loading Quiz ...
-            </p>
+          <Loader2 className="h-8 w-8 animate-spin text-primary" />
+          <p className="mt-4 text-lg font-medium text-muted-foreground animate-pulse">
+            Loading Quiz ...
+          </p>
         </div>
       )
       :
@@ -97,7 +95,7 @@ export default function ContextPage({ words, quizId, classId, wordsListId }: Pro
                 }}
                 disabled={isLoading}
               >
-                {!isLoading ?"Go to Quiz" : "Loading Quiz..."}
+                {!isLoading ? "Go to Quiz" : "Loading Quiz..."}
               </Button>
             </div>
             <div className="float-left flex flex-col">
@@ -113,7 +111,7 @@ export default function ContextPage({ words, quizId, classId, wordsListId }: Pro
             </div>
           </footer>
         </div>
-      ))}
+      )}
     </div>
   );
 }

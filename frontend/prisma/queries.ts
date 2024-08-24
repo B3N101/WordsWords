@@ -4,7 +4,7 @@ import { analytics } from "googleapis/build/src/apis/analytics";
 
 const prisma = new PrismaClient();
 
-export const getClass = cache(async(classId: string) => {
+export const getClass = cache(async (classId: string) => {
   const data = await prisma.class.findFirst({
     where: {
       classId: classId,
@@ -91,13 +91,14 @@ export const getUserWordListsWithMasteries = cache(async (userID: string, classI
       wordsList: true,
       }
     });
-  return data;
-})
+    return data;
+  },
+);
 export const getUserWordLists = cache(async (userID: string) => {
   const data = await prisma.userWordsListProgress.findMany({
     where: { userId: userID },
     include: { wordsList: true },
-    orderBy: { dueDate: 'desc' }
+    orderBy: { dueDate: "desc" },
   });
   return data;
 });
