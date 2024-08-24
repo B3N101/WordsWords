@@ -49,19 +49,9 @@ interface ClassPageProps {
 }
 
 export default async function StudentClassPage({ classID, className }: ClassPageProps) {
-  // Make an example of below code
-  const classStatus: ClassStatusType = "active";
-  const students = [
-    "John Doe",
-    "Jane Smith",
-    "Michael Johnson",
-    "Death Row Records",
-  ];
-
   // get userID
   const session = await auth();
   const userId = session?.user?.id!;
-  const today = new Date();
 
   const wordLists = await getUserClassWordLists(userId, classID);
   const wordListData = wordLists.map((wordList) => {

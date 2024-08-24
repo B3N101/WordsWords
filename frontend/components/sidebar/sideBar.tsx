@@ -19,7 +19,12 @@ export async function SideBar({ classID }: { classID: string }) {
     
     return (
         <div>
-            <SideBarStructure wordLists={wordLists} classID={classID} isTeacher={thisClass?.teacherId === userId} className={thisClass.className}/>
+            <SideBarStructure 
+              wordLists={wordLists} 
+              classID={classID} 
+              isTeacher={thisClass?.teacherId === userId} 
+              className={thisClass.className}
+            />
         </div>
     );
 }

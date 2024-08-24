@@ -1,4 +1,3 @@
-import ClassPage from "@/components/class/classPage";
 import StudentClassPage from "@/components/class/studentClassPage"
 import { auth } from "@/auth/auth";
 import { getClass } from "@/prisma/queries";

@@ -111,7 +111,7 @@ export default function ContextPage({ words, quizId, classId, wordsListId }: Pro
             </div>
           </footer>
         </div>
-      )}
+      ))}
     </div>
   );
 }

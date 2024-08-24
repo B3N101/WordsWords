@@ -224,7 +224,7 @@ async function MasterQuiz({ quizID, available, completed }: MasterQuizProps) {
                 <div>{"Master Quiz"}</div>
                 <QuizStatus status={completed ? "completed" : "open"} />
               </Link>
-            ) : (
+            )) : (
               <div
                 className="flex flex-auto items-center justify-between border-2 border-[#ff6b6b] rounded-lg p-4"
                 key={quizID}
