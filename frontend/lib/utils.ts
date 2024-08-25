@@ -9,7 +9,6 @@ export function dateFormatter(date: Date) {
   const utcDate = date.getUTCDate();
   const utcMonth = date.getUTCMonth();
   const utcYear = date.getUTCFullYear();
-  const weekDay = date.getUTCDay();
   return `${utcMonth+1}/${utcDate}/${utcYear}`;
 }
 

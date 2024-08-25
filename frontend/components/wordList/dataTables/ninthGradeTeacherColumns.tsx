@@ -189,9 +189,10 @@
 
 "use client"
 
-import { ColumnDef } from "@tanstack/react-table"
+import { ColumnDef, Row } from "@tanstack/react-table"
 import { Quiz, UserWordsListProgress } from "@prisma/client"
 import { upsertRetakesGranted } from "@/actions/quiz_progress"
+import { dateFormatter } from "@/lib/utils"
 
 import { MoreHorizontal } from "lucide-react"
 import { useState } from "react"
@@ -294,7 +295,7 @@ function StudentQuizDisplay({studentName, quizzes}: {studentName: string, quizze
                         {
                             completedQuizzes.map((quiz, index) => (
                                 <TableRow key={index}>
-                                    <TableCell>{quiz.createdAt.getMonth() + "/" + quiz.createdAt.getDate() + "/" + quiz.createdAt.getFullYear()}</TableCell>
+                                    <TableCell>{(quiz.completedAt) ? dateFormatter(quiz.completedAt) : dateFormatter(quiz.createdAt)}</TableCell>
                                     <TableCell>{quiz.score} / {quiz.length}</TableCell>
                                 </TableRow>
                             ))
@@ -427,6 +428,52 @@ function RetakeForm( { studentListProgress, quizRetakes, setQuizRetakes }: { stu
     </div>
   )
 }
+
+function ActionCell({ row }: { row: Row<StudentInfo> }) {
+  const studentListProgress = row.original.studentListProgress;
+  const retakesRequested = studentListProgress.retakesRequested;
+
+  const [attemptsRemaining, setAttemptsRemaining] = useState(studentListProgress.quizAttemptsRemaining);
+  const [notification, setNotification] = useState(retakesRequested.some((retake) => retake === true));
+  
+  return (
+      <DropdownMenu>
+        <DropdownMenuTrigger asChild>
+          {notification ?
+          <Badge dot>
+            <Button variant="ghost" className="h-8 w-8 p-0">
+              <span className="sr-only">Open menu</span>
+              <MoreHorizontal className="h-4 w-4" />
+            </Button>
+          </Badge>
+          :
+          <Button variant="ghost" className="h-8 w-8 p-0">
+            <span className="sr-only">Open menu</span>
+            <MoreHorizontal className="h-4 w-4" />
+          </Button>}
+        </DropdownMenuTrigger>
+        <DropdownMenuContent align="end">
+          <DropdownMenuLabel>Actions</DropdownMenuLabel>
+          <DropdownMenuSeparator />
+          <Dialog>
+            <DialogTrigger>
+              <DropdownMenuItem onSelect={(e) => {
+                e.preventDefault()
+                setNotification(false);
+              }}>
+                <div>Grant Additional Attempts</div>
+              </DropdownMenuItem>
+            </DialogTrigger>
+              <DialogContent>
+                <DialogHeader>
+                  <RetakeForm studentListProgress={studentListProgress} quizRetakes={attemptsRemaining} setQuizRetakes={setAttemptsRemaining}/>
+                </DialogHeader>
+              </DialogContent>
+          </Dialog>
+        </DropdownMenuContent>
+      </DropdownMenu>
+  )
+}
 export const columns: ColumnDef<StudentInfo>[] = [
   {
     accessorKey: "name",
@@ -484,48 +531,12 @@ export const columns: ColumnDef<StudentInfo>[] = [
     id: "actions",
     header: () => <div className="font-bold text-lg">Actions</div>,
     cell: ({ row }) => {
-      const studentListProgress = row.original.studentListProgress;
-      const retakesRequested = studentListProgress.retakesRequested
-
-      const [attemptsRemaining, setAttemptsRemaining] = useState(studentListProgress.quizAttemptsRemaining)
-
-      return (
-          <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              {retakesRequested.some((retake) => retake === true) ?
-              <Badge dot>
-                <Button variant="ghost" className="h-8 w-8 p-0">
-                  <span className="sr-only">Open menu</span>
-                  <MoreHorizontal className="h-4 w-4" />
-                </Button>
-              </Badge>
-              :
-              <Button variant="ghost" className="h-8 w-8 p-0">
-                <span className="sr-only">Open menu</span>
-                <MoreHorizontal className="h-4 w-4" />
-              </Button>}
-            </DropdownMenuTrigger>
-            <DropdownMenuContent align="end">
-              <DropdownMenuLabel>Actions</DropdownMenuLabel>
-              <DropdownMenuSeparator />
-              <Dialog>
-                <DialogTrigger>
-                  <DropdownMenuItem onSelect={(e) => e.preventDefault()}>
-                    <div>Grant Additional Attempts</div>
-                  </DropdownMenuItem>
-                </DialogTrigger>
-                  <DialogContent>
-                    <DialogHeader>
-                      <RetakeForm studentListProgress={studentListProgress} quizRetakes={attemptsRemaining} setQuizRetakes={setAttemptsRemaining}/>
-                    </DialogHeader>
-                  </DialogContent>
-              </Dialog>
-            </DropdownMenuContent>
-          </DropdownMenu>
-      )
+      // TODO: make this a separate component called ActionCell so that it can utilize useState
+      return <ActionCell row={row} />
     },
   },
 ]
+
 function ListStatusDisplay({ status }: { status: WordsListStatus }) {
   if (status === "Completed") {
     return (
