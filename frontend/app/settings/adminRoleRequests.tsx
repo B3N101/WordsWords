@@ -1,5 +1,6 @@
 import { getRoleRequests } from "@/lib/roleRequest";
-import { approveRoleRequest } from "./action2";
+import { approveRoleRequest } from "@/actions/approvingRoleRequestAction";
+import { disapproveRoleRequest } from "@/actions/disapprovingRoleRequestAction";
 import { Button } from "@/components/ui/button";
 import {
   Table,
@@ -24,7 +25,7 @@ export default async function AdminRoleRequests() {
             <TableHead>User Name</TableHead>
             <TableHead>Requested Role</TableHead>
             <TableHead>Request Date</TableHead>
-            <TableHead>Action</TableHead>
+            <TableHead>Actions</TableHead>
           </TableRow>
         </TableHeader>
         <TableBody>
@@ -34,15 +35,26 @@ export default async function AdminRoleRequests() {
               <TableCell>{request.role}</TableCell>
               <TableCell>{request.requestDate.toLocaleDateString()}</TableCell>
               <TableCell>
-                <form
-                  action={approveRoleRequest.bind(
-                    null,
-                    request.userId,
-                    request.role as Role,
-                  )}
-                >
-                  <Button type="submit">Approve</Button>
-                </form>
+                <div className="flex space-x-2">
+                  <form
+                    action={approveRoleRequest.bind(
+                      null,
+                      request.userId,
+                      request.role as Role,
+                    )}
+                  >
+                    <Button type="submit" variant="default">
+                      Approve
+                    </Button>
+                  </form>
+                  <form
+                    action={disapproveRoleRequest.bind(null, request.userId)}
+                  >
+                    <Button type="submit" variant="destructive">
+                      Disapprove
+                    </Button>
+                  </form>
+                </div>
               </TableCell>
             </TableRow>
           ))}

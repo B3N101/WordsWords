@@ -2,8 +2,10 @@ import prisma from "@/prisma/prisma";
 import { Role, RoleRequest } from "@prisma/client";
 
 export async function createRoleRequest(userId: string, role: Role) {
-  return await prisma.roleRequest.create({
-    data: {
+  return await prisma.roleRequest.upsert({
+    where: { userId },
+    update: { role },
+    create: {
       userId,
       role,
     },

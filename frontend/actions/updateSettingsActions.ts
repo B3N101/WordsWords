@@ -3,6 +3,7 @@
 import { createRoleRequest } from "@/lib/roleRequest";
 import { updateUserName, getUserRoleFromId } from "@/lib/userSettings";
 import { Role } from "@prisma/client";
+import { revalidatePath } from "next/cache";
 
 export async function updateSettings(formData: FormData) {
   const userId = formData.get("userId") as string;
@@ -16,6 +17,8 @@ export async function updateSettings(formData: FormData) {
     if (requestedRole !== currentRole) {
       await createRoleRequest(userId, requestedRole);
     }
+
+    revalidatePath("/settings");
 
     return { success: true };
   } catch (error) {

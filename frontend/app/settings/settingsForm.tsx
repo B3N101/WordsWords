@@ -11,7 +11,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { updateSettings } from "@/app/settings/actions";
+import { updateSettings } from "@/actions/updateSettingsActions";
 import { useToast } from "@/components/ui/use-toast";
 
 export default function SettingsForm({
