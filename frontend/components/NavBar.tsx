@@ -13,6 +13,9 @@ import {
 import { auth } from "@/auth/auth";
 
 function getInitials(name: string) {
+  if (!name) {
+    return "?";
+  }
   const names = name.split(" ");
   return names
     .map((name) => name[0])

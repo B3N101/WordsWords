@@ -9,6 +9,9 @@ import { auth } from "@/auth/auth";
 import Link from "next/link";
 
 function getInitials(name: string) {
+  if (!name) {
+    return "?";
+  }
   const names = name.split(" ");
   return names
     .map((name) => name[0])
@@ -18,10 +21,6 @@ function getInitials(name: string) {
 
 export default async function Footer() {
   const session = await auth();
-
-  if (!session) {
-    return null;
-  }
 
   const name: string = session!.user!.name!;
   const imageSrc: string = session!.user!.image!;

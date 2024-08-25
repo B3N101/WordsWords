@@ -1,13 +1,12 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
 datasource db {
   provider = "postgresql"
   url      = env("POSTGRES_PRISMA_URL")
 }
 
-generator client {
-  provider = "prisma-client-js"
-}
-
-// AUTH MODELS
 model Account {
   userId            String
   type              String
@@ -20,11 +19,9 @@ model Account {
   scope             String?
   id_token          String?
   session_state     String?
-
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-
-  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
+  user              User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@id([provider, providerAccountId])
 }
@@ -33,10 +30,9 @@ model Session {
   sessionToken String   @unique
   userId       String
   expires      DateTime
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
   user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
 }
 
 model VerificationToken {
@@ -47,198 +43,138 @@ model VerificationToken {
   @@id([identifier, token])
 }
 
-// OUR MODELS
 model User {
-  id            String    @id @default(cuid())
-  name          String?
-  email         String    @unique
-  emailVerified DateTime?
-  image         String?
-  accounts      Account[]
-  sessions      Session[]
-  // Optional for WebAuthn support
-  // Authenticator Authenticator[]
-
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-
-  role          Role              @default(STUDENT)
-  // Class         Class?          @relation(fields: [classClassId], references: [classId])
-  // classClassId  String?
-  // _____________ UPDATE _______________
-  // Changed relationship to many to many
-  Classes       Class[]           @relation("UserClasses")
-  wordMasteries UserWordMastery[]
-
-  quizzes Quiz[]
-
+  id                    String                  @id @default(cuid())
+  name                  String?
+  email                 String                  @unique
+  emailVerified         DateTime?
+  image                 String?
+  createdAt             DateTime                @default(now())
+  updatedAt             DateTime                @updatedAt
+  role                  Role                    @default(STUDENT)
+  accounts              Account[]
+  quizzes               Quiz[]
+  sessions              Session[]
+  wordMasteries         UserWordMastery[]
   UserWordsListProgress UserWordsListProgress[]
+  Classes               Class[]                 @relation("UserClasses")
 }
 
 model Class {
-  classId   String @id @default(cuid())
-  className String
-  teacherId String
-  students  User[] @relation("UserClasses")
-
-  userWordsListProgresses UserWordsListProgress[]
+  classId                 String                  @id @default(cuid())
+  className               String
+  teacherId               String
   SemesterStart           DateTime
   SemesterEnd             DateTime
+  userWordsListProgresses UserWordsListProgress[]
+  students                User[]                  @relation("UserClasses")
 }
 
 model Word {
-  wordId String @id @default(cuid())
-  word   String
-
-  partOfSpeech partOfSpeech
-  gradeLevel   Grade
-
+  wordId               String           @id @default(cuid())
+  word                 String
+  partOfSpeech         partOfSpeech
+  gradeLevel           Grade
   context              String
   definition           String
   incorrectDefinitions String[]
-
-  exampleSentence  String
-
-  correctFillIn    String
-  incorrectFillIns String[]
-
-  wordListNumber Int?
-  rankWithinList Int?
-
-  userWordMasteries UserWordMastery[]
-
-  listId    String?
-  wordsList WordsList? @relation(fields: [listId], references: [listId], onDelete: Cascade)
-  questions Question[]
+  exampleSentence      String
+  correctFillIn        String
+  incorrectFillIns     String[]
+  wordListNumber       Int?
+  rankWithinList       Int?
+  listId               String?
+  questions            Question[]
+  userWordMasteries    UserWordMastery?
+  wordsList            WordsList?       @relation(fields: [listId], references: [listId], onDelete: Cascade)
 }
 
-// TODO: static piece. woulnd't have to keep track of quizzes
 model WordsList {
-  listId String @id @default(cuid())
-  name   String
-
-  words                 Word[]
+  listId                String                  @id @default(cuid())
+  name                  String
   quizzes               Quiz[]
   UserWordsListProgress UserWordsListProgress[]
+  words                 Word[]
 }
-
 
 model UserWordsListProgress {
-  user   User   @relation(fields: [userId], references: [id])
-  userId String
+  userId                String
+  classId               String
+  wordsListListId       String
+  quizAttemptsRemaining Int[]             @default([3, 3, 3, 3])
+  retakesRequested      Boolean[]         @default([false, false, false, false])
+  completed             Boolean           @default(false)
+  dueDate               DateTime          @default(dbgenerated("(now() + '7 days'::interval)"))
+  quizzes               Quiz[]
+  userWordMasteries     UserWordMastery[]
+  class                 Class             @relation(fields: [classId], references: [classId])
+  user                  User              @relation(fields: [userId], references: [id])
+  wordsList             WordsList         @relation(fields: [wordsListListId], references: [listId])
 
-  class   Class  @relation(fields: [classId], references: [classId])
-  classId String
-
-  wordsList       WordsList @relation(fields: [wordsListListId], references: [listId])
-  wordsListListId String
-
-  userWordMasteries UserWordMastery[]
-
-  quizzes   Quiz[]
-  quizAttemptsRemaining Int[] @default([3, 3, 3, 3])
-  retakesRequested Boolean[] @default([false, false, false, false])
-
-  completed Boolean @default(false)
-  dueDate   DateTime @default(dbgenerated("NOW() + interval '1 week'"))
-
-  @@id(name: "userWordsListProgressId", [userId, wordsListListId])
+  @@id([userId, wordsListListId], name: "userWordsListProgressId")
 }
 
-// model PublishedList {
-//   publishedListId String   @id @default(cuid())
-//   userId          String
-//   user            User     @relation(fields: [userId], references: [id])
-//   startDate       DateTime
-//   endDate         DateTime
-
-//   list   WordsList @relation(fields: [listId], references: [listId], onDelete: Cascade)
-//   listId String
-
-//   class   Class?  @relation(fields: [classId], references: [classId])
-//   classId String?
-
-//   timeGoal    Int?
-//   masteryGoal Int?
-//   timeSpent   Int?
-//   isDone      Boolean @default(false)
-//   Score       Float?
-// }
-
 model UserWordMastery {
-  wordId String @id
-  word   Word   @relation(fields: [wordId], references: [wordId], onDelete: Cascade)
-
-  wordsListId  String
-  masteryScore Float  @default(0)
-
+  wordId                String                @id
+  wordsListId           String
+  masteryScore          Float                 @default(0)
+  userId                String
+  attempts              UserQuestionAttempt[]
+  user                  User                  @relation(fields: [userId], references: [id])
   userWordsListProgress UserWordsListProgress @relation(fields: [userId, wordsListId], references: [userId, wordsListListId], onDelete: Cascade)
-
-  attempts UserQuestionAttempt[]
-
-  user   User   @relation(fields: [userId], references: [id])
-  userId String
+  word                  Word                  @relation(fields: [wordId], references: [wordId], onDelete: Cascade)
 }
 
 model UserQuestionAttempt {
   questionAttemptId String          @id @default(cuid())
   wordId            String
   userId            String
-  wordMastery       UserWordMastery @relation(fields: [wordId], references: [wordId], onDelete: Cascade)
   correct           Boolean
   timeSpent         Int?
   questionAttempt   DateTime        @default(now())
+  wordMastery       UserWordMastery @relation(fields: [wordId], references: [wordId], onDelete: Cascade)
 }
 
-// todo: add a creation date for the quiz and only fetch the latest created quiz
 model Quiz {
-  quizId   String   @id @default(cuid())
-  quizType QuizType @default(MINI)
-
-  name String
-
-  user   User   @relation(fields: [userId], references: [id])
-  userId String
-
-  wordsList   WordsList @relation(fields: [wordsListId], references: [listId])
-  wordsListId String
-
-  questions Question[]
-  length   Int 
-  completed Boolean    @default(false)
-
-  score   Float     @default(0)
-  dueDate DateTime?
-  completedAt DateTime?
-
-  createdAt     DateTime @default(now())
-  miniSetNumber Int // -1 for masterQuiz
-
-  learnCompleted Boolean @default(false)
-
-  userWordsListProgress UserWordsListProgress @relation(fields: [userId, wordsListId], references: [userId, wordsListListId], onDelete: Cascade ) //TODO: Might be easier to just connect to class, not userwordslistprogress
+  quizId                String                @id @default(cuid())
+  quizType              QuizType              @default(MINI)
+  name                  String
+  userId                String
+  wordsListId           String
+  completed             Boolean               @default(false)
+  score                 Float                 @default(0)
+  dueDate               DateTime?
+  createdAt             DateTime              @default(now())
+  miniSetNumber         Int
+  learnCompleted        Boolean               @default(false)
+  length                Int
+  completedAt           DateTime?
+  questions             Question[]
+  user                  User                  @relation(fields: [userId], references: [id])
+  userWordsListProgress UserWordsListProgress @relation(fields: [userId, wordsListId], references: [userId, wordsListListId], onDelete: Cascade)
+  wordsList             WordsList             @relation(fields: [wordsListId], references: [listId])
 }
 
-// this can be the dynamic piece (word is static). only link to one quiz. this could 
-// include everything userQuestionProgress
 model Question {
-  questionId     String @id @default(cuid())
-  questionString String
-  rank           Int
-
-  quiz   Quiz   @relation(fields: [quizId], references: [quizId], onDelete: Cascade)
-  quizId String
-
-  word   Word   @relation(fields: [wordId], references: [wordId], onDelete: Cascade)
-  wordId String
-
-  allAnswers    String[]
-  correctAnswer String
-  completed     Boolean  @default(false)
-  correctlyAnswered Boolean @default(false)
+  questionId        String   @id @default(cuid())
+  questionString    String
+  rank              Int
+  quizId            String
+  wordId            String
+  allAnswers        String[]
+  correctAnswer     String
+  completed         Boolean  @default(false)
+  correctlyAnswered Boolean  @default(false)
+  quiz              Quiz     @relation(fields: [quizId], references: [quizId], onDelete: Cascade)
+  word              Word     @relation(fields: [wordId], references: [wordId], onDelete: Cascade)
 }
 
-// ENUMS - ROLE, GRADE, PART OF SPEECH
+model RoleRequest {
+  userId String @unique
+  role Role
+  requestDate DateTime @default(now())
+}
+
 enum Role {
   ADMIN
   TEACHER
