@@ -106,29 +106,10 @@ async function seedClass(userID: string) {
   console.log("Class Seeded");
   return createdClass;
 }
-async function seedWordLists(userID: string, classID: string | null) {
+async function seedWordLists() {
   await prisma.wordsList.deleteMany();
-  console.log("WordLists deleted, finding class");
+  console.log("WordLists deleted, finding words");
 
-  if (!classID) {
-    const studentClass = await prisma.class.findFirst({
-      where: {
-        students: {
-          some: {
-            id: userID,
-          },
-        },
-      },
-    });
-
-    if (studentClass) {
-      classID = studentClass.classId;
-    } else {
-      console.log("No class found for the student");
-      return;
-    }
-  }
-  console.log("Class found, finding words");
   const words = await prisma.word.findMany({
     where: {
       wordListNumber: {
@@ -310,14 +291,14 @@ async function seedWordLists(userID: string, classID: string | null) {
 
 async function seedAll(userID: string) {
   await seedWords();
-  const createdClass = await seedClass(userID);
-  await seedWordLists(userID, createdClass.classId);
+  await seedClass(userID);
+  await seedWordLists();
   // await seedWordMasteries(userID);
   // await seedQuestions(userID);
   // await seedQuizzes(userID);
 }
 
-seedAll("4afb862f-1a70-4d52-b9c8-cf17cdc2726a").then(async () => {
+seedAll("3cf1eeea-60f4-4690-b523-99943cdd0c9a").then(async () => {
   await prisma.$disconnect();
 });
 // // seedWords().then(async () => {
