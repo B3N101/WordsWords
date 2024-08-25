@@ -1,4 +1,9 @@
-// app/policy/page.tsx
+import { Metadata } from "next";
+
+export const metadata: Metadata = {
+  title: "MX Words Words | Policy",
+  description: "MX Words Words Privacy Policy",
+};
 
 export default function PolicyPage() {
   return (

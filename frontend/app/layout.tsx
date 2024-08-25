@@ -32,23 +32,17 @@ export const metadata: Metadata = {
 export default function Layout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="en" suppressHydrationWarning>
-      <head>
-        <title>Words Words</title>
-        <meta name="description" content="Words Words - A Vocab Builder" />
-        {/* favicon */}
-        <link rel="icon" href="/favicon.ico" />
-      </head>
       <Analytics />
       <body
         className={cn(
-          "min-h-screen bg-background bg-tan dark:bg-red-950 font-sans antialiased",
+          "flex flex-col min-h-screen bg-background bg-tan dark:bg-red-950 font-sans antialiased",
           inter.className,
           ibm_plex_mono.className,
           poppins.className,
         )}
       >
         <NavBar />
-        <main>{children}</main>
+        <main className="flex-grow">{children}</main>
         <Footer />
         <Toaster />
       </body>
