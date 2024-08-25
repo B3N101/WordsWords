@@ -9,9 +9,6 @@ import { auth } from "@/auth/auth";
 import Link from "next/link";
 
 function getInitials(name: string) {
-  if (!name) {
-    return "?";
-  }
   const names = name.split(" ");
   return names
     .map((name) => name[0])
@@ -22,9 +19,9 @@ function getInitials(name: string) {
 export default async function Footer() {
   const session = await auth();
 
-  const name: string = session!.user!.name!;
-  const imageSrc: string = session!.user!.image!;
-  const email: string = session!.user!.email!;
+  const name: string = session ? session!.user!.name! : "";
+  const imageSrc: string = session ? session!.user!.image! : "";
+  const email: string = session ? session!.user!.email! : "";
 
   return (
     <footer className="bg-muted py-6 border-t w-full bottom-0 mt-6">

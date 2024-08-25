@@ -13,9 +13,6 @@ import {
 import { auth } from "@/auth/auth";
 
 function getInitials(name: string) {
-  if (!name) {
-    return "?";
-  }
   const names = name.split(" ");
   return names
     .map((name) => name[0])
@@ -25,8 +22,8 @@ function getInitials(name: string) {
 
 export default async function Navbar() {
   const session = await auth();
-  const imageURL: string = session?.user?.image!;
-  const name: string = session?.user?.name!;
+  const imageURL: string = session?.user?.image! || "";
+  const name: string = session?.user?.name! || "";
 
   return (
     <header className="flex items-center justify-between px-4 py-2 bg-white border-b">
