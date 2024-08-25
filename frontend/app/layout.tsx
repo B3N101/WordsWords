@@ -32,6 +32,9 @@ export const metadata: Metadata = {
 export default function Layout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="en" suppressHydrationWarning>
+      <head>
+        <meta name="google-site-verification" content="MjRyMh8v-9qExGvA9C7L37ZdBcKzZGpKJodT2uznVxo" />
+      </head>
       <Analytics />
       <body
         className={cn(
