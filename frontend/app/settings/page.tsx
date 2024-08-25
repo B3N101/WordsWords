@@ -11,6 +11,12 @@ import {
 import { Role } from "@prisma/client";
 import { revalidatePath } from "next/cache";
 import RoleButton from "./roleButton";
+import type { Metadata } from "next";
+
+export const metadata: Metadata = {
+  title: "MX Words Words | Settings",
+  description: "MX Words Words Settings Page",
+};
 
 export default async function Page() {
   const session = await auth();

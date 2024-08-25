@@ -1,4 +1,10 @@
 import StudentClassPage from "@/components/class/studentClassPage";
+import type { Metadata } from "next";
+
+export const metadata: Metadata = {
+  title: "MX Words Words | Class",
+  description: "MX Words Words Class Page",
+};
 
 export default async function Page({
   params,
