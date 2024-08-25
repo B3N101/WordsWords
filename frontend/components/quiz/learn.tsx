@@ -8,8 +8,10 @@ import { upsertLearnCompleted } from "@/actions/quiz_progress";
 type Props = {
   words: Word[];
   quizId: string;
+  classId: string;
+  wordsListId: string;
 };
-export default function ContextPage({ words, quizId }: Props) {
+export default function ContextPage({ words, quizId, classId, wordsListId }: Props) {
   const [onContext, setOnContext] = useState<boolean>(true);
   const [currentIndex, setCurrentIndex] = useState<number>(0);
   const [completed, setCompleted] = useState<boolean>(false);
@@ -47,17 +49,19 @@ export default function ContextPage({ words, quizId }: Props) {
             Loading Quiz ...
           </p>
         </div>
-      ) : !completed ? (
-        <div className="flex flex-col gap-y-10 align-middle">
-          <h1 className="text-2xl font-bold text-center">
+      )
+      :
+      (!completed ? (
+        <div className="flex flex-col gap-10 h-dvh">
+          <h1 className="text-5xl font-bold text-center mx-auto mt-20">
             {words[currentIndex].word}
           </h1>
-          <p className="w-3/4 align-middle text-center items-center m-auto">
+          <p className={onContext?"w-1/2 align-middle items-center text-left text-2xl mx-auto" : "w-1/2 align-middle items-center text-center text-2xl mx-auto" }>
             {onContext
               ? words[currentIndex].context
               : words[currentIndex].definition}
           </p>
-          <footer className="flow-root position: absolute bottom-3 px-6 w-full items-center justify-center">
+          <footer className="flow-root position: absolute bottom-3 p-6 w-full items-center justify-center">
             <div className="float-right position: absolute right-6 flex flex-col">
               <Button onClick={handleNext}>
                 {onContext
@@ -77,8 +81,8 @@ export default function ContextPage({ words, quizId }: Props) {
           </footer>
         </div>
       ) : (
-        <div>
-          <h1 className="text-2xl font-bold text-center">
+        <div className="flex h-dvh">
+          <h1 className="text-2xl font-bold text-center m-auto">
             You&apos;ve completed learning!
           </h1>
           <footer className="flow-root position: absolute bottom-3 px-6 w-full items-center justify-center">
@@ -99,6 +103,7 @@ export default function ContextPage({ words, quizId }: Props) {
                 onClick={async () => {
                   await upsertLearnCompleted(quizId, true);
                   window.location.href = `/quiz`;
+                  window.location.href = "/class/" + classId + "/" + wordsListId;
                 }}
               >
                 Back to dashboard
@@ -106,7 +111,7 @@ export default function ContextPage({ words, quizId }: Props) {
             </div>
           </footer>
         </div>
-      )}
+      ))}
     </div>
   );
 }

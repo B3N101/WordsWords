@@ -9,8 +9,8 @@ import {
   getUserRoleFromId,
 } from "@/lib/userSettings";
 import { getUserClassIdsFromId } from "@/lib/userSettings";
-import CreateClassCard from "@/components/createClass";
-import JoinClassCard from "@/components/joinClass";
+import CreateClassCard from "@/components/classUtils/createClass";
+import JoinClassCard from "@/components/classUtils/joinClass";
 import Link from "next/link";
 
 // type classData to be used to get custom classDashboard

@@ -6,7 +6,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import { addStudentToClass } from "@/actions/class_student_actions";
-import { useToast } from "./ui/use-toast";
+import { useToast } from "../ui/use-toast";
 
 export default function JoinClassCard({ userId }: { userId: string }) {
   const [classCode, setClassCode] = useState<string>("");

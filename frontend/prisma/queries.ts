@@ -3,6 +3,20 @@ import { UserWordsListProgress } from "@prisma/client";
 import { analytics } from "googleapis/build/src/apis/analytics";
 import prisma from "./prisma";
 
+export const getUserRole = cache(async (userId: string) => {
+  const data = await prisma.user.findFirst({
+    where: {
+      id: userId,
+    },
+    select:{
+      role: true
+    }
+  });
+  if (!data) {
+    throw new Error("User not found");
+  }
+  return data.role;
+});
 export const getClass = cache(async (classId: string) => {
   const data = await prisma.class.findFirst({
     where: {
@@ -11,15 +25,52 @@ export const getClass = cache(async (classId: string) => {
   });
   return data;
 });
-export const getAllWordsLists = cache(async () => {
-  const data = await prisma.wordsList.findMany({
-    include: {
-      words: true,
-      UserWordsListProgress: true,
+
+export const getClassPeople = cache(async (classId: string) => {
+  const data = await prisma.class.findFirst({
+    where: {
+      classId: classId,
+    },
+    select: {
+      students: true,
+      teacherId: true,
     },
   });
   return data;
 });
+export const getAllWordsListsAssigned = cache(async (classId: string) => {
+  const data = await prisma.wordsList.findMany({
+    where: {
+      UserWordsListProgress: {
+        some: {
+          classId: classId
+        }
+      }
+    },
+    include: {
+      words: true,
+      UserWordsListProgress: true,
+    }
+  });
+  return data;
+})
+
+export const getAllWordListsNotAssigned = cache(async (classId: string) =>{
+  const data = await prisma.wordsList.findMany({
+    where: {
+      UserWordsListProgress: {
+        none: {
+          classId: classId
+        }
+      }
+    },
+    include: {
+      words: true,
+      UserWordsListProgress: true,
+    }
+  });
+  return data;
+})
 
 export const getWordListName = cache(async (wordListID: string) => {
   const data = await prisma.wordsList.findFirst({
@@ -28,35 +79,42 @@ export const getWordListName = cache(async (wordListID: string) => {
   });
   return data;
 });
-export const getAllUserWordsListProgresses = cache(
-  async (classId: string, wordListId: string) => {
-    const data = await prisma.userWordsListProgress.findMany({
-      where: {
-        classId: classId,
-        wordsListListId: wordListId,
+export const getListNameAndDueDate = cache(async (classId: string, wordListID: string) => {
+  const data = await prisma.userWordsListProgress.findFirst({
+    where: {
+      classId: classId,
+      wordsListListId: wordListID,
+    },
+    include: { wordsList: true },
+  });
+  return {name: data?.wordsList.name, dueDate: data?.dueDate};
+})
+export const getAllUserWordsListProgresses = cache(async (classId: string, wordListId: string) => {
+  const data = await prisma.userWordsListProgress.findMany({
+    where: {
+      classId: classId,
+      wordsListListId: wordListId,
+    },
+    include: { 
+      quizzes: true,
+      user: true,
+    }
+  });
+  return data;
+})
+export const getUserWordListsWithMasteries = cache(async (userID: string, classID: string) => {
+  const data = await prisma.userWordsListProgress.findMany({
+    where: { 
+      userId: userID ,
+      classId: classID,
+    },
+    include:{
+      userWordMasteries: {
+        orderBy: { masteryScore: 'desc'},
+        include: { word: true }
       },
-      include: {
-        quizzes: true,
-        user: true,
-      },
-    });
-    return data;
-  },
-);
-export const getUserWordListsWithMasteries = cache(
-  async (userID: string, classID: string) => {
-    const data = await prisma.userWordsListProgress.findMany({
-      where: {
-        userId: userID,
-        classId: classID,
-      },
-      include: {
-        userWordMasteries: {
-          orderBy: { masteryScore: "desc" },
-          include: { word: true },
-        },
-        wordsList: true,
-      },
+      wordsList: true,
+      }
     });
     return data;
   },
@@ -70,18 +128,40 @@ export const getUserWordLists = cache(async (userID: string) => {
   return data;
 });
 
-export const getUserClassWordLists = cache(
-  async (userID: string, classID: string) => {
-    const data = await prisma.userWordsListProgress.findMany({
-      where: {
-        userId: userID,
-        classId: classID,
-      },
-      include: { wordsList: true },
-    });
-    return data;
-  },
-);
+export const getUserClassWordLists = cache(async (userID: string, classID: string) => {
+  const data = await prisma.userWordsListProgress.findMany({
+    where: { 
+      userId: userID,
+      classId: classID,
+    },
+    include: { wordsList: true },
+  });
+  return data;
+});
+
+export const getClassWordLists = cache(async ( classID: string) => {
+  const currClass = await prisma.class.findFirst({
+    where: {
+      classId: classID,
+    },
+    select:{
+      students: true,
+    }
+  });
+  if(!currClass){
+    throw new Error("Class not found");
+  }
+  if(currClass.students.length === 0){
+    return [];
+  }
+  const studentId = currClass.students[0].id;
+  const data = await prisma.userWordsListProgress.findMany({
+    where: { userId: studentId, classId: classID },
+    include: { wordsList: true },
+    orderBy: { dueDate: 'desc' }
+  });
+  return data;
+});
 export const getWordList = cache(async (wordListID: string) => {
   const data = await prisma.wordsList.findFirst({
     where: { listId: wordListID },
@@ -147,6 +227,20 @@ export const getQuiz = cache(async (quizID: string) => {
   return quiz;
 });
 
+export const getQuizzesFromWordsList = cache(async (wordListID: string, userId: string) => {
+  const quizzes = await prisma.quiz.findMany({
+    where: {
+      wordsListId: wordListID,
+      userId: userId,
+      completed: true,
+    },
+    //TODO: Add a completed at field to quizzes
+    orderBy:{
+      completedAt: 'desc'
+    }
+  });
+  return quizzes;
+});
 export const getQuizzesFromWordsList = cache(
   async (wordListID: string, userId: string) => {
     const quizzes = await prisma.quiz.findMany({
@@ -164,22 +258,28 @@ export const getQuizzesFromWordsList = cache(
   },
 );
 
-export const getQuizWords = cache(async (quizID: string) => {
+export const getLearnQuiz = cache(async (quizID: string) => {
   const quiz = await prisma.quiz.findFirst({
     where: {
       quizId: quizID,
     },
     select: {
-      questions: {
-        select: {
-          word: true,
-        },
+      questions:{
+        select:{
+          word: true
+        }
       },
+      userWordsListProgress:{
+        select:{
+          classId: true,
+          wordsListListId: true,
+        }
+      }
     },
   });
 
   if (!quiz) {
     throw new Error("Quiz not found");
   }
-  return quiz.questions.map((question) => question.word);
+  return { words: quiz.questions.map((question) => question.word), classId: quiz.userWordsListProgress.classId, wordListId: quiz.userWordsListProgress.wordsListListId };
 });

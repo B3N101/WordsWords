@@ -269,29 +269,23 @@ export const fetchQuizzes = async (
       },
     });
 
-    if (!latestQuiz) {
-      let latestQuiz = await prisma.quiz.findFirst({
-        where: {
-          wordsListId: wordListId,
-          userId: userId,
-          quizType: QuizType.MINI,
-          miniSetNumber: miniSetNumber,
-        },
-        orderBy: {
-          createdAt: "desc",
-        },
-      });
-      if (!latestQuiz) {
-        console.log("No latest quiz found for miniset", miniSetNumber);
-        latestQuiz = await createMiniQuiz(
-          wordListId,
-          userId,
-          classId,
-          miniSetNumber,
-          false,
-        );
-      }
-    }
+        if (!latestQuiz) {
+            latestQuiz = await prisma.quiz.findFirst({
+                where: {
+                    wordsListId: wordListId,
+                    userId: userId,
+                    quizType: QuizType.MINI,
+                    miniSetNumber: miniSetNumber,
+                },
+                orderBy: {
+                    createdAt: 'desc',
+                }
+            })
+            if (!latestQuiz){
+                console.log("No latest quiz found for miniset", miniSetNumber);
+                latestQuiz = await createMiniQuiz(wordListId, userId, classId, miniSetNumber, false);    
+            }
+        }
 
     if (latestQuiz) {
       console.log("Found latest quiz");
@@ -299,25 +293,38 @@ export const fetchQuizzes = async (
     }
   }
 
-  // check if all the miniquizzes are completed. If not, no master quiz
-  for (let miniquiz of miniQuizzes) {
-    if (!miniquiz.completed) {
-      return { miniQuizzes, masterQuiz: null };
+    // check if all the miniquizzes are completed. If not, no master quiz
+    for (let miniquiz of miniQuizzes){
+        if (!miniquiz.completed){
+            return { miniQuizzes, masterQuiz: null };
+        }
     }
-  }
-  // otherwise a masterquiz is either available or needs to be created
-  let masterQuiz = await prisma.quiz.findFirst({
-    where: {
-      wordsListId: wordListId,
-      userId: userId,
-      quizType: QuizType.MASTERY,
-    },
-    orderBy: {
-      createdAt: "desc",
-    },
-  });
-  if (!masterQuiz) {
-    masterQuiz = await createMasterQuiz(wordListId, userId, classId);
-  }
-  return { miniQuizzes, masterQuiz };
-};
+    // otherwise a masterquiz is either available or needs to be created
+    let masterQuiz = await prisma.quiz.findFirst({
+        where: {
+            wordsListId: wordListId,
+            userId: userId,
+            quizType: QuizType.MASTERY,
+            completed: true,
+        },
+        orderBy: {
+            createdAt: 'desc',
+        }
+    });
+    if (!masterQuiz){
+        masterQuiz = await prisma.quiz.findFirst({
+            where: {
+                wordsListId: wordListId,
+                userId: userId,
+                quizType: QuizType.MASTERY,
+            },
+            orderBy: {
+                createdAt: 'desc',
+            }
+        })
+        if (!masterQuiz){
+            masterQuiz = await createMasterQuiz(wordListId, userId, classId);
+        }
+    }
+    return { miniQuizzes, masterQuiz };
+}

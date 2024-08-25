@@ -10,16 +10,21 @@ export async function SideBar({ classID }: { classID: string }) {
     throw new Error("User not found");
   }
 
-  const thisClass = await getClass(classID);
-  const wordLists = await getUserWordLists(userId);
+    const thisClass = await getClass(classID);
+    const wordLists = await getUserWordLists(userId);
 
-  return (
-    <div>
-      <SideBarStructure
-        wordLists={wordLists}
-        classID={classID}
-        isTeacher={thisClass?.teacherId === userId}
-      />
-    </div>
-  );
+    if (!thisClass) {
+        throw new Error("Class not found");
+    }
+    
+    return (
+        <div>
+            <SideBarStructure 
+              wordLists={wordLists} 
+              classID={classID} 
+              isTeacher={thisClass?.teacherId === userId} 
+              className={thisClass.className}
+            />
+        </div>
+    );
 }

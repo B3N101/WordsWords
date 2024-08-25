@@ -145,24 +145,20 @@ export default function QuizPage({ quiz, userID }: Props) {
         </div>
       ) : !completed ? (
         <div className="flex flex-col">
-          {started ? (
-            <header className="pb-10 pt-5 flex-col items-center align-middle">
-              <ProgressBar
-                value={((currentIndex + 1) / questions.length) * 100}
-              />
+            {started ? 
+            <header className="pb-10 pt-10 flex-col items-center align-middle">
+              <ProgressBar value={((currentIndex+1) / questions.length) * 100} />
               <div className="text-center pt-5">
                 Question {currentIndex + 1} / {questions.length}
               </div>
             </header>
-          ) : null}
-          <main className="flex justify-center flex-1 align-middle h-full">
+            : null}
+          <main className="flex justify-center flex-1 align-middle h-dvh">
             {!started ? (
-              <h1 className="text-3xl font-bold p-4">{quiz.name}</h1>
+              <h1 className="text-3xl font-bold p-4 pt-10">{quiz.name}</h1>
             ) : (
               <div className="w-full">
-                <h2 className="text-2xl font-bold text-center">
-                  {question.questionString}
-                </h2>
+                <h2 className="text-2xl font-bold text-center w-3/4 mx-auto">{question.questionString}</h2>
                 <div className="grid grid-cols1 gap-6 m-12 max-w-[100%] items-center justify-center">
                   {options.map((answer, index) => (
                     <Button

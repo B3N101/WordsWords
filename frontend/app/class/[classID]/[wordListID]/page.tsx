@@ -53,32 +53,28 @@ export default async function Page({
   }
   return (
     <div>
-      {thisClass?.teacherId === userId ? (
-        <TeacherWordListPage
-          userId={userId}
-          classID={classString}
-          wordListID={wordListString}
-        />
-      ) : (
-        <div className="flex-1 p-6">
-          <Suspense fallback={<HeaderSkeleton />}>
-            <StudentWordListHeader
-              userID={userId}
-              wordListID={wordListString}
-            />
+        {
+          thisClass?.teacherId === userId ?
+          (
+          <Suspense fallback={<TeacherDataTableSkeleton/>}>
+            <TeacherWordListPage classID={classString} wordListID={wordListString}/>
           </Suspense>
-          <Suspense fallback={<QuizTableSkeleton />}>
-            <StudentWordListQuizzes
-              userId={userId}
-              classID={classString}
-              wordListID={wordListString}
-            />
-          </Suspense>
-          <Suspense fallback={<AttemptsTableSkeleton />}>
-            <AttemptsTable wordsListId={wordListString} userId={userId} />
-          </Suspense>
-        </div>
-      )}
+          )
+          :
+          (
+          <div className="flex-1 p-6">
+            <Suspense fallback={<HeaderSkeleton/>}>
+              <StudentWordListHeader userID={userId} wordListID={wordListString} />
+            </Suspense>
+            <Suspense fallback={<QuizTableSkeleton/>}>
+              <StudentWordListQuizzes userId={userId} classID={classString} wordListID={wordListString}/>
+            </Suspense>
+            <Suspense fallback={<AttemptsTableSkeleton/>}>
+              <AttemptsTable wordsListId={wordListString} userId={userId}/>
+            </Suspense>
+          </div>
+          )
+        }
     </div>
   );
 }

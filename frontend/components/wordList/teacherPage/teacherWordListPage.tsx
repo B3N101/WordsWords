@@ -13,7 +13,7 @@ import {
 } from "../dataTables/ninthGradeTeacherColumns";
 import { DataTable } from "../dataTables/ninthGradeTeacherTable";
 
-import { getAllUserWordsListProgresses } from "@/prisma/queries";
+import { getAllUserWordsListProgresses, getListNameAndDueDate } from "@/prisma/queries";
 
 import { Card, CardContent } from "@/components/ui/card";
 import { AttemptsTable } from "../studentPage/attemptsTable";
@@ -25,15 +25,15 @@ import {
   fetchBackupMiniQuiz,
 } from "@/actions/quiz_creation";
 import { Quiz } from "@prisma/client";
-import { isOverdue } from "@/lib/utils";
+import { isOverdue, dateFormatter } from "@/lib/utils";
+
 
 type ClassStatusType = "active" | "upcoming" | "completed";
 type QuizStatusType = "completed" | "open" | "locked";
 type LearnStatusType = "completed" | "open" | "locked";
 
 type WordListPageProps = {
-  userId: string;
-  classID: string;
+  classID: string
   wordListID: string;
 };
 
@@ -77,21 +77,27 @@ async function getData(
   return tabledata;
 }
 
-export default async function TeacherWordListPage({
-  userId,
-  classID,
-  wordListID,
-}: WordListPageProps) {
+export async function TeacherWordListHeader ( { classId, wordListID } : { classId: string, wordListID: string }) {
+  const {name, dueDate} = await getListNameAndDueDate(classId, wordListID);
+  return (
+    <div className="flex flex-1 items-center justify-between p-6">
+      <h1 className="text-2xl font-bold text-[#ff6b6b]">{name}</h1>
+      <div className="flex flex-col items-center justify-between gap-2">
+        {"Due Date: " + dateFormatter(dueDate!)}
+      </div>
+    </div>
+  );
+}
+export default async function TeacherWordListPage({ classID, wordListID }: WordListPageProps) {
   console.log("Rendering wordlist page for", wordListID);
   // Make an example of below code
 
-  const className = "WordsList " + wordListID;
-  const classStatus: ClassStatusType = "active";
 
   const tableData = await getData(classID, wordListID);
   return (
     <div>
-      <DataTable columns={columns} data={tableData} />
+      <TeacherWordListHeader classId={classID} wordListID={wordListID}/>
+        <DataTable columns={columns} data={tableData}/>
     </div>
   );
 }

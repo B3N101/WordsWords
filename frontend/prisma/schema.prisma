@@ -44,20 +44,26 @@ model VerificationToken {
 }
 
 model User {
-  id                    String                  @id @default(cuid())
-  name                  String?
-  email                 String                  @unique
-  emailVerified         DateTime?
-  image                 String?
-  createdAt             DateTime                @default(now())
-  updatedAt             DateTime                @updatedAt
-  role                  Role                    @default(STUDENT)
-  accounts              Account[]
-  quizzes               Quiz[]
-  sessions              Session[]
-  wordMasteries         UserWordMastery[]
+  id            String    @id @default(cuid())
+  name          String
+  email         String    @unique
+  emailVerified DateTime?
+  image         String?
+  accounts      Account[]
+  sessions      Session[]
+  // Optional for WebAuthn support
+  // Authenticator Authenticator[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  role          Role              @default(STUDENT)
+  Classes       Class[]           @relation("UserClasses")
+  wordMasteries UserWordMastery[]
+
+  quizzes Quiz[]
+
   UserWordsListProgress UserWordsListProgress[]
-  Classes               Class[]                 @relation("UserClasses")
 }
 
 model Class {

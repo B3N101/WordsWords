@@ -1,4 +1,5 @@
 import { WordAnalytics } from "@/components/analytics/wordAnalytics";
+import WordAnalyticSkeleton  from "@/components/analytics/skeleton";
 import { Suspense } from "react";
 import type { Metadata } from "next";
 
@@ -8,10 +9,11 @@ export const metadata: Metadata = {
 };
 
 export default function Page({ params }: { params: { classID: string } }) {
+  const classString = params.classID
   return (
     <div>
-      <Suspense>
-        <WordAnalytics classID={params.classID} />
+      <Suspense fallback={<WordAnalyticSkeleton/>}>
+        <WordAnalytics classID={classString}/>
       </Suspense>
     </div>
   );

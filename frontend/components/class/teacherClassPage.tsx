@@ -6,8 +6,6 @@
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
-import { isOverdue } from "@/lib/utils";
-
 import {
   Table,
   TableCell,
@@ -19,14 +17,9 @@ import {
   TableHeader,
 } from "@/components/ui/table";
 import { Card, CardContent } from "@/components/ui/card";
-import { getUserClassWordLists } from "@/prisma/queries";
+import { getClassWordLists } from "@/prisma/queries";
 import { auth } from "@/auth/auth";
-import {
-  getClassNameFromClassId,
-  getClassTeacherId,
-  getTeacherNameFromClassId,
-} from "@/lib/userSettings";
-
+import { isOverdue } from "@/lib/utils";
 function getInitials(name: string) {
   return name
     .split(" ")
@@ -48,14 +41,23 @@ interface ClassPageProps {
   className: string;
 }
 
-export default async function StudentClassPage({ classID, className }: ClassPageProps) {
+export default async function TeacherClassPage({ classID, className }: ClassPageProps) {
+  // Make an example of below code
+  const classStatus: ClassStatusType = "active";
+  const students = [
+    "John Doe",
+    "Jane Smith",
+    "Michael Johnson",
+    "Death Row Records",
+  ];
+
   // get userID
   const session = await auth();
-  const userId = session?.user?.id!;
+  const today = new Date();
 
-  const wordLists = await getUserClassWordLists(userId, classID);
+  const wordLists = await getClassWordLists(classID);
   const wordListData = wordLists.map((wordList) => {
-    const status: WordListStatusType = wordList.completed ? "completed" : (isOverdue(wordList.dueDate) ? "overdue" : "active");
+    const status: WordListStatusType = isOverdue(wordList.dueDate) ? "completed" : "active";
     return {
       name: wordList.wordsList.name,
       status: status,
@@ -65,27 +67,11 @@ export default async function StudentClassPage({ classID, className }: ClassPage
 
   const completedLists = wordListData.filter((wordList) => wordList.status === "completed");
   const activeLists = wordListData.filter((wordList) => wordList.status === "active");
-  const overdueLists = wordListData.filter((wordList) => wordList.status === "overdue");
 
   return (
     <div className="flex-1 p-6">
       <div className="flex items-center justify-between mb-6">
         <h1 className="text-3xl font-bold text-[#ff6b6b]">{className}</h1>
-      </div>
-      <div className="flex items-center justify-between mb-4">
-          <h2 className="text-xl text-[#ff6b6b]">Overdue</h2>
-      </div>
-      <div className="space-y-4 pb-10">
-            {overdueLists.map((eachList, index) => (
-            <Link
-                className="flex group items-center justify-between border-2 border-[#ff6b6b] rounded-lg p-4"
-                key={index}
-                href={"/class/" + classID + "/" + eachList.wordListID}
-            >
-                <div>{eachList.name}</div>
-                <WordListStatus status={eachList.status} />
-            </Link>
-            ))}
       </div>
       <div className="flex items-center justify-between mb-4">
           <h2 className="text-xl text-[#ff6b6b]">Completed</h2>

@@ -78,6 +78,7 @@ export const upsertQuizCompleted = async (
     data: {
       completed: completed,
       score: score,
+      completedAt: new Date(),
     },
   });
   await upsertQuizAttempts(userId, quiz.wordsListId, quiz.miniSetNumber, -1);

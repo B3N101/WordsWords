@@ -17,10 +17,12 @@ export default function SideBarStructure({
   wordLists,
   classID,
   isTeacher,
+  className
 }: {
   wordLists: UserWordsListProgressWithWordsList[];
   classID: string;
   isTeacher: boolean;
+  className: string;
 }) {
   const [isExpanded, setIsExpanded] = useState(false);
   const [isSubMenuExpanded, setIsSubMenuExpanded] = useState(false);
@@ -33,11 +35,7 @@ export default function SideBarStructure({
     >
       <div className="flex h-16 items-center justify-between border-b bg-background px-3">
         <div className="flex items-center gap-2">
-          <span
-            className={`text-lg font-semibold ${isExpanded ? "block" : "hidden"}`}
-          >
-            WordsWords
-          </span>
+          <span className={`text-lg font-semibold ${isExpanded ? "block" : "hidden"}`}>{className}</span>
         </div>
         <Button
           size="icon"
@@ -135,7 +133,7 @@ export default function SideBarStructure({
           </li>
           <li>
             <Link
-              href="#"
+              href={"/class/" + classID + "/people"}
               className={`flex items-center gap-3 rounded-md px-3 py-2 text-muted-foreground transition-colors hover:bg-accent hover:text-accent-foreground ${
                 isExpanded ? "justify-start" : "justify-center"
               }`}
