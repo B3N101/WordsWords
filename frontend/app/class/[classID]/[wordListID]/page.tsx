@@ -29,7 +29,7 @@ export async function generateMetadata({
   const listName = userWordList?.wordsList.name;
 
   return {
-    title: "MX Words Words | Word List" + listName,
+    title: "MX Words Words | " + listName,
     description: "MX Words Words Word List Page for " + listName,
   };
 }
