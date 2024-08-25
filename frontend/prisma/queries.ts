@@ -241,22 +241,6 @@ export const getQuizzesFromWordsList = cache(async (wordListID: string, userId: 
   });
   return quizzes;
 });
-export const getQuizzesFromWordsList = cache(
-  async (wordListID: string, userId: string) => {
-    const quizzes = await prisma.quiz.findMany({
-      where: {
-        wordsListId: wordListID,
-        userId: userId,
-        completed: true,
-      },
-      //TODO: Add a completed at field to quizzes
-      orderBy: {
-        createdAt: "desc",
-      },
-    });
-    return quizzes;
-  },
-);
 
 export const getLearnQuiz = cache(async (quizID: string) => {
   const quiz = await prisma.quiz.findFirst({

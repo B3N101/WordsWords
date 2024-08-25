@@ -1,6 +1,6 @@
 import { auth } from "@/auth/auth";
 import ContextPage from "@/components/quiz/learn";
-import { getQuizWords } from "@/prisma/queries";
+import { getLearnQuiz } from "@/prisma/queries";
 import { Metadata } from "next";
 
 export const metadata: Metadata = {
