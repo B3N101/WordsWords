@@ -10,6 +10,7 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { Role } from "@prisma/client";
+import { getUserNameFromId } from "@/lib/userSettings";
 
 export default async function AdminRoleRequests() {
   const requests = await getRoleRequests();
@@ -20,7 +21,7 @@ export default async function AdminRoleRequests() {
       <Table>
         <TableHeader>
           <TableRow>
-            <TableHead>User ID</TableHead>
+            <TableHead>User Name</TableHead>
             <TableHead>Requested Role</TableHead>
             <TableHead>Request Date</TableHead>
             <TableHead>Action</TableHead>
@@ -29,7 +30,7 @@ export default async function AdminRoleRequests() {
         <TableBody>
           {requests.map((request) => (
             <TableRow key={request.userId}>
-              <TableCell>{request.userId}</TableCell>
+              <TableCell>{getUserNameFromId(request.userId)}</TableCell>
               <TableCell>{request.role}</TableCell>
               <TableCell>{request.requestDate.toLocaleDateString()}</TableCell>
               <TableCell>
