@@ -13,6 +13,18 @@ export const getClass = cache(async (classId: string) => {
   return data;
 });
 
+export const getClassPeople = cache(async (classId: string) => {
+  const data = await prisma.class.findFirst({
+    where: {
+      classId: classId,
+    },
+    select: {
+      students: true,
+      teacherId: true,
+    },
+  });
+  return data;
+});
 export const getAllWordsListsAssigned = cache(async (classId: string) => {
   const data = await prisma.wordsList.findMany({
     where: {

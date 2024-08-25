@@ -129,7 +129,7 @@ export default function SideBarStructure({
           </li>
           <li>
             <Link
-              href="#"
+              href={"/class/" + classID + "/people"}
               className={`flex items-center gap-3 rounded-md px-3 py-2 text-muted-foreground transition-colors hover:bg-accent hover:text-accent-foreground ${
                 isExpanded ? "justify-start" : "justify-center"
               }`}

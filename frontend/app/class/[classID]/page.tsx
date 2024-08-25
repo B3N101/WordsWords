@@ -3,7 +3,7 @@ import { auth } from "@/auth/auth";
 import { getClass } from "@/prisma/queries";
 import { Suspense } from "react";
 import TeacherClassPage from "@/components/class/teacherClassPage";
-import ClassSkeleton from "@/components/class/skeleton";
+import { ClassSkeleton } from "@/components/class/skeleton";
 
 export default async function Page({
   params,
