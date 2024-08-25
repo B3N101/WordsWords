@@ -4,6 +4,20 @@ import { analytics } from "googleapis/build/src/apis/analytics";
 
 const prisma = new PrismaClient();
 
+export const getUserRole = cache(async (userId: string) => {
+  const data = await prisma.user.findFirst({
+    where: {
+      id: userId,
+    },
+    select:{
+      role: true
+    }
+  });
+  if (!data) {
+    throw new Error("User not found");
+  }
+  return data.role;
+});
 export const getClass = cache(async (classId: string) => {
   const data = await prisma.class.findFirst({
     where: {
