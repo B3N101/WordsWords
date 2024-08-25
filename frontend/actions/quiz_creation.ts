@@ -16,30 +16,36 @@ function pickNRandom(arr: string[], n: number) {
   }
   return result;
 }
-export const createMiniQuiz = async (wordListId: string, userId: string, classId: string, miniSetId: number, learnCompleted: boolean) => {
-    const wordList = await prisma.wordsList.findFirst({
-        where: {
-            listId: wordListId,
-        },
-        include:{
-            words: true
-        }
-    });
-    if (!wordList){
-        throw new Error("Word list not found");
-    }
-    // get the words associated with the correct miniquiz
-    const allwords = wordList.words;
-    const words = allwords.slice(miniSetId*5, (miniSetId+1)*5);
-    console.log(allwords, words);
-    if (words.length === 0){
-        return null;
-    }
-    // shuffle the words
-    const shuffledWords = words.sort(() => Math.random() - 0.5);
-    const questions = shuffledWords.map((word, index) => {
-        // get random number between 0 and 1
-        const random = Math.random();
+export const createMiniQuiz = async (
+  wordListId: string,
+  userId: string,
+  classId: string,
+  miniSetId: number,
+  learnCompleted: boolean,
+) => {
+  const wordList = await prisma.wordsList.findFirst({
+    where: {
+      listId: wordListId,
+    },
+    include: {
+      words: true,
+    },
+  });
+  if (!wordList) {
+    throw new Error("Word list not found");
+  }
+  // get the words associated with the correct miniquiz
+  const allwords = wordList.words;
+  const words = allwords.slice(miniSetId * 5, (miniSetId + 1) * 5);
+  console.log(allwords, words);
+  if (words.length === 0) {
+    return null;
+  }
+  // shuffle the words
+  const shuffledWords = words.sort(() => Math.random() - 0.5);
+  const questions = shuffledWords.map((word, index) => {
+    // get random number between 0 and 1
+    const random = Math.random();
 
     // first type of question
     if (random < 0.5) {
@@ -103,42 +109,46 @@ export const createMiniQuiz = async (wordListId: string, userId: string, classId
   return quiz;
 };
 
-export const createMasterQuiz = async (wordListId: string, userId: string, classId: string) => {
-    const wordList = await prisma.wordsList.findFirst({
-        where: {
-            listId: wordListId,
+export const createMasterQuiz = async (
+  wordListId: string,
+  userId: string,
+  classId: string,
+) => {
+  const wordList = await prisma.wordsList.findFirst({
+    where: {
+      listId: wordListId,
+    },
+    include: {
+      words: true,
+    },
+  });
+  if (!wordList) {
+    throw new Error("Word list not found");
+  }
+  const words = wordList.words;
+  // retrieve the 5 words with the lowest mastery score from other lists
+  const oldWords = await prisma.userWordMastery.findMany({
+    where: {
+      userId: userId,
+      word: {
+        listId: {
+          not: wordListId,
         },
-        include:{
-            words: true
-        }
-    });
-    if (!wordList){
-        throw new Error("Word list not found");
-    }
-    const words = wordList.words;
-    // retrieve the 5 words with the lowest mastery score from other lists
-    const oldWords = await prisma.userWordMastery.findMany({
-        where: {
-            userId: userId,
-            word: {
-                listId: {
-                    not: wordListId,
-                },
-            },
-        },
-        orderBy: {
-            masteryScore: "asc",
-        },
-        select: {
-            word: true
-        },
-        take: 5,
-    });
-    const allWords = words.concat(oldWords.flatMap((word) => word.word));
-    const allShuffledWords = allWords.sort(() => Math.random() - 0.5);
-    const questions = allShuffledWords.map((word, index) => {
-        // get random number between 0 and 1
-        const random = Math.random();
+      },
+    },
+    orderBy: {
+      masteryScore: "asc",
+    },
+    select: {
+      word: true,
+    },
+    take: 5,
+  });
+  const allWords = words.concat(oldWords.flatMap((word) => word.word));
+  const allShuffledWords = allWords.sort(() => Math.random() - 0.5);
+  const questions = allShuffledWords.map((word, index) => {
+    // get random number between 0 and 1
+    const random = Math.random();
 
     // first type of question
     if (random < 0.5) {
@@ -244,38 +254,44 @@ export const fetchQuizzes = async (
 ) => {
   let miniQuizzes = [];
 
-    for (let miniSetNumber = 0; miniSetNumber < 3; miniSetNumber++) {
-        // First look for a completed quiz, then an uncompleted quiz.
-        let latestQuiz = await prisma.quiz.findFirst({
-            where: {
-                wordsListId: wordListId,
-                userId: userId,
-                quizType: QuizType.MINI,
-                miniSetNumber: miniSetNumber,
-                completed: true,
-            },
-            orderBy: {
-                createdAt: 'desc',
-            },
-        });
+  for (let miniSetNumber = 0; miniSetNumber < 3; miniSetNumber++) {
+    // First look for a completed quiz, then an uncompleted quiz.
+    let latestQuiz = await prisma.quiz.findFirst({
+      where: {
+        wordsListId: wordListId,
+        userId: userId,
+        quizType: QuizType.MINI,
+        miniSetNumber: miniSetNumber,
+        completed: true,
+      },
+      orderBy: {
+        createdAt: "desc",
+      },
+    });
 
-        if (!latestQuiz) {
-            let latestQuiz = await prisma.quiz.findFirst({
-                where: {
-                    wordsListId: wordListId,
-                    userId: userId,
-                    quizType: QuizType.MINI,
-                    miniSetNumber: miniSetNumber,
-                },
-                orderBy: {
-                    createdAt: 'desc',
-                }
-            })
-            if (!latestQuiz){
-                console.log("No latest quiz found for miniset", miniSetNumber);
-                latestQuiz = await createMiniQuiz(wordListId, userId, classId, miniSetNumber, false);    
-            }
-        }
+    if (!latestQuiz) {
+      let latestQuiz = await prisma.quiz.findFirst({
+        where: {
+          wordsListId: wordListId,
+          userId: userId,
+          quizType: QuizType.MINI,
+          miniSetNumber: miniSetNumber,
+        },
+        orderBy: {
+          createdAt: "desc",
+        },
+      });
+      if (!latestQuiz) {
+        console.log("No latest quiz found for miniset", miniSetNumber);
+        latestQuiz = await createMiniQuiz(
+          wordListId,
+          userId,
+          classId,
+          miniSetNumber,
+          false,
+        );
+      }
+    }
 
     if (latestQuiz) {
       console.log("Found latest quiz");

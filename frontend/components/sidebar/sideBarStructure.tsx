@@ -9,7 +9,7 @@ import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { WordListSubMenu } from "./sideBarSubMenu";
 import { UserWordsListProgressWithWordsList } from "@/prisma/types";
-import { ClipboardList } from 'lucide-react'
+import { ClipboardList } from "lucide-react";
 
 import Link from "next/link";
 
@@ -110,7 +110,11 @@ export default function SideBarStructure({
                 prefetch={false}
               >
                 <ClipboardList className="h-5 w-5" />
-                <span className={`text-sm font-medium ${isExpanded ? "block" : "hidden"}`}>Assign Lists</span>
+                <span
+                  className={`text-sm font-medium ${isExpanded ? "block" : "hidden"}`}
+                >
+                  Assign Lists
+                </span>
               </Link>
             ) : (
               <Link

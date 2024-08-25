@@ -1,6 +1,12 @@
 import { auth } from "@/auth/auth";
 import ContextPage from "@/components/quiz/learn";
 import { getQuizWords } from "@/prisma/queries";
+import { Metadata } from "next";
+
+export const metadata: Metadata = {
+  title: "MX Words Words | Learn",
+  description: "MX Words Words Learn",
+};
 
 const page = async ({ params }: { params: { slug: string } }) => {
   const quizId = params.slug;

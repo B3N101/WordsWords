@@ -8,6 +8,12 @@ import {
 import { getAllWordsLists } from "@/prisma/queries";
 import { type WordsListWithWordsAndUserWordsList } from "@/prisma/types";
 import { auth } from "@/auth/auth";
+import type { Metadata } from "next";
+
+export const metadata: Metadata = {
+  title: "MX Words Words | Assign List",
+  description: "MX Words Words Assign List Page",
+};
 
 async function getData(classId: string): Promise<WordListTableType[]> {
   const today = new Date();

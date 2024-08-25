@@ -6,6 +6,13 @@ import Google from "next-auth/providers/google";
 // import { providers, getSession, csrfToken } from "next-auth/client";
 import Component from "./component";
 
+import { Metadata } from "next";
+
+export const metadata: Metadata = {
+  title: "MX Words Words | Login",
+  description: "MX Words Words Login",
+};
+
 export default async function SignInPage() {
   // if signed in, redirect to home
   const session = await auth();

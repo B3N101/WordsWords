@@ -3,19 +3,23 @@ import { auth } from "@/auth/auth";
 import { PrismaClient, QuizType } from "@prisma/client";
 
 const prisma = new PrismaClient();
-export const updateWordListProgress = async (wordListId: string, userId: string, completed: boolean) =>{
+export const updateWordListProgress = async (
+  wordListId: string,
+  userId: string,
+  completed: boolean,
+) => {
   await prisma.userWordsListProgress.update({
-    where:{
-      userWordsListProgressId:{
+    where: {
+      userWordsListProgressId: {
         userId: userId,
         wordsListListId: wordListId,
-      }
+      },
     },
-    data:{
+    data: {
       completed: completed,
-    }
+    },
   });
-}
+};
 export const upsertWordMastery = async (
   wordId: string,
   isCorrect: boolean,

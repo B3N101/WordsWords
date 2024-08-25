@@ -45,8 +45,12 @@ export async function StudentWordListHeader({
   if (!userWordList) {
     throw new Error("Wordlist not found");
   }
-  const overdue = isOverdue(userWordList.dueDate); 
-  const status: WordListStatusType = userWordList.completed ? "completed" : overdue ? "overdue" : "active";
+  const overdue = isOverdue(userWordList.dueDate);
+  const status: WordListStatusType = userWordList.completed
+    ? "completed"
+    : overdue
+      ? "overdue"
+      : "active";
 
   return (
     <div className="flex flex-1 items-center justify-between">

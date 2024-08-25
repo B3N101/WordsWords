@@ -2,6 +2,12 @@ import { auth } from "@/auth/auth";
 import QuizPage from "@/components/quiz/quiz";
 import RequestRetakePage from "@/components/quiz/retake";
 import { getQuiz } from "@/prisma/queries";
+import { Metadata } from "next";
+
+export const metadata: Metadata = {
+  title: "MX Words Words | Quiz",
+  description: "MX Words Words Quiz",
+};
 
 const page = async ({ params }: { params: { slug: string } }) => {
   const quizId = params.slug;
@@ -25,11 +31,11 @@ const page = async ({ params }: { params: { slug: string } }) => {
     quiz.userWordsListProgress.quizAttemptsRemaining[miniSet];
   return (
     <div>
-      {hasAttemptsRemaining ? 
-      <QuizPage quiz={quiz} userID={userId}/>
-      :
-      <RequestRetakePage quiz={quiz} />
-    }
+      {hasAttemptsRemaining ? (
+        <QuizPage quiz={quiz} userID={userId} />
+      ) : (
+        <RequestRetakePage quiz={quiz} />
+      )}
     </div>
   );
 };

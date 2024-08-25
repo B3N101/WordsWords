@@ -151,7 +151,6 @@ const ActionCell = ({ student }: { student: StudentInfo }) => {
 };
 
 export const columns: ColumnDef<StudentInfo>[] = [
-  
   {
     accessorKey: "name",
     header: "Name",

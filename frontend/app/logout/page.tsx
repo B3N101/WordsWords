@@ -7,7 +7,12 @@ import { Button } from "@/components/ui/button";
 import Link from "next/link";
 import { signOut } from "@/auth/auth";
 import { redirect } from "next/dist/server/api-utils";
+import { Metadata } from "next";
 
+export const metadata: Metadata = {
+  title: "MX Words Words | Logout",
+  description: "MX Words Words Logout",
+};
 export default function Component() {
   return (
     <div className="flex min-h-[100dvh] items-center justify-center bg-[#F0FFF4] dark:bg-[#00B894]">
