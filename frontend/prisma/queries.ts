@@ -1,8 +1,7 @@
 import { cache } from "react";
-import { PrismaClient, Prisma, UserWordsListProgress } from "@prisma/client";
+import { UserWordsListProgress } from "@prisma/client";
 import { analytics } from "googleapis/build/src/apis/analytics";
-
-const prisma = new PrismaClient();
+import prisma from "./prisma";
 
 export const getClass = cache(async (classId: string) => {
   const data = await prisma.class.findFirst({

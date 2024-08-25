@@ -1,7 +1,6 @@
 "use server";
-import { Class, Grade, PrismaClient, Role } from "@prisma/client";
-
-const prisma = new PrismaClient();
+import { Class, Grade, Role } from "@prisma/client";
+import prisma from "@/prisma/prisma";
 
 // Create a new class
 export async function createClass(

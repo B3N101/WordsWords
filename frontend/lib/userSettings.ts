@@ -1,7 +1,6 @@
 "use server";
-import { Class, Grade, PrismaClient, Role, User } from "@prisma/client";
-
-const prisma = new PrismaClient();
+import { Class, Grade, Role, User } from "@prisma/client";
+import prisma from "@/prisma/prisma";
 
 // USER ROLE SETTINGS
 // ____________________________________________________________________________
@@ -132,20 +131,6 @@ export async function updateUserEmail(userId: string, newEmail: string) {
 // USER CLASS SETTINGS
 // ____________________________________________________________________________
 // Get user class
-// export async function getUserClassesFromId(userId: string): Promise<Class[]> {
-//   const user = await prisma.user.findUnique({
-//     where: { id: userId },
-//     select: { Class: true },
-//   });
-
-//   if (!user) {
-//     throw new Error("User not found");
-//   }
-
-//   const classes = await prisma.class.findMany({
-//     where: { teacherId: userId },
-//   });
-// }
 export async function getUserClassesFromId(userId: string): Promise<Class[]> {
   const userWithClasses = await prisma.user.findUnique({
     where: { id: userId },
@@ -182,10 +167,6 @@ export async function updateUserClass(userId: string, newClass: Class) {
     throw new Error("User not found");
   }
 
-  // return await prisma.user.update({
-  //   where: { id: userId },
-  //   data: { Class: { connect: { classId: newClass.classId } } },
-  // });
   return await prisma.user.update({
     where: { id: userId },
     data: { Classes: { connect: { classId: newClass.classId } } },

@@ -1,6 +1,6 @@
 "use server";
-import { PrismaClient, QuizType, Question } from "@prisma/client";
-const prisma = new PrismaClient();
+import { QuizType, Question } from "@prisma/client";
+import prisma from "@/prisma/prisma";
 
 function pickNRandom(arr: string[], n: number) {
   const result = new Array(n);

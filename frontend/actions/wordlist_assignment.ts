@@ -1,8 +1,7 @@
 "use server";
 import { auth } from "@/auth/auth";
-import { PrismaClient, QuizType } from "@prisma/client";
-
-const prisma = new PrismaClient();
+import { QuizType } from "@prisma/client";
+import prisma from "@/prisma/prisma";
 
 export const updateUserListDueDate = async (
   userId: string,

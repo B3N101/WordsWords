@@ -1,8 +1,8 @@
 "use server";
 import { auth } from "@/auth/auth";
-import { PrismaClient, UserWordsListProgress } from "@prisma/client";
-// import { getUserQuizProgress } from "@/prisma/queries";
-const prisma = new PrismaClient();
+import { UserWordsListProgress } from "@prisma/client";
+import prisma from "@/prisma/prisma";
+
 export const upsertLearnCompleted = async (
   quizId: string,
   completed: boolean,
@@ -17,6 +17,7 @@ export const upsertLearnCompleted = async (
   });
   return;
 };
+
 export const upsertQuestionCompleted = async (
   questionId: string,
   completed: boolean,

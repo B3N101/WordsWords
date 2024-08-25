@@ -1,8 +1,8 @@
 "use server";
 import { auth } from "@/auth/auth";
-import { PrismaClient, QuizType } from "@prisma/client";
+import { QuizType } from "@prisma/client";
+import prisma from "@/prisma/prisma";
 
-const prisma = new PrismaClient();
 export const updateWordListProgress = async (
   wordListId: string,
   userId: string,

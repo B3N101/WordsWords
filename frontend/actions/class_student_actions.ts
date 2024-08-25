@@ -1,7 +1,7 @@
 "use server";
 
-import { Class, PrismaClient } from "@prisma/client";
-const prisma = new PrismaClient();
+import { Class } from "@prisma/client";
+import prisma from "@/prisma/prisma";
 
 export async function addStudentToClass(
   classId: string,
