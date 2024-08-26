@@ -17,6 +17,9 @@ export async function createClass(
       SemesterStart: semesterStart,
       SemesterEnd: semesterEnd,
       gradeLevel: grade,
+      students: {
+        connect: {id: teacherId},
+      }
     },
   });
 }
