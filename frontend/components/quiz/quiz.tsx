@@ -97,7 +97,7 @@ export default function QuizPage({ quiz, userID }: Props) {
       if (isCurrentCorrect) {
         setScore(score + 1);
       }
-      upsertQuestionCompleted(
+      await upsertQuestionCompleted(
         questions[currentIndex].questionId,
         true,
         answeredCorrectly,
