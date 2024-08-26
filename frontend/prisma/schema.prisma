@@ -70,6 +70,7 @@ model Class {
   classId                 String                  @id @default(cuid())
   className               String
   teacherId               String
+  gradeLevel              Grade
   SemesterStart           DateTime
   SemesterEnd             DateTime
   userWordsListProgresses UserWordsListProgress[]
