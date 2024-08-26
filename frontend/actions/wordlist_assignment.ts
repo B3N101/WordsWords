@@ -82,6 +82,8 @@ export const createUserWordsListForClass = async (
       },
       update: {
         dueDate: dueDate,
+        wordsList: { connect: { listId: wordsListId } },
+        class: { connect: { classId: classId } },
       },
       create: {
         user: { connect: { id: student.id } },
