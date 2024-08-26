@@ -1,11 +1,12 @@
 import { DataTable } from "@/components/wordList/dataTables/assignListTable";
 import { WordsList } from "@prisma/client";
 import { columns, WordListTableType, WordsListStatus } from "@/components/wordList/dataTables/assignListColumns";
-import { getAllWordsListsAssigned, getAllWordListsNotAssigned } from "@/prisma/queries";
+import { getAllWordsListsAssigned, getAllWordListsNotAssigned, getUserRole } from "@/prisma/queries";
 import { isOverdue } from "@/lib/utils";
 import { type WordsListWithWordsAndUserWordsList } from "@/prisma/types";
 import { auth } from "@/auth/auth";
 import type { Metadata } from "next";
+import { get } from "http";
 
 export const metadata: Metadata = {
   title: "MX Words Words | Assign List",
@@ -49,9 +50,12 @@ export default async function Page({
   const data = await getData(classString);
   const session = await auth();
   const userId = session?.user?.id;
-
   if (!userId) {
     throw new Error("User not found");
+  }
+  const role = await getUserRole(userId);
+  if (role === "STUDENT") {
+    throw new Error("User not authorized");
   }
   return (
     <div>
