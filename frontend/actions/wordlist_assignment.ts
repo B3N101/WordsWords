@@ -82,12 +82,68 @@ export const createUserWordsListForClass = async (
       },
       update: {
         dueDate: dueDate,
+        wordsList: { connect: { listId: wordsListId } },
+        class: { connect: { classId: classId } },
       },
       create: {
         user: { connect: { id: student.id } },
         wordsList: { connect: { listId: wordsListId } },
         class: { connect: { classId: classId } },
         dueDate: dueDate,
+      },
+    });
+  }
+};
+
+
+export async function connectClassActiveWordLists ( userID: string, classID: string) {
+  const currClass = await prisma.class.findFirst({
+    where: {
+      classId: classID,
+    },
+    select:{
+      students: true,
+      teacherId: true,
+    }
+  });
+  if(!currClass){
+    throw new Error("Class not found");
+  }
+  if(currClass.students.length === 0){
+    return [];
+  }
+  const activeLists = await prisma.userWordsListProgress.findMany({
+    where: { 
+      userId: currClass.students[0].id, 
+      classId: classID,
+      dueDate:{
+        gte: new Date()
+      }
+    },
+    select: {
+      wordsListListId: true,
+      dueDate: true,
+     },
+    orderBy: { dueDate: 'desc' }
+  });
+  for (const list of activeLists){
+    await prisma.userWordsListProgress.upsert({
+      where: {
+        userWordsListProgressId: {
+          userId: userID,
+          wordsListListId: list.wordsListListId,
+        },
+      },
+      create: {
+        userId: userID,
+        wordsListListId: list.wordsListListId,
+        classId: classID,
+        dueDate: list.dueDate,
+      },
+      update: {
+        dueDate: list.dueDate,
+        wordsList: { connect: { listId: list.wordsListListId } },
+        class: { connect: { classId: classID } },
       },
     });
   }

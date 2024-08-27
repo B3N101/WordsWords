@@ -94,6 +94,7 @@ async function seedClass(userID: string) {
     data: {
       className: "Testing Class",
       teacherId: "TEACHERID",
+      gradeLevel: Grade.NINE,
       SemesterStart: new Date(),
       SemesterEnd: new Date(),
       students: {
@@ -298,7 +299,7 @@ async function seedAll(userID: string) {
   // await seedQuizzes(userID);
 }
 
-seedAll("3cf1eeea-60f4-4690-b523-99943cdd0c9a").then(async () => {
+seedAll("f23447e0-738b-431f-aefe-b286f027f25e").then(async () => {
   await prisma.$disconnect();
 });
 // // seedWords().then(async () => {

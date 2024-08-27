@@ -11,6 +11,7 @@ import {
   DropdownMenuSeparator,
 } from "@/components/ui/dropdown-menu";
 import { auth } from "@/auth/auth";
+import { getUserRole } from "@/prisma/queries";
 
 function getInitials(name: string) {
   const names = name.split(" ");
@@ -24,6 +25,7 @@ export default async function Navbar() {
   const session = await auth();
   const imageURL: string = session?.user?.image! || "";
   const name: string = session?.user?.name! || "";
+  const role = await getUserRole(session?.user?.id!);
 
   return (
     <header className="flex items-center justify-between px-4 py-2 bg-white border-b">
@@ -60,6 +62,9 @@ export default async function Navbar() {
           <DropdownMenuContent align="end">
             <DropdownMenuItem>
               <Link href={"/settings"}>Settings</Link>
+            </DropdownMenuItem>
+            <DropdownMenuItem>
+              <Link href={"/classUtils"}>{role === "STUDENT" ? "Join Class" : "Create Class"}</Link>
             </DropdownMenuItem>
             <DropdownMenuSeparator />
             <DropdownMenuItem>

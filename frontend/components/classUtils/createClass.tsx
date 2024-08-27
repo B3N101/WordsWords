@@ -8,6 +8,14 @@ import { Input } from "@/components/ui/input";
 import { createClass } from "@/lib/teacherSettings";
 import { useToast } from "@/components/ui/use-toast";
 import { ToastAction } from "@/components/ui/toast";
+import { Grade } from "@prisma/client";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 
 export default function CreateClassCard({ teacherId }: { teacherId: string }) {
   const { toast } = useToast();
@@ -15,6 +23,7 @@ export default function CreateClassCard({ teacherId }: { teacherId: string }) {
     className: "",
     semesterStart: "",
     semesterEnd: "",
+    grade: "",
   });
   const [isLoading, setIsLoading] = useState(false);
   const [createdClassId, setCreatedClassId] = useState<string | null>(null);
@@ -24,16 +33,17 @@ export default function CreateClassCard({ teacherId }: { teacherId: string }) {
     setIsLoading(true);
 
     try {
-      const { className, semesterStart, semesterEnd } = newClass;
+      const { className, semesterStart, semesterEnd, grade } = newClass;
 
       const createdClass = await createClass(
         className,
         teacherId,
         new Date(semesterStart),
         new Date(semesterEnd),
+        grade as Grade,
       );
 
-      setNewClass({ className: "", semesterStart: "", semesterEnd: "" });
+      setNewClass({ className: "", semesterStart: "", semesterEnd: "", grade: "" });
       setCreatedClassId(createdClass.classId);
       toast({
         description:
@@ -100,6 +110,24 @@ export default function CreateClassCard({ teacherId }: { teacherId: string }) {
                     required
                   />
                 </div>
+              </div>
+              <div className="grid gap-2">
+                <label htmlFor="grade">Grade</label>
+                <Select
+                  name="grade"
+                  onValueChange={(value) => setNewClass({ ...newClass, grade: value as Grade })}
+                  defaultValue={Grade.NINE}
+                  required
+                >
+                  <SelectTrigger className="w-full">
+                    <SelectValue placeholder="Select a grade" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value={Grade.NINE}>Ninth</SelectItem>
+                    <SelectItem value={Grade.TEN}>Tenth</SelectItem>
+                    <SelectItem value={Grade.ELEVEN}>Eleventh</SelectItem>
+                  </SelectContent>
+                </Select>
               </div>
               <Button
                 type="submit"

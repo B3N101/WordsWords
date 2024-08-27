@@ -55,10 +55,14 @@ export type StudentInfo = {
 }
 
 function StudentQuizDisplay({studentName, quizzes}: {studentName: string, quizzes: Quiz[]}) {
+  
     if(!quizzes || quizzes.length === 0) {
         return <div>Not started</div>
     }
-    const completedQuizzes = quizzes.filter(quiz => quiz.completed)
+    const completedQuizzes = quizzes.filter(quiz => quiz.completed);
+    if (completedQuizzes.length === 0 ){
+        return <div>Not started</div>
+    }
     const attempts = completedQuizzes.length
     const lastAttempt = completedQuizzes[completedQuizzes.length - 1]
     const bestAttempt = completedQuizzes.reduce((best, current) => {
