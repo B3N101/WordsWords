@@ -8,6 +8,7 @@ export async function createClass(
   teacherId: string,
   semesterStart: Date,
   semesterEnd: Date,
+  grade: Grade,
 ): Promise<Class> {
   return await prisma.class.create({
     data: {
@@ -15,6 +16,10 @@ export async function createClass(
       teacherId: teacherId,
       SemesterStart: semesterStart,
       SemesterEnd: semesterEnd,
+      gradeLevel: grade,
+      students: {
+        connect: {id: teacherId},
+      }
     },
   });
 }

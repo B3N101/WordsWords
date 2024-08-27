@@ -3,44 +3,33 @@
  * @see https://v0.dev/t/LQBMKWfv1iW
  * Documentation: https://v0.dev/docs#integrating-generated-code-into-your-nextjs-app
  */
-import Link from "next/link";
-import { Button } from "@/components/ui/button";
-import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import {
-  StudentInfo,
+  FreshmanStudentInfo,
   WordsListStatus,
-  columns,
+  freshmenColumns,
 } from "../dataTables/ninthGradeTeacherColumns";
-import { DataTable } from "../dataTables/ninthGradeTeacherTable";
+import { 
+  TenElevenStudentInfo, 
+  tenElevenColumns 
+} from "../dataTables/tenElevenTeacherColumns";
 
+import { TeacherDataTable } from "../dataTables/teacherTable";
 import { getAllUserWordsListProgresses, getListNameAndDueDate } from "@/prisma/queries";
 
-import { Card, CardContent } from "@/components/ui/card";
-import { AttemptsTable } from "../studentPage/attemptsTable";
-import {
-  createMasterQuiz,
-  createMiniQuiz,
-  fetchQuizzes,
-  fetchBackupMasterQuiz,
-  fetchBackupMiniQuiz,
-} from "@/actions/quiz_creation";
-import { Quiz } from "@prisma/client";
+import { Quiz, Grade } from "@prisma/client";
 import { isOverdue, dateFormatter } from "@/lib/utils";
 
-
-type ClassStatusType = "active" | "upcoming" | "completed";
-type QuizStatusType = "completed" | "open" | "locked";
-type LearnStatusType = "completed" | "open" | "locked";
 
 type WordListPageProps = {
   classID: string
   wordListID: string;
+  grade: Grade;
 };
 
-async function getData(
+async function getFreshmenData(
   classId: string,
   wordListId: string,
-): Promise<StudentInfo[]> {
+): Promise<FreshmanStudentInfo[]> {
   const userWordsLists = await getAllUserWordsListProgresses(
     classId,
     wordListId,
@@ -77,6 +66,50 @@ async function getData(
   return tabledata;
 }
 
+async function getTenElevenData(
+  classId: string,
+  wordListId: string,
+): Promise<TenElevenStudentInfo[]> {
+  const userWordsLists = await getAllUserWordsListProgresses(
+    classId,
+    wordListId,
+  );
+  console.log("UserWordsLists", userWordsLists);
+  const tabledata = userWordsLists.map((listProgress) => {
+    const allQuiz1Data: Quiz[] = listProgress.quizzes.filter(
+      (quiz) => quiz.miniSetNumber === 0,
+    );
+    const allQuiz2Data: Quiz[] = listProgress.quizzes.filter(
+      (quiz) => quiz.miniSetNumber === 1,
+    );
+    const allQuiz3Data: Quiz[] = listProgress.quizzes.filter(
+      (quiz) => quiz.miniSetNumber === 2,
+    );
+    const allMasterQuizData: Quiz[] = listProgress.quizzes.filter(
+      (quiz) => quiz.miniSetNumber === -1,
+    );
+
+    const name = listProgress.user.name ? listProgress.user.name : "Unknown";
+    const overDue = isOverdue(listProgress.dueDate);
+    const status: WordsListStatus = listProgress.completed
+      ? "Completed"
+      : overDue
+        ? "Overdue"
+        : "Active";
+    return {
+      id: listProgress.userId,
+      name: name,
+      quiz1: allQuiz1Data,
+      quiz2: allQuiz2Data,
+      quiz3: allQuiz3Data,
+      masterQuiz: allMasterQuizData,
+      studentListProgress: listProgress,
+      status: status,
+    };
+  });
+  return tabledata;
+}
+
 export async function TeacherWordListHeader ( { classId, wordListID } : { classId: string, wordListID: string }) {
   const {name, dueDate} = await getListNameAndDueDate(classId, wordListID);
   return (
@@ -88,16 +121,26 @@ export async function TeacherWordListHeader ( { classId, wordListID } : { classI
     </div>
   );
 }
-export default async function TeacherWordListPage({ classID, wordListID }: WordListPageProps) {
+export default async function TeacherWordListPage({ classID, wordListID, grade }: WordListPageProps) {
   console.log("Rendering wordlist page for", wordListID);
   // Make an example of below code
 
-
-  const tableData = await getData(classID, wordListID);
-  return (
-    <div>
-      <TeacherWordListHeader classId={classID} wordListID={wordListID}/>
-        <DataTable columns={columns} data={tableData}/>
-    </div>
-  );
+  if (grade === Grade.NINE){
+    const tableData = await getFreshmenData(classID, wordListID);
+    return (
+      <div>
+        <TeacherWordListHeader classId={classID} wordListID={wordListID}/>
+        <TeacherDataTable columns={freshmenColumns} data={tableData}/>
+      </div>
+    );
+  }
+  else{
+    const tableData = await getTenElevenData(classID, wordListID);
+    return (
+      <div>
+        <TeacherWordListHeader classId={classID} wordListID={wordListID}/>
+        <TeacherDataTable columns={tenElevenColumns} data={tableData}/>
+      </div>
+    );
+  }
 }

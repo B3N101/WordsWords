@@ -1,7 +1,7 @@
 "use client";
 
 import { ColumnDef } from "@tanstack/react-table";
-import { Word } from "@prisma/client";
+import { Word, Grade } from "@prisma/client";
 import { WordsListWithWordsAndUserWordsList } from "@/prisma/types";
 import { deleteUserWordsListForClass } from "@/actions/wordlist_assignment";
 import { Link, MoreHorizontal } from "lucide-react";
@@ -27,6 +27,7 @@ import {
 
 import { Checkbox } from "@/components/ui/checkbox";
 import { toast } from "@/components/ui/use-toast";
+import { Badge } from "antd";
 
 // This type is used to define the shape of our data.
 // You can use a Zod schema here if you want.
@@ -35,6 +36,7 @@ export type WordsListStatus = "Unassigned" | "Completed" | "Active";
 export type WordListTableType = {
   id: string;
   status: WordsListStatus;
+  grade: Grade;
   name: string;
   words: Word[];
   classId: string;
@@ -125,6 +127,7 @@ const ActionCell = ({ wordslist }: { wordslist: WordListTableType }) => {
                     title: "Success!",
                     description: "Wordslist reset",
                   });
+                  window.location.reload();
                 }}
               >
                 {isDeleting ? "Resetting ..." : "Reset"}
@@ -171,6 +174,14 @@ export const columns: ColumnDef<WordListTableType>[] = [
     header: () => <div className="font-bold text-lg">Name</div>,
   },
   {
+    accessorKey: "grade",
+    header: () => <div className="font-bold text-lg">Grade</div>,
+    cell: ( {row } ) => {
+      const grade = row.original.words[0].gradeLevel;
+      return <div>{grade}</div>;
+    }
+  },
+  {
     id: "actions",
     header: () => <div className="font-bold text-lg">Actions</div>,
     cell: ({ row }) => <ActionCell wordslist={row.original} />,
@@ -180,21 +191,22 @@ export const columns: ColumnDef<WordListTableType>[] = [
 function ListStatusDisplay({ status }: { status: WordsListStatus }) {
   if (status === "Completed") {
     return (
-      <div className="bg-[#e6f7f2] text-[#1abc9c] font-medium text-right w-min">
-        Completed
-      </div>
+      <Badge color="green" text="Completed"></Badge>
     );
   } else if (status === "Active") {
     return (
-      <div className="bg-[#f2f7fe] text-[#3498db] font-medium text-right w-min">
-        Active
-      </div>
+      <Badge color="blue" text="Active" status="processing"></Badge>
+      // <div className="bg-[#f2f7fe] text-[#3498db] font-medium text-right w-min">
+      //   Active
+      // </div>
     );
   } else {
     return (
-      <div className="bg-[#fafafa] text-[#6b6b6b] font-medium text-right w-min">
-        Unassigned
-      </div>
+      <Badge text="Unassigned" status="default"></Badge>
+
+      // <div className="bg-[#fafafa] text-[#6b6b6b] font-medium text-right w-min">
+      //   Unassigned
+      // </div>
     );
   }
 }

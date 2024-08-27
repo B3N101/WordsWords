@@ -44,11 +44,12 @@ import { Badge } from "antd";
 // You can use a Zod schema here if you want.
 export type WordsListStatus = "Unassigned" | "Completed" | "Active" | "Overdue"
 
-export type FreshmanStudentInfo = {
+export type TenElevenStudentInfo = {
   id: string
   name: string
   quiz1: Quiz[]
   quiz2: Quiz[]
+  quiz3: Quiz[]
   masterQuiz: Quiz[]
   studentListProgress: UserWordsListProgress
   status: WordsListStatus
@@ -128,10 +129,12 @@ function RetakeForm( { studentListProgress, quizRetakes, setQuizRetakes }: { stu
   const [isLoading, setIsLoading] = useState(false);
   const [quiz1Retakes, setQuiz1Retakes] = useState<number>(0);
   const [quiz2Retakes, setQuiz2Retakes] = useState<number>(0);
+  const [quiz3Retakes, setQuiz3Retakes] = useState<number>(0);
   const [masterQuizRetakes, setMasterQuizRetakes] = useState<number>(0);
 
   const [attemptsRemaining1, setAttemptsRemaining1] = useState<number>(quizRetakes[0]);
   const [attemptsRemaining2, setAttemptsRemaining2] = useState<number>(quizRetakes[1]);
+  const [attemptsRemaining3, setAttemptsRemaining3] = useState<number>(quizRetakes[2]);
   const [attemptsRemainingMastery, setAttemptsRemainingMastery] = useState<number>(quizRetakes[3]);
 
   const handleFormSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
@@ -139,20 +142,22 @@ function RetakeForm( { studentListProgress, quizRetakes, setQuizRetakes }: { stu
     setIsLoading(true);
 
     try {
-      await upsertRetakesGranted(studentListProgress, [quiz1Retakes, quiz2Retakes, 0, masterQuizRetakes]);
+      await upsertRetakesGranted(studentListProgress, [quiz1Retakes, quiz2Retakes, quiz3Retakes, masterQuizRetakes]);
     } catch (error) {
       console.error(error);
     }
     setIsLoading(false);
-    const newAttemptsRemaining = [attemptsRemaining1+quiz1Retakes, attemptsRemaining2+quiz2Retakes, 0, attemptsRemainingMastery+masterQuizRetakes];
+    const newAttemptsRemaining = [attemptsRemaining1+quiz1Retakes, attemptsRemaining2+quiz2Retakes, attemptsRemaining3+quiz3Retakes, attemptsRemainingMastery+masterQuizRetakes];
     setQuizRetakes(newAttemptsRemaining);
 
     setAttemptsRemaining1(attemptsRemaining1 + quiz1Retakes);
     setAttemptsRemaining2(attemptsRemaining2 + quiz2Retakes);
+    setAttemptsRemaining3(attemptsRemaining3 + quiz3Retakes);
     setAttemptsRemainingMastery(attemptsRemainingMastery + masterQuizRetakes);
 
     setQuiz1Retakes(0);
     setQuiz2Retakes(0);
+    setQuiz3Retakes(0);
     setMasterQuizRetakes(0);
   }
 
@@ -166,6 +171,7 @@ function RetakeForm( { studentListProgress, quizRetakes, setQuizRetakes }: { stu
                 <TableRow>
                   <TableHead>Quiz 1</TableHead>
                   <TableHead>Quiz 2</TableHead>
+                  <TableHead>Quiz 3</TableHead>
                   <TableHead>Master Quiz</TableHead>
                 </TableRow>
               </TableHeader>
@@ -173,6 +179,7 @@ function RetakeForm( { studentListProgress, quizRetakes, setQuizRetakes }: { stu
                 <TableRow>
                   <TableCell>{attemptsRemaining1}</TableCell>
                   <TableCell>{attemptsRemaining2}</TableCell>
+                  <TableCell>{attemptsRemaining3}</TableCell>
                   <TableCell>{attemptsRemainingMastery}</TableCell>
                 </TableRow>
               </TableBody>
@@ -189,6 +196,8 @@ function RetakeForm( { studentListProgress, quizRetakes, setQuizRetakes }: { stu
                     return <div key={index}>Quiz 1</div>
                   } else if (index === 1) {
                     return <div key={index}>Quiz 2</div>
+                  } else if (index === 2) {
+                    return <div key={index}>Quiz 3</div>
                   } else if (index === 3) {
                     return <div key={index}>Master Quiz</div>
                   }
@@ -225,6 +234,16 @@ function RetakeForm( { studentListProgress, quizRetakes, setQuizRetakes }: { stu
               }
               required
             />
+            <Label htmlFor="quiz3">Quiz 3</Label>
+            <Input type="number"
+              id="quiz3"
+              value={quiz3Retakes}
+              defaultValue="0"
+              onChange={(e) =>
+                setQuiz3Retakes(Number(e.target.value))
+              }
+              required
+            />
             <Label htmlFor="masterQuiz">Master Quiz</Label>
             <Input type="number"
               id="masterQuiz"
@@ -244,7 +263,7 @@ function RetakeForm( { studentListProgress, quizRetakes, setQuizRetakes }: { stu
   )
 }
 
-function ActionCell({ row }: { row: Row<FreshmanStudentInfo> }) {
+function ActionCell({ row }: { row: Row<TenElevenStudentInfo> }) {
   const studentListProgress = row.original.studentListProgress;
   const retakesRequested = studentListProgress.retakesRequested;
 
@@ -289,7 +308,7 @@ function ActionCell({ row }: { row: Row<FreshmanStudentInfo> }) {
       </DropdownMenu>
   )
 }
-export const freshmenColumns: ColumnDef<FreshmanStudentInfo>[] = [
+export const tenElevenColumns: ColumnDef<TenElevenStudentInfo>[] = [
   {
     accessorKey: "name",
     header: () => <div className="font-bold text-lg">Student</div>,
@@ -334,6 +353,15 @@ export const freshmenColumns: ColumnDef<FreshmanStudentInfo>[] = [
     },
   },
   {
+    accessorKey: "quiz3",
+    header: () => <div className="font-bold text-lg">Quiz 3</div>,
+    cell: ({ row }) => {
+      const quizzes: Quiz[] = row.getValue("quiz3");
+      const name: string = row.getValue("name");
+      return <StudentQuizDisplay studentName={name} quizzes={quizzes}/>
+    },
+  },
+  {
     accessorKey: "masterQuiz",
     header: () => <div className="font-bold text-lg">Master Quiz</div>,
     cell: ({ row }) => {
@@ -351,25 +379,3 @@ export const freshmenColumns: ColumnDef<FreshmanStudentInfo>[] = [
     },
   },
 ]
-
-function ListStatusDisplay({ status }: { status: WordsListStatus }) {
-  if (status === "Completed") {
-    return (
-      <div className="bg-[#e6f7f2] text-[#1abc9c] font-medium text-right w-min">
-        Completed
-      </div>
-    );
-  } else if (status === "Active") {
-    return (
-      <div className="bg-[#f2f7fe] text-[#3498db] font-medium text-right w-min">
-        Active
-      </div>
-    );
-  } else {
-    return (
-      <div className="bg-[#f2f7fe] text-[#db3434] font-medium text-right w-min">
-         Overdue
-      </div>
-    );
-  }
-}

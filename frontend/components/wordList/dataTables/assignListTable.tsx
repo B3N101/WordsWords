@@ -31,6 +31,10 @@ import {
   WordsListStatus,
 } from "@/components/wordList/dataTables/assignListColumns";
 
+import {
+  Grade
+} from "@prisma/client";
+
 interface DataTableProps<TData, TValue> {
   columns: ColumnDef<TData, TValue>[];
   initial_data: TData[];
@@ -93,6 +97,21 @@ export function DataTable<TData, TValue>({
             <option value="Active">Active</option>
             <option value="Completed">Completed</option>
             <option value="Unassigned">Unassigned</option>
+          </select>
+          <Label>Filter by Grade: </Label>
+          <select
+            value={
+              (table.getColumn("grade")?.getFilterValue() as string) ?? ""
+            }
+            onChange={(event) =>
+              table.getColumn("grade")?.setFilterValue(event.target.value)
+            }
+            className="max-w-sm bg-tan outline-black"
+          >
+            <option value="">All</option>
+            <option value={Grade.NINE}>Ninth</option>
+            <option value={Grade.TEN}>Tenth</option>
+            <option value={Grade.ELEVEN}>Eleventh</option>
           </select>
         </div>
       </div>

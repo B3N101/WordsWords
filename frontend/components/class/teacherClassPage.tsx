@@ -7,19 +7,19 @@ import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import {
-  Table,
-  TableCell,
-  TableBody,
-  TableHead,
-  TableRow,
-  TableFooter,
-  TableCaption,
-  TableHeader,
-} from "@/components/ui/table";
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
+
 import { Card, CardContent } from "@/components/ui/card";
 import { getClassWordLists } from "@/prisma/queries";
 import { auth } from "@/auth/auth";
 import { isOverdue } from "@/lib/utils";
+import { ClassSkeleton } from "./skeleton";
 function getInitials(name: string) {
   return name
     .split(" ")
@@ -41,23 +41,15 @@ interface ClassPageProps {
   className: string;
 }
 
-export default async function TeacherClassPage({ classID, className }: ClassPageProps) {
-  // Make an example of below code
-  const classStatus: ClassStatusType = "active";
-  const students = [
-    "John Doe",
-    "Jane Smith",
-    "Michael Johnson",
-    "Death Row Records",
-  ];
-
-  // get userID
-  const session = await auth();
-  const today = new Date();
-
+export default async function TeacherClassPage({
+  classID,
+  className,
+}: ClassPageProps) {
   const wordLists = await getClassWordLists(classID);
   const wordListData = wordLists.map((wordList) => {
-    const status: WordListStatusType = isOverdue(wordList.dueDate) ? "completed" : "active";
+    const status: WordListStatusType = isOverdue(wordList.dueDate)
+      ? "completed"
+      : "active";
     return {
       name: wordList.wordsList.name,
       status: status,
@@ -65,44 +57,74 @@ export default async function TeacherClassPage({ classID, className }: ClassPage
     };
   });
 
-  const completedLists = wordListData.filter((wordList) => wordList.status === "completed");
-  const activeLists = wordListData.filter((wordList) => wordList.status === "active");
+  const completedLists = wordListData.filter(
+    (wordList) => wordList.status === "completed",
+  );
+  const activeLists = wordListData.filter(
+    (wordList) => wordList.status === "active",
+  );
 
   return (
-    <div className="flex-1 p-6">
-      <div className="flex items-center justify-between mb-6">
+    <div className="flex-1 p-6 gap-y-5">
+      <div className="flex items-center justify-between m-6">
         <h1 className="text-3xl font-bold text-[#ff6b6b]">{className}</h1>
+        <Dialog>
+          <DialogTrigger asChild>
+            <Button variant="default">View Class Code</Button>
+          </DialogTrigger>
+          <DialogContent>
+            <DialogDescription>
+              View the class code to share with students
+            </DialogDescription>
+            <DialogHeader>
+              <DialogTitle>
+                <div className="text-center ">Class Code</div>
+              </DialogTitle>
+            </DialogHeader>
+            <div className="text-center">
+              <p>Class Code: {classID}</p>
+            </div>
+          </DialogContent>
+        </Dialog>
       </div>
-      <div className="flex items-center justify-between mb-4">
-          <h2 className="text-xl text-[#ff6b6b]">Completed</h2>
-      </div>
-      <div className="space-y-4 pb-10">
+      <Card className="bg-white rounded-lg shadow-md my-10">
+        <CardContent>
+          <div className="flex items-center justify-between my-4">
+            <h2 className="text-xl text-[#ff6b6b]">Completed</h2>
+          </div>
+          <div className="space-y-4 pb-10">
             {completedLists.map((eachList, index) => (
-            <Link
+              <Link
                 className="flex group items-center justify-between border-2 border-[#ff6b6b] rounded-lg p-4"
                 key={index}
                 href={"/class/" + classID + "/" + eachList.wordListID}
-            >
+              >
                 <div>{eachList.name}</div>
                 <WordListStatus status={eachList.status} />
-            </Link>
+              </Link>
             ))}
-      </div>      
-      <div className="flex items-center justify-between mb-4">
-          <h2 className="text-xl text-[#ff6b6b]">Active</h2>
-      </div>
-      <div className="space-y-4 pb-10">
+          </div>
+        </CardContent>
+      </Card>
+      <Card className="bg-white rounded-lg shadow-md my-10">
+        <CardContent>
+          <div className="flex items-center justify-between my-4">
+            <h2 className="text-xl text-[#ff6b6b]">Active</h2>
+          </div>
+          <div className="space-y-4 pb-10">
             {activeLists.map((eachList, index) => (
-            <Link
+              <Link
                 className="flex group items-center justify-between border-2 border-[#ff6b6b] rounded-lg p-4"
                 key={index}
                 href={"/class/" + classID + "/" + eachList.wordListID}
-            >
+              >
                 <div>{eachList.name}</div>
                 <WordListStatus status={eachList.status} />
-            </Link>
+              </Link>
             ))}
-      </div>
+          </div>
+        </CardContent>
+      </Card>
     </div>
   );
 }

@@ -57,7 +57,7 @@ export default async function Page({
           thisClass?.teacherId === userId ?
           (
           <Suspense fallback={<TeacherDataTableSkeleton/>}>
-            <TeacherWordListPage classID={classString} wordListID={wordListString}/>
+            <TeacherWordListPage classID={classString} wordListID={wordListString} grade={thisClass.gradeLevel}/>
           </Suspense>
           )
           :
