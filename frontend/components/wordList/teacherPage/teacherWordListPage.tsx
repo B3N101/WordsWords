@@ -34,8 +34,9 @@ async function getFreshmenData(
     classId,
     wordListId,
   );
-  console.log("UserWordsLists", userWordsLists);
-  const tabledata = userWordsLists.map((listProgress) => {
+  const studentWordsLists = userWordsLists.filter(wordList => wordList.user.role === "STUDENT");
+
+  const tabledata = studentWordsLists.map((listProgress) => {
     const allQuiz1Data: Quiz[] = listProgress.quizzes.filter(
       (quiz) => quiz.miniSetNumber === 0,
     );
@@ -74,8 +75,9 @@ async function getTenElevenData(
     classId,
     wordListId,
   );
-  console.log("UserWordsLists", userWordsLists);
-  const tabledata = userWordsLists.map((listProgress) => {
+  const studentWordsLists = userWordsLists.filter(wordList => wordList.user.role === "STUDENT");
+
+  const tabledata = studentWordsLists.map((listProgress) => {
     const allQuiz1Data: Quiz[] = listProgress.quizzes.filter(
       (quiz) => quiz.miniSetNumber === 0,
     );
