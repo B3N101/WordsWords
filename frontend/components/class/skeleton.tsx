@@ -6,12 +6,11 @@ export function ClassSkeleton({ numberOfCards }: { numberOfCards: number }) {
   const numberOfRows = 5;
 
   return (
-    <div className="container mx-auto p-4 space-y-4">
+    <div className="flex-1 p-6 gap-y-5">
       {[...Array(numberOfCards)].map((_, cardIndex) => (
         <Card className="bg-white rounded-lg shadow-md my-10 p-6" key={cardIndex}>
           <CardContent>
-            <Skeleton className="h-4 w-full" />
-            <Skeleton className="h-4 w-5/6" />
+            <Skeleton className="h-20 w-full" />
           </CardContent>
         </Card>
       ))}

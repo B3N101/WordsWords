@@ -19,6 +19,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { getClassWordLists } from "@/prisma/queries";
 import { auth } from "@/auth/auth";
 import { isOverdue } from "@/lib/utils";
+import { ClassSkeleton } from "./skeleton";
 function getInitials(name: string) {
   return name
     .split(" ")
