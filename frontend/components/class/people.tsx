@@ -32,7 +32,7 @@ export async function PeopleBoard( { classID }: { classID: string } ) {
                     <div key={index} className="flex items-center space-x-4">
                       <Avatar>
                         <AvatarImage src={teacher.image ? teacher.image : ""} />
-                        <AvatarFallback>{getInitials(teacher.name)}</AvatarFallback>
+                        <AvatarFallback>{getInitials(teacher.name ? teacher.name : "")}</AvatarFallback>
                       </Avatar>
                       <div>
                         <p className="text-sm font-medium leading-none">{teacher.name}</p>
@@ -54,7 +54,7 @@ export async function PeopleBoard( { classID }: { classID: string } ) {
                       <div key={index} className="flex items-center space-x-4">
                         <Avatar>
                           <AvatarImage src={student.image ? student.image : ""} />
-                          <AvatarFallback>{getInitials(student.name)}</AvatarFallback>
+                          <AvatarFallback>{getInitials(student.name ? student.name : "")}</AvatarFallback>
                         </Avatar>
                         <div className="flex-1">
                           <p className="text-sm font-medium leading-none">{student.name}</p>

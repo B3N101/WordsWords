@@ -16,7 +16,7 @@ export default async function Page() {
     return (
         <div className="m-auto items-center w-3/4 justify-center">
             {
-                userRole === "TEACHER" ?
+                userRole === "TEACHER" || userRole === "ADMIN" ?
                 <div>
                     <CreateClassCard teacherId={userId}/>
                 </div>
