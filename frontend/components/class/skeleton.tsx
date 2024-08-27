@@ -1,28 +1,27 @@
-import { Skeleton } from "@/components/ui/skeleton"
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
+import { Skeleton } from "@/components/ui/skeleton";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 
-export function ClassSkeleton() {
+export function ClassSkeleton({ numberOfCards }: { numberOfCards: number }) {
   // You can adjust the number of rows here
-  const numberOfRows = 5
+  const numberOfRows = 5;
 
   return (
     <div className="container mx-auto p-4 space-y-4">
-      {[...Array(numberOfRows)].map((_, rowIndex) => (
-        <div key={rowIndex} className="bg-card rounded-lg shadow-sm p-4">
-          <div className="mt-4 space-y-2">
+      {[...Array(numberOfCards)].map((_, cardIndex) => (
+        <Card className="bg-white rounded-lg shadow-md my-10 p-6" key={cardIndex}>
+          <CardContent>
             <Skeleton className="h-4 w-full" />
             <Skeleton className="h-4 w-5/6" />
-          </div>
-        </div>
+          </CardContent>
+        </Card>
       ))}
     </div>
-  )
+  );
 }
-
 
 const ShimmerEffect = () => (
   <div className="animate-pulse bg-gradient-to-r from-transparent via-muted-foreground/10 to-transparent h-full w-full absolute" />
-)
+);
 
 const PersonSkeleton = () => (
   <div className="flex items-center space-x-4">
@@ -32,7 +31,7 @@ const PersonSkeleton = () => (
       <Skeleton className="h-4 w-[100px]" />
     </div>
   </div>
-)
+);
 
 export function PeopleSkeleton() {
   return (
@@ -55,7 +54,7 @@ export function PeopleSkeleton() {
             </div>
           </CardContent>
         </Card>
-        
+
         <Card>
           <CardHeader>
             <CardTitle>
@@ -75,5 +74,5 @@ export function PeopleSkeleton() {
         </Card>
       </div>
     </div>
-  )
+  );
 }

@@ -21,16 +21,13 @@ import {
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { createUserWordsListForClass } from "@/actions/wordlist_assignment";
-import { WordsListWithWordsAndUserWordsList } from "@/prisma/types";
-import { WordListTableType } from "@/components/wordList/dataTables/assignListColumns";
 
 interface DataTableProps<TData, TValue> {
   columns: ColumnDef<TData, TValue>[];
   data: TData[];
 }
 
-export function DataTable<TData, TValue>({
+export function TeacherDataTable<TData, TValue>({
   columns,
   data,
 }: DataTableProps<TData, TValue>) {

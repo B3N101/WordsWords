@@ -33,13 +33,13 @@ export default async function Page({
     {
       thisClass?.teacherId === userId ?
       (
-        <Suspense fallback={<ClassSkeleton />}>
+        <Suspense fallback={<ClassSkeleton numberOfCards={2}/>}>
           <TeacherClassPage classID={classString} className={thisClass.className}/>
         </Suspense>
       )
       :
       (
-        <Suspense fallback={<ClassSkeleton />}>
+        <Suspense fallback={<ClassSkeleton numberOfCards={3}/>}>
           <StudentClassPage classID={classString} className={thisClass.className}/>
         </Suspense>
       )
