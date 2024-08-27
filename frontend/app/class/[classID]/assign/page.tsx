@@ -18,7 +18,6 @@ async function getData(classId: string): Promise<WordListTableType[]>{
 
     const unassignedLists = await getAllWordListsNotAssigned(classId);
     const assignedLists = await getAllWordsListsAssigned(classId);
-
     const tableData1 = assignedLists.map((wordList) => {
       const status = isOverdue(wordList.UserWordsListProgress[0].dueDate) ? "Completed" : "Active";
         return {

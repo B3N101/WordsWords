@@ -3,6 +3,21 @@ import { UserWordsListProgress } from "@prisma/client";
 import { analytics } from "googleapis/build/src/apis/analytics";
 import prisma from "./prisma";
 
+export const getListSize = cache(async (wordListID: string) => {
+  const data = await prisma.wordsList.findFirst({
+    where: {
+      listId: wordListID,
+    },
+    select: {
+      words: true
+    },
+  });
+
+  if (!data) {
+    throw new Error("Word list not found");
+  }
+  return data.words.length;
+});
 export const getUserRole = cache(async (userId: string) => {
   const data = await prisma.user.findFirst({
     where: {

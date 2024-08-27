@@ -56,6 +56,13 @@ export default function ContextPage({ words, quizId, classId, wordsListId }: Pro
           <h1 className="text-5xl font-bold text-center mx-auto mt-20">
             {words[currentIndex].word}
           </h1>
+          {
+            !onContext ? (
+              <h2 className="text-2xl font-semibold text-center mx-auto">
+                {words[currentIndex].partOfSpeech}
+              </h2>
+            ) : (null)
+          }
           <p className={onContext?"w-1/2 align-middle items-center text-left text-2xl mx-auto" : "w-1/2 align-middle items-center text-center text-2xl mx-auto" }>
             {onContext
               ? words[currentIndex].context

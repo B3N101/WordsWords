@@ -14,7 +14,7 @@ import {
 } from "../dataTables/tenElevenTeacherColumns";
 
 import { TeacherDataTable } from "../dataTables/teacherTable";
-import { getAllUserWordsListProgresses, getListNameAndDueDate } from "@/prisma/queries";
+import { getAllUserWordsListProgresses, getListNameAndDueDate, getListSize } from "@/prisma/queries";
 
 import { Quiz, Grade } from "@prisma/client";
 import { isOverdue, dateFormatter } from "@/lib/utils";
@@ -124,10 +124,9 @@ export async function TeacherWordListHeader ( { classId, wordListID } : { classI
   );
 }
 export default async function TeacherWordListPage({ classID, wordListID, grade }: WordListPageProps) {
-  console.log("Rendering wordlist page for", wordListID);
   // Make an example of below code
-
-  if (grade === Grade.NINE){
+  const listSize = await getListSize(wordListID);
+  if (grade === Grade.NINE && listSize === 10){
     const tableData = await getFreshmenData(classID, wordListID);
     return (
       <div>

@@ -92,7 +92,7 @@ model Word {
   rankWithinList       Int?
   listId               String?
   questions            Question[]
-  userWordMasteries    UserWordMastery?
+  userWordMasteries    UserWordMastery[]
   wordsList            WordsList?       @relation(fields: [listId], references: [listId], onDelete: Cascade)
 }
 
@@ -114,32 +114,22 @@ model UserWordsListProgress {
   dueDate               DateTime          @default(dbgenerated("(now() + '7 days'::interval)"))
   quizzes               Quiz[]
   userWordMasteries     UserWordMastery[]
-  class                 Class             @relation(fields: [classId], references: [classId])
-  user                  User              @relation(fields: [userId], references: [id])
+  class                 Class             @relation(fields: [classId], references: [classId], onDelete: Cascade)
+  user                  User              @relation(fields: [userId], references: [id], onDelete: Cascade)
   wordsList             WordsList         @relation(fields: [wordsListListId], references: [listId])
 
   @@id([userId, wordsListListId], name: "userWordsListProgressId")
 }
 
 model UserWordMastery {
-  wordId                String                @id
+  @@id([userId, wordId], name: "userWordMasteryId")
+  wordId                String                
   wordsListId           String
   masteryScore          Float                 @default(0)
   userId                String
-  attempts              UserQuestionAttempt[]
-  user                  User                  @relation(fields: [userId], references: [id])
+  user                  User                  @relation(fields: [userId], references: [id], onDelete: Cascade)
   userWordsListProgress UserWordsListProgress @relation(fields: [userId, wordsListId], references: [userId, wordsListListId], onDelete: Cascade)
   word                  Word                  @relation(fields: [wordId], references: [wordId], onDelete: Cascade)
-}
-
-model UserQuestionAttempt {
-  questionAttemptId String          @id @default(cuid())
-  wordId            String
-  userId            String
-  correct           Boolean
-  timeSpent         Int?
-  questionAttempt   DateTime        @default(now())
-  wordMastery       UserWordMastery @relation(fields: [wordId], references: [wordId], onDelete: Cascade)
 }
 
 model Quiz {
@@ -157,7 +147,7 @@ model Quiz {
   length                Int
   completedAt           DateTime?
   questions             Question[]
-  user                  User                  @relation(fields: [userId], references: [id])
+  user                  User                  @relation(fields: [userId], references: [id], onDelete: Cascade)
   userWordsListProgress UserWordsListProgress @relation(fields: [userId, wordsListId], references: [userId, wordsListListId], onDelete: Cascade)
   wordsList             WordsList             @relation(fields: [wordsListId], references: [listId])
 }
