@@ -60,7 +60,7 @@ export default async function Home() {
   return (
     <div>
       <ClassDashboard data={classData} />
-      {ClassAddition(role, userId)}
+      {/* {ClassAddition(role, userId)} */}
     </div>
   );
 }
