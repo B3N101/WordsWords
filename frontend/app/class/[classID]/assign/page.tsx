@@ -24,6 +24,7 @@ async function getData(classId: string): Promise<WordListTableType[]>{
         return {
             id: wordList.listId,
             status: status as WordsListStatus,
+            grade: wordList.words[0].gradeLevel,
             name: wordList.name,
             words: wordList.words,
             classId: classId
@@ -32,6 +33,7 @@ async function getData(classId: string): Promise<WordListTableType[]>{
         return {
             id: wordList.listId,
             status: "Unassigned" as WordsListStatus,
+            grade: wordList.words[0].gradeLevel,
             name: wordList.name,
             words: wordList.words,
             classId: classId
