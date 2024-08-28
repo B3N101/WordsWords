@@ -45,6 +45,9 @@ export default async function Home() {
     (date) => new Date(date),
   );
 
+  if (classIds.length === 0){
+    redirect("/classUtils");
+  }
   for (let i = 0; i < classIds.length; i++) {
     classData.push({
       className: classNames[i],

@@ -18,7 +18,7 @@ export async function PeopleBoard( { classID }: { classID: string } ) {
         throw new Error("Class not found");
     };
     const students = data.students.filter((student) => student.role === "STUDENT")
-    const teachers = data.students.filter((student) => student.role === "TEACHER")
+    const teachers = data.students.filter((student) => student.role === "TEACHER" || student.role === "ADMIN")
     return (
         <div className="container mx-auto p-4 bg-background">          
           <div className="grid gap-6 md:grid-cols-2">

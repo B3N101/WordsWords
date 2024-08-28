@@ -17,6 +17,7 @@ export async function WordAnalytics({ classID }: { classID: string }) {
   const session = await auth();
   const userID = session?.user?.id!;
   const userWordLists = await getUserWordListsWithMasteries(userID, classID);
+  console.log("userwordlists with amsteries are ", userWordLists);
   return (
     <div className="flex-1 p-6">
       <div className="flex items-center justify-between mb-6">

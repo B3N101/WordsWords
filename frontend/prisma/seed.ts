@@ -136,7 +136,7 @@ async function seedWordLists() {
       console.log("Current words list number is " + prevWordListID);
       await prisma.wordsList.create({
         data: {
-          listId: "grade_" + words[0].gradeLevel + "_list_" + prevWordListID,
+          listId: "grade_" + currWords[0].gradeLevel + "_list_" + prevWordListID,
           words: {
             connect: currWords.map((word) => ({ wordId: word.wordId })),
           },
@@ -156,6 +156,23 @@ async function seedWordLists() {
     }
     prevWordListID = wordListID;
   }
+  await prisma.wordsList.create({
+    data: {
+      listId: "grade_" + currWords[0].gradeLevel + "_list_" + currWords[0].wordListNumber,
+      words: {
+        connect: currWords.map((word) => ({ wordId: word.wordId })),
+      },
+      name: "List " + currWords[0].wordListNumber,
+      // UserWordsListProgress: {
+      //   create: [
+      //     {
+      //       userId: userID,
+      //       classId: classID,
+      //     },
+      //   ],
+      // },
+    },
+  });
   console.log("WordLists seeded");
 }
 // async function seedQuestions(userID: string) {
@@ -292,7 +309,7 @@ async function seedWordLists() {
 
 async function seedAll(userID: string) {
   await seedWords();
-  await seedClass(userID);
+  // await seedClass(userID);
   await seedWordLists();
   // await seedWordMasteries(userID);
   // await seedQuestions(userID);

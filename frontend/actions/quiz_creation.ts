@@ -36,8 +36,13 @@ export const createMiniQuiz = async (
   }
   // get the words associated with the correct miniquiz
   const allwords = wordList.words;
-  const words = allwords.slice(miniSetId * 5, (miniSetId + 1) * 5);
-  console.log(allwords, words);
+  let words;
+  if (miniSetId === 2){
+    words = allwords.slice(miniSetId * 5);
+  }
+  else{
+    words = allwords.slice(miniSetId * 5, (miniSetId + 1) * 5);
+  }
   if (words.length === 0) {
     return null;
   }

@@ -93,10 +93,11 @@ export default function QuizPage({ quiz, userID }: Props) {
     // the user has just submitted an answer
     if (!questionSubmitted) {
       let answeredCorrectly = isCurrentCorrect ? true : false;
-
+      
       if (isCurrentCorrect) {
         setScore(score + 1);
       }
+      console.log(score);
       await upsertQuestionCompleted(
         questions[currentIndex].questionId,
         true,

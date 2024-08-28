@@ -38,12 +38,9 @@ export const upsertWordMastery = async (
       wordId: wordId,
       userId: userId,
     },
-    include: {
-      attempts: true,
-    },
   });
   let masteryScore;
-  if (!currWordMastery || currWordMastery.attempts.length === 0) {
+  if (!currWordMastery || currWordMastery.masteryScore === 0) {
     if (isCorrect) {
       masteryScore = 0.75;
     } else {
@@ -63,29 +60,19 @@ export const upsertWordMastery = async (
   }
   await prisma.userWordMastery.upsert({
     where: {
-      userId: userId,
-      wordId: wordId,
+      userWordMasteryId:{
+        userId: userId,
+        wordId: wordId,  
+      }
     },
     update: {
       masteryScore: masteryScore,
-      attempts: {
-        create: {
-          userId: userId,
-          correct: isCorrect,
-        },
-      },
     },
     create: {
       wordId: wordId,
       userId: userId,
       masteryScore: masteryScore,
       wordsListId: wordListId,
-      attempts: {
-        create: {
-          userId: userId,
-          correct: isCorrect,
-        },
-      },
     },
   });
   return;
