@@ -66,6 +66,9 @@ export const createUserWordsListForClass = async (
     where: {
       listId: wordsListId,
     },
+    include: {
+      words: true,
+    }
   });
   if (!wordsList) {
     throw new Error("Words list not found");
@@ -84,11 +87,39 @@ export const createUserWordsListForClass = async (
         dueDate: dueDate,
         wordsList: { connect: { listId: wordsListId } },
         class: { connect: { classId: classId } },
+        userWordMasteries:{
+          upsert: wordsList.words.map((word) => {
+            return {
+              where: {
+                userWordMasteryId: {
+                  userId: student.id,
+                  wordId: word.wordId,
+                },
+              },
+              create: {
+                word: { connect: { wordId: word.wordId } },
+                user: { connect: { id: student.id } },
+                masteryScore: 0,
+              },
+              update: {
+              },
+            };
+          }),
+        },
       },
       create: {
         user: { connect: { id: student.id } },
         wordsList: { connect: { listId: wordsListId } },
         class: { connect: { classId: classId } },
+        userWordMasteries:{
+          create: wordsList.words.map((word) => {
+            return {
+              word: { connect: { wordId: word.wordId } },
+              user: { connect: { id: student.id } },
+              masteryScore: 0,
+            };
+          }),
+        },
         dueDate: dueDate,
       },
     });

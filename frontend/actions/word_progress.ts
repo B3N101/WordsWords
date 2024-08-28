@@ -40,7 +40,7 @@ export const upsertWordMastery = async (
     },
   });
   let masteryScore;
-  if (!currWordMastery) {
+  if (!currWordMastery || currWordMastery.masteryScore === 0) {
     if (isCorrect) {
       masteryScore = 0.75;
     } else {

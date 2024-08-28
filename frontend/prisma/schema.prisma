@@ -116,7 +116,7 @@ model UserWordsListProgress {
   userWordMasteries     UserWordMastery[]
   class                 Class             @relation(fields: [classId], references: [classId], onDelete: Cascade)
   user                  User              @relation(fields: [userId], references: [id], onDelete: Cascade)
-  wordsList             WordsList         @relation(fields: [wordsListListId], references: [listId])
+  wordsList             WordsList         @relation(fields: [wordsListListId], references: [listId], onDelete: Cascade)
 
   @@id([userId, wordsListListId], name: "userWordsListProgressId")
 }
@@ -149,7 +149,7 @@ model Quiz {
   questions             Question[]
   user                  User                  @relation(fields: [userId], references: [id], onDelete: Cascade)
   userWordsListProgress UserWordsListProgress @relation(fields: [userId, wordsListId], references: [userId, wordsListListId], onDelete: Cascade)
-  wordsList             WordsList             @relation(fields: [wordsListId], references: [listId])
+  wordsList             WordsList             @relation(fields: [wordsListId], references: [listId], onDelete: Cascade)
 }
 
 model Question {
