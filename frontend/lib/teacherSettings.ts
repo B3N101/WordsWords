@@ -19,7 +19,7 @@ export async function createClass(
       gradeLevel: grade,
       students: {
         connect: {id: teacherId},
-      }
+      },
     },
   });
 }

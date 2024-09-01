@@ -64,7 +64,11 @@ export default async function Navbar() {
               <Link href={"/settings"}>Settings</Link>
             </DropdownMenuItem>
             <DropdownMenuItem>
-              <Link href={"/classUtils"}>{role === "STUDENT" ? "Join Class" : "Create Class"}</Link>
+              {role === "STUDENT" ? (
+                <Link href={"/joinClass"}>Join Class</Link>
+              ) : (
+                <Link href={"/createClass"}>Create Class</Link>
+              )}
             </DropdownMenuItem>
             <DropdownMenuSeparator />
             <DropdownMenuItem>
