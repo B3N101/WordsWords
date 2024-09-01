@@ -72,7 +72,7 @@ function StudentQuizDisplay({studentName, quizzes}: {studentName: string, quizze
         }
         return best
     }, quizzes[0])
-    const numQuestions = quizzes[0].quizType === "MINI" ? 5 : 15
+    const numQuestions = quizzes[0].length
 
     return (
         <div className="flex flex-col space-y-2">
