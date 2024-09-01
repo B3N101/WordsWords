@@ -46,7 +46,7 @@ export default async function Home() {
   );
 
   if (classIds.length === 0){
-    redirect("/classUtils");
+    redirect("/joinClass");
   }
   for (let i = 0; i < classIds.length; i++) {
     classData.push({
