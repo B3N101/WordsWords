@@ -1,6 +1,14 @@
 import { google } from "googleapis";
 import { PrismaClient, Grade, partOfSpeech, QuizType } from "@prisma/client";
+
+import OpenAI from "openai";
+import path from "path";
+import fs from "fs";
+
 const prisma = new PrismaClient();
+const openai = new OpenAI({
+    apiKey: process.env.OPENAI_API_KEY,
+});
 
 async function seedWords() {
   await prisma.word.deleteMany();
@@ -71,8 +79,31 @@ async function seedWords() {
   }
 }
 
+async function seedAudio(){
+  const words = await prisma.word.findMany();
+  for (const word of words){
+    if (word.audioSrc){
+      continue;
+    }
+    const filename = "./public/audio/" + word.word + ".mp3";
+    const mp3 = await openai.audio.speech.create({
+      model: "tts-1-hd",
+      voice: "echo",
+      input: "[pause] " + word.word,
+    });
+    const buffer = Buffer.from(await mp3.arrayBuffer());
+    await fs.promises.writeFile(filename, buffer);
+  
+    const audioSrc = "/audio/" + word.word + ".mp3";
+    await prisma.word.update({
+      where: { wordId: word.wordId },
+      data: { audioSrc: audioSrc },
+    });
+  }
+}
+
 // async function seedWordMasteries(userId: string){
-//   const words = await prisma.word.findMany();
+//   const words = await prisma.word.findMany(); for (const word of words){ }
 
 //   for (const word of words){
 //     if (word.listId)
@@ -316,9 +347,12 @@ async function seedAll(userID: string) {
   // await seedQuizzes(userID);
 }
 
-seedAll("f23447e0-738b-431f-aefe-b286f027f25e").then(async () => {
+// seedAll("f23447e0-738b-431f-aefe-b286f027f25e").then(async () => {
+//   await prisma.$disconnect();
+// });
+seedAudio().then(async () => {
   await prisma.$disconnect();
-});
+})
 // // seedWords().then(async () => {
 // //         await prisma.$disconnect();
 // //       })

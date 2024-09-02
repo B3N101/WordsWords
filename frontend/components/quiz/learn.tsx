@@ -5,13 +5,19 @@ import { Button } from "@/components/ui/button";
 import { Loader2 } from "lucide-react";
 import { useState } from "react";
 import { upsertLearnCompleted } from "@/actions/quiz_progress";
+import AudioButton from "../audioButton";
 type Props = {
   words: Word[];
   quizId: string;
   classId: string;
   wordsListId: string;
 };
-export default function ContextPage({ words, quizId, classId, wordsListId }: Props) {
+export default function ContextPage({
+  words,
+  quizId,
+  classId,
+  wordsListId,
+}: Props) {
   const [onContext, setOnContext] = useState<boolean>(true);
   const [currentIndex, setCurrentIndex] = useState<number>(0);
   const [completed, setCompleted] = useState<boolean>(false);
@@ -49,21 +55,26 @@ export default function ContextPage({ words, quizId, classId, wordsListId }: Pro
             Loading Quiz ...
           </p>
         </div>
-      )
-      :
-      (!completed ? (
+      ) : !completed ? (
         <div className="flex flex-col gap-10 h-dvh">
-          <h1 className="text-5xl font-bold text-center mx-auto mt-20">
+          <h1 className="flex flex-row gap-3 text-5xl font-bold text-center mx-auto mt-20">
             {words[currentIndex].word}
+            {words[currentIndex].audioSrc ? (
+              <AudioButton src={words[currentIndex].audioSrc} />
+            ) : null}
           </h1>
-          {
-            !onContext ? (
-              <h2 className="text-2xl font-semibold text-center mx-auto">
-                {words[currentIndex].partOfSpeech}
-              </h2>
-            ) : (null)
-          }
-          <p className={onContext?"w-1/2 align-middle items-center text-left text-2xl mx-auto" : "w-1/2 align-middle items-center text-center text-2xl mx-auto" }>
+          {!onContext ? (
+            <h2 className="text-2xl font-semibold text-center mx-auto">
+              {words[currentIndex].partOfSpeech}
+            </h2>
+          ) : null}
+          <p
+            className={
+              onContext
+                ? "w-1/2 align-middle items-center text-left text-2xl mx-auto"
+                : "w-1/2 align-middle items-center text-center text-2xl mx-auto"
+            }
+          >
             {onContext
               ? words[currentIndex].context
               : words[currentIndex].definition}
@@ -110,7 +121,8 @@ export default function ContextPage({ words, quizId, classId, wordsListId }: Pro
                 onClick={async () => {
                   await upsertLearnCompleted(quizId, true);
                   window.location.href = `/quiz`;
-                  window.location.href = "/class/" + classId + "/" + wordsListId;
+                  window.location.href =
+                    "/class/" + classId + "/" + wordsListId;
                 }}
               >
                 Back to dashboard
@@ -118,7 +130,7 @@ export default function ContextPage({ words, quizId, classId, wordsListId }: Pro
             </div>
           </footer>
         </div>
-      ))}
+      )}
     </div>
   );
 }
