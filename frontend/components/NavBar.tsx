@@ -61,6 +61,9 @@ export default async function Navbar() {
           </DropdownMenuTrigger>
           <DropdownMenuContent align="end">
             <DropdownMenuItem>
+              <Link href={"/words"}>Words</Link>
+            </DropdownMenuItem>
+            <DropdownMenuItem>
               <Link href={"/settings"}>Settings</Link>
             </DropdownMenuItem>
             <DropdownMenuItem>
@@ -70,6 +73,11 @@ export default async function Navbar() {
                 <Link href={"/createClass"}>Create Class</Link>
               )}
             </DropdownMenuItem>
+              {role === "ADMIN" ? (
+                <DropdownMenuItem>
+                  <Link href={"#"}>Admin</Link>
+                </DropdownMenuItem>
+              ) : null}
             <DropdownMenuSeparator />
             <DropdownMenuItem>
               <Link href={"/logout"}>Logout</Link>
