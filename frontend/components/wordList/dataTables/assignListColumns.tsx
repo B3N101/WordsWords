@@ -191,19 +191,27 @@ export const columns: ColumnDef<WordListTableType>[] = [
 function ListStatusDisplay({ status }: { status: WordsListStatus }) {
   if (status === "Completed") {
     return (
-      <Badge color="green" text="Completed"></Badge>
+      <span className="flex flex-row gap-2">
+        <Badge color="green" />
+        <h1>Completed</h1>
+      </span>
     );
   } else if (status === "Active") {
     return (
-      <Badge color="blue" text="Active" status="processing"></Badge>
+      <span className="flex flex-row gap-2">
+        <Badge color="blue" status="processing" />
+        <h1>Active</h1>
+      </span>
       // <div className="bg-[#f2f7fe] text-[#3498db] font-medium text-right w-min">
       //   Active
       // </div>
     );
   } else {
     return (
-      <Badge text="Unassigned" status="default"></Badge>
-
+      <span className="flex flex-row gap-2">
+        <Badge status="default" />
+        <h1>Unassigned</h1>
+      </span>
       // <div className="bg-[#fafafa] text-[#6b6b6b] font-medium text-right w-min">
       //   Unassigned
       // </div>

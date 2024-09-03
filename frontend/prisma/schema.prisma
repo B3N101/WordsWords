@@ -91,6 +91,7 @@ model Word {
   wordListNumber       Int?
   rankWithinList       Int?
   listId               String?
+  audioSrc             String?
   questions            Question[]
   userWordMasteries    UserWordMastery[]
   wordsList            WordsList?       @relation(fields: [listId], references: [listId], onDelete: Cascade)

@@ -300,7 +300,8 @@ export const freshmenColumns: ColumnDef<FreshmanStudentInfo>[] = [
     cell: ({ row }) => {
       const status = row.getValue("status") as WordsListStatus;
       return (
-        <Badge
+        <span className="flex flex-row gap-2">
+          <Badge
           status={
             status === "Completed"
               ? "success"
@@ -310,8 +311,10 @@ export const freshmenColumns: ColumnDef<FreshmanStudentInfo>[] = [
                   ? "error"
                   : "default"
           }
-          text={status}
-        />
+          />
+          <h1>{status}</h1>
+        </span>
+        
       );
     },
   },
