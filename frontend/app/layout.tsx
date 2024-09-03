@@ -8,6 +8,7 @@ import NavBar from "@/components/NavBar";
 import { Toaster } from "@/components/ui/toaster";
 import Footer from "@/components/Footer";
 import { Metadata } from "next";
+import { eb_garamond } from "@/components/ui/fonts";
 
 const inter = Inter({
   subsets: ["latin"],
@@ -42,6 +43,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
       <body
         className={cn(
           "flex flex-col min-h-screen bg-background bg-tan dark:bg-red-950 font-sans antialiased",
+          eb_garamond.className,
           inter.className,
           ibm_plex_mono.className,
           poppins.className,
