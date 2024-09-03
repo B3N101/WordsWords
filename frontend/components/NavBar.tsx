@@ -60,28 +60,42 @@ export default async function Navbar() {
             </Avatar>
           </DropdownMenuTrigger>
           <DropdownMenuContent align="end">
-            <DropdownMenuItem>
-              <Link href={"/words"}>Words</Link>
-            </DropdownMenuItem>
-            <DropdownMenuItem>
-              <Link href={"/settings"}>Settings</Link>
-            </DropdownMenuItem>
-            <DropdownMenuItem>
-              {role === "STUDENT" ? (
-                <Link href={"/joinClass"}>Join Class</Link>
-              ) : (
-                <Link href={"/createClass"}>Create Class</Link>
-              )}
-            </DropdownMenuItem>
-              {role === "ADMIN" ? (
+            <Link href="/words">
+              <DropdownMenuItem>
+                Words
+              </DropdownMenuItem>
+            </Link>
+            <Link href="/settings">
+              <DropdownMenuItem>
+                Settings
+              </DropdownMenuItem>
+            </Link>
+            {role === "STUDENT" ? (
+              <Link href="/joinClass">
                 <DropdownMenuItem>
-                  <Link href={"#"}>Admin</Link>
+                  Join Class
                 </DropdownMenuItem>
-              ) : null}
+              </Link>
+            ) : (
+              <Link href="/createClass">
+                <DropdownMenuItem>
+                  Create Class
+                </DropdownMenuItem>
+              </Link>
+            )}
+            {role === "ADMIN" && (
+              <Link href="#">
+                <DropdownMenuItem>
+                  Admin
+                </DropdownMenuItem>
+              </Link>
+            )}
             <DropdownMenuSeparator />
-            <DropdownMenuItem>
-              <Link href={"/logout"}>Logout</Link>
-            </DropdownMenuItem>
+            <Link href="/logout">
+              <DropdownMenuItem>
+                Logout
+              </DropdownMenuItem>
+            </Link>
           </DropdownMenuContent>
         </DropdownMenu>
       </div>
