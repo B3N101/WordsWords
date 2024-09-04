@@ -12,7 +12,7 @@ import { getUserClassIdsFromId } from "@/lib/userSettings";
 import CreateClassCard from "@/components/classUtils/createClass";
 import JoinClassCard from "@/components/classUtils/joinClass";
 import Link from "next/link";
-
+import { Button } from "@/components/ui/button";
 // type classData to be used to get custom classDashboard
 type classData = {
   className: string;
@@ -25,7 +25,22 @@ type classData = {
 export default async function Home() {
   const session = await auth();
 
-  if (!session) redirect("/api/auth/signin");
+  // if (!session) redirect("/api/auth/signin");
+  if (!session) {
+    return (
+      <div className="flex flex-col items-center justify-center min-h-screen bg-background">
+        <h1 className="text-4xl font-bold mb-6">Welcome to MX Words Words</h1>
+        <p className="text-xl mb-8 text-center max-w-2xl">
+          Enhance your vocabulary and language skills with our interactive
+          learning platform. Join classes, take quizzes, and track your progress
+          effortlessly.
+        </p>
+        <Link href="/login" passHref>
+          <Button className="px-6 py-2">Login to Get Started</Button>
+        </Link>
+      </div>
+    );
+  }
 
   const User = {
     name: session.user!.name,
@@ -62,6 +77,14 @@ export default async function Home() {
 
   return (
     <div>
+      <div className="p-6">
+        <h1 className="text-4xl font-bold mb-6">Welcome to MX Words Words</h1>
+        <p className="text-xl mb-8">
+          Enhance your vocabulary and language skills with our interactive
+          learning platform. Join classes, take quizzes, and track your progress
+          effortlessly.
+        </p>
+      </div>
       <ClassDashboard data={classData} />
       {/* {ClassAddition(role, userId)} */}
     </div>

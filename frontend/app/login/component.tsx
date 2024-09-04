@@ -11,7 +11,6 @@ import { Button } from "@/components/ui/button";
 import { redirect } from "next/navigation";
 import { signIn, auth, providerMap } from "@/auth/auth";
 import { AuthError } from "next-auth";
-import GitHub from "next-auth/providers/github";
 import Google from "next-auth/providers/google";
 
 export default function Component() {
@@ -21,42 +20,9 @@ export default function Component() {
         <div className="space-y-2 text-center">
           <h1 className="text-3xl font-bold">Welcome Back</h1>
           <p className="text-gray-500 dark:text-gray-400">
-            Sign in to your account using your Github/Google account.
+            Sign in to your account using your Google account.
           </p>
         </div>
-
-        <form
-          action={async () => {
-            "use server";
-            try {
-              await signIn("github", { redirectTo: "/" });
-            } catch (error) {
-              // Signin can fail for a number of reasons, such as the user
-              // not existing, or the user not having the correct role.
-              // In some cases, you may want to redirect to a custom error
-
-              if (error instanceof AuthError) {
-                return redirect(`${SIGNIN_ERROR_URL}?error=${error.type}`);
-              }
-
-              // Otherwise if a redirects happens NextJS can handle it
-              // so you can just re-thrown the error and let NextJS handle it.
-              // Docs:
-              // https://nextjs.org/docs/app/api-reference/functions/redirect#server-component
-              throw error;
-            }
-          }}
-        >
-          <Button
-            variant="outline"
-            className="w-full rounded-text-white "
-            type="submit"
-          >
-            <GitHubIcon className="mr-2 h-5 w-5" />
-            <span>Sign in with GitHub</span>
-          </Button>
-        </form>
-
         <form
           action={async () => {
             "use server";
@@ -80,7 +46,7 @@ export default function Component() {
         >
           <Button
             variant="outline"
-            className="w-full rounded-md text-white"
+            className="w-full rounded-md"
             type="submit"
           >
             <ChromeIcon className="mr-2 h-5 w-5" />
