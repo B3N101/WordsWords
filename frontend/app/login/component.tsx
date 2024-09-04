@@ -16,10 +16,10 @@ import Google from "next-auth/providers/google";
 
 export default function Component() {
   return (
-    <div className="flex min-h-[100dvh] items-center justify-center bg-[#F0FFF4] dark:bg-[#00B894]">
-      <div className="mx-auto max-w-md space-y-6 rounded-lg bg-white p-6 shadow-lg dark:bg-[#00D1B2]">
+    <div className="flex min-h-[100dvh] items-center justify-center">
+      <div className="mx-auto max-w-md space-y-6 rounded-lg bg-white p-6 shadow-lg">
         <div className="space-y-2 text-center">
-          <h1 className="text-3xl font-bold text-[#00B894]">Welcome Back</h1>
+          <h1 className="text-3xl font-bold">Welcome Back</h1>
           <p className="text-gray-500 dark:text-gray-400">
             Sign in to your account using your Github/Google account.
           </p>
@@ -49,7 +49,7 @@ export default function Component() {
         >
           <Button
             variant="outline"
-            className="w-full rounded-md bg-[#00B894] text-white hover:bg-[#00D1B2] focus:ring-[#00D1B2]"
+            className="w-full rounded-text-white "
             type="submit"
           >
             <GitHubIcon className="mr-2 h-5 w-5" />
@@ -80,7 +80,7 @@ export default function Component() {
         >
           <Button
             variant="outline"
-            className="w-full rounded-md bg-[#00B894] text-white hover:bg-[#00D1B2] focus:ring-[#00D1B2]"
+            className="w-full rounded-md text-white"
             type="submit"
           >
             <ChromeIcon className="mr-2 h-5 w-5" />
