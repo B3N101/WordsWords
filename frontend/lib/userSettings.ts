@@ -213,18 +213,21 @@ export async function getUserTeacherIDFromId(
 export async function getTeacherNameFromUserId(
   userId: string,
 ): Promise<string[]> {
-  const teacherId = await getUserTeacherIDFromId(userId);
+  const teacherIds = await getUserTeacherIDFromId(userId);
 
-  if (!teacherId) {
+  if (!teacherIds) {
     // throw new Error("Teacher not found");
     return [];
   }
-  const teachers = await prisma.user.findMany({
-    where: { id: { in: teacherId } },
-    select: { name: true },
-  });
-
-  return teachers.map((t) => t.name!);
+  let teacherNames = [];
+  for (const teacherId of teacherIds) {
+    const teacher = await prisma.user.findUnique({
+      where: { id: teacherId },
+      select: { name: true },
+    });
+    teacherNames.push(teacher?.name!);
+  }
+  return teacherNames;
 }
 
 // Get Class Students
