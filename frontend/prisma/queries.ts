@@ -65,6 +65,9 @@ export const getAllWordsListsAssigned = cache(async (classId: string) => {
     include: {
       words: true,
       UserWordsListProgress: true,
+    },
+    orderBy: {
+      listNumber: 'asc',
     }
   });
   return data;
@@ -82,7 +85,11 @@ export const getAllWordListsNotAssigned = cache(async (classId: string) =>{
     include: {
       words: true,
       UserWordsListProgress: true,
+    },
+    orderBy: {
+      listNumber: 'asc',
     }
+    
   });
   return data;
 })
