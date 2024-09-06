@@ -386,7 +386,11 @@ async function seedAudioWithGoogle(){
 // seedAll("f23447e0-738b-431f-aefe-b286f027f25e").then(async () => {
 //   await prisma.$disconnect();
 // });
-seedAudioWithGoogle().then(async () => {
+async function seedAudioAndWords() {
+  await seedWords();
+  await seedAudioWithGoogle();
+}
+seedAudioAndWords().then(async () => {
   await prisma.$disconnect();
 })
 // // // seedWords().then(async () => {
