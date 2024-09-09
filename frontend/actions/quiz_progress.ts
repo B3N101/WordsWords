@@ -81,7 +81,8 @@ export const upsertQuizCompleted = async (
       completedAt: new Date(),
     },
   });
-  await upsertQuizAttempts(userId, quiz.wordsListId, quiz.miniSetNumber, -1);
+  const miniSetId = quiz.quizType == "MINI" ? quiz.miniSetNumber : 3;
+  await upsertQuizAttempts(userId, quiz.wordsListId, miniSetId, -1);
   return;
 };
 
