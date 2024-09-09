@@ -10,7 +10,7 @@ import {
   upsertQuizCompleted,
 } from "@/actions/quiz_progress";
 
-import { createMiniQuiz } from "@/actions/quiz_creation";
+import { createMasterQuiz, createMiniQuiz } from "@/actions/quiz_creation";
 
 import {
   upsertWordMastery,
@@ -93,7 +93,7 @@ export default function QuizPage({ quiz, userID }: Props) {
     // the user has just submitted an answer
     if (!questionSubmitted) {
       let answeredCorrectly = isCurrentCorrect ? true : false;
-      
+
       if (isCurrentCorrect) {
         setScore(score + 1);
       }
@@ -146,20 +146,24 @@ export default function QuizPage({ quiz, userID }: Props) {
         </div>
       ) : !completed ? (
         <div className="flex flex-col">
-            {started ? 
+          {started ? (
             <header className="pb-10 pt-10 flex-col items-center align-middle">
-              <ProgressBar value={((currentIndex+1) / questions.length) * 100} />
+              <ProgressBar
+                value={((currentIndex + 1) / questions.length) * 100}
+              />
               <div className="text-center pt-5">
                 Question {currentIndex + 1} / {questions.length}
               </div>
             </header>
-            : null}
+          ) : null}
           <main className="flex justify-center flex-1 align-middle h-dvh">
             {!started ? (
               <h1 className="text-3xl font-bold p-4 pt-10">{quiz.name}</h1>
             ) : (
               <div className="w-full">
-                <h2 className="text-2xl font-bold text-center w-3/4 mx-auto">{question.questionString}</h2>
+                <h2 className="text-2xl font-bold text-center w-3/4 mx-auto">
+                  {question.questionString}
+                </h2>
                 <div className="grid grid-cols1 gap-6 m-12 max-w-[100%] items-center justify-center">
                   {options.map((answer, index) => (
                     <Button
@@ -220,19 +224,29 @@ export default function QuizPage({ quiz, userID }: Props) {
             <Button
               onClick={async () => {
                 setIsLoadingNewQuiz(true);
-                const newQuizData = createMiniQuiz(
-                  quiz.wordsListId,
-                  quiz.userId,
-                  classId,
-                  quiz.miniSetNumber,
-                  true,
-                );
-                // TODO: switch to updating react states, remove async
-                newQuizData.then((newQuiz) => {
-                  if (newQuiz) {
-                    window.location.href = "/quiz/" + newQuiz.quizId;
+                if (quiz.quizType === "MINI") {
+                  const newQuiz = await createMiniQuiz(
+                    quiz.wordsListId,
+                    quiz.userId,
+                    classId,
+                    quiz.miniSetNumber,
+                    true,
+                  );
+                  if (!newQuiz) {
+                    throw new Error("Error creating new quiz");
                   }
-                });
+                  window.location.href = "/quiz/" + newQuiz.quizId;
+                } else {
+                  const newQuiz = await createMasterQuiz(
+                    quiz.wordsListId,
+                    quiz.userId,
+                    classId,
+                  );
+                  if (!newQuiz) {
+                    throw new Error("Error creating new quiz");
+                  }
+                  window.location.href = "/quiz/" + newQuiz.quizId;
+                }
               }}
             >
               Retake Quiz

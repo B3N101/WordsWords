@@ -43,6 +43,7 @@ export const createMiniQuiz = async (
   else{
     words = allwords.slice(miniSetId * 5, (miniSetId + 1) * 5);
   }
+  console.log("Words are", words);
   if (words.length === 0) {
     return null;
   }
