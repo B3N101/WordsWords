@@ -3,7 +3,7 @@
 import { ColumnDef } from "@tanstack/react-table";
 import { Word, Grade } from "@prisma/client";
 import { WordsListWithWordsAndUserWordsList } from "@/prisma/types";
-import { deleteUserWordsListForClass } from "@/actions/wordlist_assignment";
+import { deleteClassWordsList, deleteUserWordsListForClass } from "@/actions/wordlist_assignment";
 import { Link, MoreHorizontal } from "lucide-react";
 import { useState } from "react";
 
@@ -121,6 +121,7 @@ const ActionCell = ({ wordslist }: { wordslist: WordListTableType }) => {
                     wordslist.id,
                     wordslist.classId,
                   );
+                  await deleteClassWordsList(wordslist.id, wordslist.classId);
                   setIsDeleting(false);
 
                   toast({

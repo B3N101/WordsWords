@@ -74,6 +74,7 @@ model Class {
   SemesterStart           DateTime
   SemesterEnd             DateTime
   userWordsListProgresses UserWordsListProgress[]
+  classWordsLists         ClassWordsList[]
   students                User[]                  @relation("UserClasses")
 }
 
@@ -103,6 +104,7 @@ model WordsList {
   listNumber            Int?
   quizzes               Quiz[]
   UserWordsListProgress UserWordsListProgress[]
+  ClassWordsList        ClassWordsList[]
   words                 Word[]
 }
 
@@ -123,6 +125,15 @@ model UserWordsListProgress {
   @@id([userId, wordsListListId], name: "userWordsListProgressId")
 }
 
+model ClassWordsList{
+  classId String
+  listId String
+  dueDate DateTime
+  class Class @relation(fields: [classId], references: [classId], onDelete: Cascade)
+  wordsList WordsList @relation(fields: [listId], references: [listId], onDelete: Cascade)
+  
+  @@id([classId, listId], name: "classWordsListId")
+}
 model UserWordMastery {
   @@id([userId, wordId], name: "userWordMasteryId")
   wordId                String                
