@@ -15,7 +15,7 @@ export default async function Page() {
     <div className="flex items-center justify-center">
       <div className="mx-auto space-y-6 rounded-lg p-6">
         <div className="space-y-2 text-center">
-          <h1 className="text-3xl font-bold text-[#00B894]">Words</h1>
+          <h1 className="text-3xl font-bold text-[#ff6b6b]">Words</h1>
           <p className="text-gray-600">Learn new words and their definitions</p>
         </div>
         <div className="space-y-4">

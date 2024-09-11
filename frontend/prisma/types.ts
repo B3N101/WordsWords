@@ -14,8 +14,8 @@ export type WordsListWithWordsAndUserWordsList = Prisma.WordsListGetPayload<{
   };
 }>;
 
-export type UserWordsListProgressWithWordsList =
-  Prisma.UserWordsListProgressGetPayload<{
+export type ClassWordsListWithWordsList =
+  Prisma.ClassWordsListGetPayload<{
     include: {
       wordsList: true;
     };

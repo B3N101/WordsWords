@@ -1,5 +1,5 @@
 import { auth } from "@/auth/auth";
-import { getUserClassWordLists, getClass } from "@/prisma/queries";
+import { getUserClassWordLists, getClass, getClassWordLists} from "@/prisma/queries";
 import { cn } from "@/lib/utils";
 import SideBarStructure from "@/components/sidebar/sideBarStructure";
 export async function SideBar({ classID }: { classID: string }) {
@@ -11,7 +11,7 @@ export async function SideBar({ classID }: { classID: string }) {
   }
 
     const thisClass = await getClass(classID);
-    const wordLists = await getUserClassWordLists(userId, classID);
+    const wordLists = await getClassWordLists(classID);
 
     if (!thisClass) {
         throw new Error("Class not found");
