@@ -2,20 +2,21 @@
 
 import { auth } from "@/auth/auth";
 import { getUserWordLists } from "@/prisma/queries";
-import { UserWordsListProgressWithWordsList } from "@/prisma/types";
+import { ClassWordsListWithWordsList } from "@/prisma/types";
+import {  } from "@prisma/client";
 import Link from "next/link";
 
 export function WordListSubMenu({
   wordLists,
 }: {
-  wordLists: UserWordsListProgressWithWordsList[];
+  wordLists: ClassWordsListWithWordsList[];
 }) {
   return (
     <ul className="grid gap-2 pl-8 pt-2 overflow-auto max-h-32">
       {wordLists.map((wordlist, index) => (
         <li key={index}>
           <Link
-            href={"/class/" + wordlist.classId + "/" + wordlist.wordsListListId}
+            href={"/class/" + wordlist.classId + "/" + wordlist.listId}
             className={`flex items-center gap-3 rounded-md px-3 py-2 text-muted-foreground transition-colors hover:bg-accent hover:text-accent-foreground`}
             prefetch={false}
           >

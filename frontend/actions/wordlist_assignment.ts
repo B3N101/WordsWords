@@ -172,13 +172,22 @@ export const createClassWordsList = async (
   if (!wordsList) {
     throw new Error("Words list not found");
   }
-  console.log("Creating user words list for class");
-  await prisma.classWordsList.create({
-    data: {
+  console.log("Creating class words list for class");
+  await prisma.classWordsList.upsert({
+    where: {
+      classWordsListId: {
+        listId: wordsListId,
+        classId: classId,
+      },
+    },
+    create: {
       wordsList: { connect: { listId: wordsListId } },
       class: { connect: { classId: classId } },
       dueDate: dueDate,
     },
+    update: {
+      dueDate: dueDate,
+    }
   });
 };
 

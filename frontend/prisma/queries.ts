@@ -56,7 +56,7 @@ export const getClassPeople = cache(async (classId: string) => {
 export const getAllWordsListsAssigned = cache(async (classId: string) => {
   const data = await prisma.wordsList.findMany({
     where: {
-      UserWordsListProgress: {
+      ClassWordsList: {
         some: {
           classId: classId
         }
@@ -76,7 +76,7 @@ export const getAllWordsListsAssigned = cache(async (classId: string) => {
 export const getAllWordListsNotAssigned = cache(async (classId: string) =>{
   const data = await prisma.wordsList.findMany({
     where: {
-      UserWordsListProgress: {
+      ClassWordsList: {
         none: {
           classId: classId
         }
@@ -162,27 +162,39 @@ export const getUserClassWordLists = cache(async (userID: string, classID: strin
 });
 
 export const getClassWordLists = cache(async ( classID: string) => {
-  const currClass = await prisma.class.findFirst({
+  const listData = await prisma.classWordsList.findMany({
     where: {
       classId: classID,
     },
-    select:{
-      students: true,
+    include:{
+      wordsList: true,
+    },
+    orderBy:{
+      dueDate: 'desc',
     }
   });
-  if(!currClass){
-    throw new Error("Class not found");
-  }
-  if(currClass.students.length === 0){
-    return [];
-  }
-  const studentId = currClass.students[0].id;
-  const data = await prisma.userWordsListProgress.findMany({
-    where: { userId: studentId, classId: classID },
-    include: { wordsList: true },
-    orderBy: { dueDate: 'desc' }
-  });
-  return data;
+  return listData;
+  // const currClass = await prisma.class.findFirst({
+  //   where: {
+  //     classId: classID,
+  //   },
+  //   select:{
+  //     students: true,
+  //   }
+  // });
+  // if(!currClass){
+  //   throw new Error("Class not found");
+  // }
+  // if(currClass.students.length === 0){
+  //   return [];
+  // }
+  // const studentId = currClass.students[0].id;
+  // const data = await prisma.userWordsListProgress.findMany({
+  //   where: { userId: studentId, classId: classID },
+  //   include: { wordsList: true },
+  //   orderBy: { dueDate: 'desc' }
+  // });
+  // return data;
 });
 export const getWordList = cache(async (wordListID: string) => {
   const data = await prisma.wordsList.findFirst({

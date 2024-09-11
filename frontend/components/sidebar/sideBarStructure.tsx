@@ -8,7 +8,7 @@
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { WordListSubMenu } from "./sideBarSubMenu";
-import { UserWordsListProgressWithWordsList } from "@/prisma/types";
+import { ClassWordsListWithWordsList } from "@/prisma/types";
 import { ClipboardList } from "lucide-react";
 
 import Link from "next/link";
@@ -19,7 +19,7 @@ export default function SideBarStructure({
   isTeacher,
   className
 }: {
-  wordLists: UserWordsListProgressWithWordsList[];
+  wordLists: ClassWordsListWithWordsList[];
   classID: string;
   isTeacher: boolean;
   className: string;

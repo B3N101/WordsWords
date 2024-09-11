@@ -53,7 +53,7 @@ export default async function TeacherClassPage({
     return {
       name: wordList.wordsList.name,
       status: status,
-      wordListID: wordList.wordsListListId,
+      wordListID: wordList.listId,
     };
   });
 
