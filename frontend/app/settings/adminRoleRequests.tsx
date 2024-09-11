@@ -18,7 +18,7 @@ export default async function AdminRoleRequests() {
 
   return (
     <div>
-      <h2 className="text-xl font-bold mb-4">Role Change Requests</h2>
+      <h2 className="text-xl font-black mb-4">Role Change Requests</h2>
       <Table>
         <TableHeader>
           <TableRow>

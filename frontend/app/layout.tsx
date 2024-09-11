@@ -38,15 +38,16 @@ export default function Layout({ children }: { children: React.ReactNode }) {
           name="google-site-verification"
           content="MjRyMh8v-9qExGvA9C7L37ZdBcKzZGpKJodT2uznVxo"
         />
+        <meta name="robots" content="index,follow" />
       </head>
       <Analytics />
       <body
         className={cn(
           "flex flex-col min-h-screen bg-background bg-tan dark:bg-red-950 font-sans antialiased",
           eb_garamond.className,
-          inter.className,
-          ibm_plex_mono.className,
-          poppins.className,
+          // inter.className,
+          // ibm_plex_mono.className,
+          // poppins.className,
         )}
       >
         <NavBar />

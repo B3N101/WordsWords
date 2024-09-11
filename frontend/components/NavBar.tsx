@@ -84,7 +84,7 @@ export default async function Navbar() {
               </Link>
             )}
             {role === "ADMIN" && (
-              <Link href="#">
+              <Link href="/admin">
                 <DropdownMenuItem>
                   Admin
                 </DropdownMenuItem>
