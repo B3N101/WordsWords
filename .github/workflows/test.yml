@@ -4,7 +4,6 @@ on:
   - push
   - pull_request
 
-
 jobs:
   test:
     runs-on: ubuntu-22.04
@@ -14,31 +13,31 @@ jobs:
         node-version: [20]
 
     steps:
-    - uses: actions/checkout@v4
-    - name: Install pnpm
-      uses: pnpm/action-setup@v4
-      with:
-        version: 9
-    - name: Use Node.js ${{ matrix.node-version }}
-      uses: actions/setup-node@v4
-      with:
-        node-version: ${{ matrix.node-version }}
-        cache: 'pnpm'
-          
-    - name: Install dependencies
-      run: |
-        cd frontend
-        echo "Installing dependencies"
-        pnpm install 
+      - uses: actions/checkout@v4
+      - name: Install pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 9
+      - name: Use Node.js ${{ matrix.node-version }}
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ matrix.node-version }}
+          cache: "pnpm"
 
-    - name: Run lint test
-      run: |
-        cd frontend
-        echo "Running lint test"
-        pnpm run lint
+      - name: Install dependencies
+        run: |
+          cd frontend
+          echo "Installing dependencies"
+          pnpm install
 
-    - name: Run build test
-      run: |
-        cd frontend
-        echo "Running build test"
-        pnpm run test-build
+      - name: Run lint test
+        run: |
+          cd frontend
+          echo "Running lint test"
+          pnpm run lint
+
+      - name: Run build test
+        run: |
+          cd frontend
+          echo "Running build test"
+          pnpm run test-build

@@ -1,12 +1,14 @@
 # WordsWords
 
 ## Description
+
 A vocabulario trainer built by Middlesex School Students
 
 ## Engineering
+
 WordsWords is a web app built with NextJs, React, a Rust backend that uses PostgreSQL.
 
-The website is designed for teachers' access to student learning and for students to effectively master new vocabulary. 
+The website is designed for teachers' access to student learning and for students to effectively master new vocabulary.
 
 The intended purpose is for students to learn new 10 words a week until they reach mastery online so that students can be given a 20-word quiz biweekly.
 
@@ -16,7 +18,9 @@ This site will use gamify techniques to improve vocabulary understanding and mem
 
 Lastly, this site will incorporate vocab from old lists to maintain past vocab knowledge.
 x
+
 ## Data Collected
+
 - Time spent by a student
 - Level of mastery per mastery and per list
 - Consistency
