@@ -39,7 +39,6 @@ export default function QuizPage({ quiz, userID }: Props) {
     const uncompletedIndex = questions.findIndex(
       (question) => !question.completed,
     );
-    console.log("Uncompleted index", uncompletedIndex);
     if (uncompletedIndex === -1) {
       setCompleted(true);
       return 0;
@@ -114,7 +113,6 @@ export default function QuizPage({ quiz, userID }: Props) {
         wordListId,
         quiz.quizType,
       );
-      console.log("upserted word mastery + question completed");
       setQuestionSubmitted(true);
     }
     // user has just pressed next
