@@ -39,7 +39,11 @@ export default function QuizPage({ quiz, userID }: Props) {
     const uncompletedIndex = questions.findIndex(
       (question) => !question.completed,
     );
-    return uncompletedIndex === -1 ? 0 : uncompletedIndex;
+    if (uncompletedIndex === -1) {
+      setCompleted(true);
+      return 0;
+    }
+    return uncompletedIndex;
   });
   const [score, setScore] = useState<number>(() => {
     let score = 0;
