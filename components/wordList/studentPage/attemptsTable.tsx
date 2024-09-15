@@ -11,7 +11,7 @@ import {
 } from "@/components/ui/table";
 
 import { Card, CardContent } from "@/components/ui/card";
-
+import Link from "next/link";
 export async function AttemptsTable({
   wordsListId,
   userId,
@@ -49,6 +49,20 @@ export async function AttemptsTable({
           </Table>
         </CardContent>
       </Card>
+      <div className="flex items-center justify-center m-auto w-full p-6">
+        <WordsButton wordListID={wordsListId} />
+      </div>
     </div>
+  );
+}
+
+
+async function WordsButton({ wordListID }: { wordListID: string }) {
+  return (
+    <Link href={`/words/${wordListID}`} passHref>
+      <button className="bg-[#ff6b6b] text-white font-bold py-2 px-4 rounded-lg">
+        View Words
+      </button>
+    </Link>
   );
 }
