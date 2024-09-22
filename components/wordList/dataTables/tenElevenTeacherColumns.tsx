@@ -4,7 +4,7 @@ import { ColumnDef, Row } from "@tanstack/react-table";
 import { Quiz, UserWordsListProgress } from "@prisma/client";
 import { upsertRetakesGranted } from "@/actions/quiz_progress";
 import { updateUserListDueDate } from "@/actions/wordlist_assignment";
-import { dateFormatter } from "@/lib/utils";
+import { dateFormatter, formatEasternTime } from "@/lib/utils";
 
 import { MoreHorizontal } from "lucide-react";
 import { useState } from "react";
@@ -118,8 +118,8 @@ function StudentQuizDisplay({
                   <TableRow key={index}>
                     <TableCell>
                       {quiz.completedAt
-                        ? dateFormatter(quiz.completedAt)
-                        : dateFormatter(quiz.createdAt)}
+                        ? formatEasternTime(quiz.completedAt)
+                        : formatEasternTime(quiz.createdAt)}
                     </TableCell>
                     <TableCell>
                       {quiz.score} / {quiz.length}

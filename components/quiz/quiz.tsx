@@ -60,6 +60,7 @@ export default function QuizPage({ quiz, userID }: Props) {
   const [questionSubmitted, setQuestionSubmitted] = useState<boolean>(false);
   const [isLoadingResults, setIsLoadingResults] = useState<boolean>(false);
   const [isLoadingNewQuiz, setIsLoadingNewQuiz] = useState<boolean>(false);
+  const [isUpserted, setIsUpserted] = useState<boolean>(false);
 
   if (!quiz.learnCompleted && quiz.quizType === "MINI") {
     return (
@@ -93,7 +94,6 @@ export default function QuizPage({ quiz, userID }: Props) {
     if (selected === null) {
       return;
     }
-
     // the user has just submitted an answer
     if (!questionSubmitted) {
       let answeredCorrectly = isCurrentCorrect ? true : false;
@@ -126,6 +126,7 @@ export default function QuizPage({ quiz, userID }: Props) {
       } else {
         setIsLoadingResults(true);
         await upsertQuizCompleted(quiz.quizId, true, score);
+        setIsUpserted(true);
         if (quiz.quizType === "MASTERY") {
           if (score >= questions.length * 0.8) {
             await updateWordListProgress(wordListId, userID, true);
@@ -256,7 +257,10 @@ export default function QuizPage({ quiz, userID }: Props) {
               Retake Quiz
             </Button>
             <Button
-              onClick={() => {
+              onClick={async () => {
+                if (!isUpserted){
+                  await upsertQuizCompleted(quiz.quizId, true, score);
+                }
                 window.location.href =
                   "/class/" + classId + "/" + quiz.wordsListId;
               }}
