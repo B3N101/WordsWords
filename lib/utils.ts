@@ -1,8 +1,13 @@
 import { type ClassValue, clsx } from "clsx";
 import { twMerge } from "tailwind-merge";
+import { toZonedTime } from "date-fns-tz";
 
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
+}
+
+export function toEasternTime(date: Date){
+  return toZonedTime(date, "America/New_York").toLocaleString();
 }
 
 export function dateFormatter(date: Date) {

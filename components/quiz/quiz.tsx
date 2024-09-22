@@ -45,8 +45,7 @@ export default function QuizPage({ quiz, userID }: Props) {
     }
     return uncompletedIndex;
   });
-  // todo: calculate score based on questions at the very end, not while in progress
-  const calculateScore = () => {
+  const [score, setScore] = useState<number>(() => {
     let score = 0;
     questions.forEach((question) => {
       if (question.correctlyAnswered) {
@@ -54,13 +53,14 @@ export default function QuizPage({ quiz, userID }: Props) {
       }
     });
     return score;
-  };
+  });
   const [isCurrentCorrect, setIsCurrentCorrect] = useState<boolean | null>(
     null,
   );
   const [questionSubmitted, setQuestionSubmitted] = useState<boolean>(false);
   const [isLoadingResults, setIsLoadingResults] = useState<boolean>(false);
   const [isLoadingNewQuiz, setIsLoadingNewQuiz] = useState<boolean>(false);
+  const [isUpserted, setIsUpserted] = useState<boolean>(false);
 
   if (!quiz.learnCompleted && quiz.quizType === "MINI") {
     return (
@@ -94,10 +94,14 @@ export default function QuizPage({ quiz, userID }: Props) {
     if (selected === null) {
       return;
     }
-
     // the user has just submitted an answer
     if (!questionSubmitted) {
       let answeredCorrectly = isCurrentCorrect ? true : false;
+
+      if (isCurrentCorrect) {
+        setScore(score + 1);
+      }
+      console.log(score);
       await upsertQuestionCompleted(
         questions[currentIndex].questionId,
         true,
@@ -121,8 +125,8 @@ export default function QuizPage({ quiz, userID }: Props) {
         setIsCurrentCorrect(null);
       } else {
         setIsLoadingResults(true);
-        const score = calculateScore();
         await upsertQuizCompleted(quiz.quizId, true, score);
+        setIsUpserted(true);
         if (quiz.quizType === "MASTERY") {
           if (score >= questions.length * 0.8) {
             await updateWordListProgress(wordListId, userID, true);
@@ -218,7 +222,7 @@ export default function QuizPage({ quiz, userID }: Props) {
         <div className="flex flex-col flex-1 items-center justify-center gap-10 align-middle">
           <h1 className="text-3xl font-bold pt-10">Quiz Results</h1>
           <p>
-            You scored {quiz.score} out of{" "}
+            You scored {score === 0 ? quiz.score : score} out of{" "}
             {questions.length}
           </p>
           <div className="grid grid-cols-2 gap-6 m-12">
@@ -253,7 +257,10 @@ export default function QuizPage({ quiz, userID }: Props) {
               Retake Quiz
             </Button>
             <Button
-              onClick={() => {
+              onClick={async () => {
+                if (!isUpserted){
+                  await upsertQuizCompleted(quiz.quizId, true, score);
+                }
                 window.location.href =
                   "/class/" + classId + "/" + quiz.wordsListId;
               }}

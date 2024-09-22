@@ -9,7 +9,7 @@ import {
   TableCaption,
   TableHeader,
 } from "@/components/ui/table";
-
+import { toEasternTime } from "@/lib/utils";
 import { Card, CardContent } from "@/components/ui/card";
 import Link from "next/link";
 export async function AttemptsTable({
@@ -42,7 +42,7 @@ export async function AttemptsTable({
                   <TableCell>
                     {quiz.score} / {quiz.length}
                   </TableCell>
-                  <TableCell>{quiz.completedAt?.toLocaleString()}</TableCell>
+                  <TableCell>{toEasternTime(quiz.completedAt!)}</TableCell>
                 </TableRow>
               ))}
             </TableBody>
