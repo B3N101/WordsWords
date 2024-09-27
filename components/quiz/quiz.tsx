@@ -31,6 +31,7 @@ export default function QuizPage({ quiz, userID }: Props) {
   // TODO: shuffle questions here
   const [completed, setCompleted] = useState<boolean>(quiz.completed);
   const [selected, setSelected] = useState<string | null>(null);
+  const [isButtonDisabled, setIsButtonDisabled] = useState(false);
   const [started, setStarted] = useState<boolean>(() => {
     return questions.some((question) => question.completed);
   });
@@ -96,12 +97,12 @@ export default function QuizPage({ quiz, userID }: Props) {
     }
     // the user has just submitted an answer
     if (!questionSubmitted) {
+      setIsButtonDisabled(true);
       let answeredCorrectly = isCurrentCorrect ? true : false;
-
       if (isCurrentCorrect) {
         setScore(score + 1);
       }
-      console.log(score);
+      console.log("Score is ", score);
       await upsertQuestionCompleted(
         questions[currentIndex].questionId,
         true,
@@ -113,8 +114,8 @@ export default function QuizPage({ quiz, userID }: Props) {
         wordListId,
         quiz.quizType,
       );
-
       setQuestionSubmitted(true);
+      setIsButtonDisabled(false);
     }
     // user has just pressed next
     else {
@@ -211,7 +212,7 @@ export default function QuizPage({ quiz, userID }: Props) {
             <div className="float-right">
               <Button
                 onClick={handleNext}
-                disabled={started ? selected === null : false}
+                disabled={started ? (selected === null || isButtonDisabled) : false}
               >
                 {!started ? "Start" : questionSubmitted ? "Next" : "Submit"}
               </Button>
