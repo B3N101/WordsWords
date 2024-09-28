@@ -119,26 +119,55 @@ export const createMasterQuiz = async (
   userId: string,
   classId: string,
 ) => {
-  const wordList = await prisma.wordsList.findFirst({
-    where: {
+  const classWordsList = await prisma.classWordsList.findFirst({
+    where:{
       listId: wordListId,
+      classId: classId,
     },
-    include: {
-      words: true,
-    },
-  });
-  if (!wordList) {
+    include:{
+      wordsList: {
+        include: {
+          words: true,
+        }
+      },
+    }
+  })
+  if (!classWordsList){
     throw new Error("Word list not found");
   }
+  const wordList = classWordsList.wordsList;
   const words = wordList.words;
   // retrieve the 5 words with the lowest mastery score from other lists
+  const lastThreeLists = await prisma.classWordsList.findMany({
+    where: {
+      classId: classId,
+      dueDate: {
+        lt: classWordsList.dueDate,
+      },
+      listId:{
+        not: wordListId,
+      },
+    },
+    orderBy: {
+      dueDate: "desc",
+    },
+    select:{
+      listId: true,
+    },
+    take: 3,
+  });
+  const lastThreeListIds = lastThreeLists.map(list => list.listId);
+  console.log("Taking from last three lists", lastThreeListIds)
   const oldWords = await prisma.userWordMastery.findMany({
     where: {
       userId: userId,
       word: {
         listId: {
-          not: wordListId,
+          in: lastThreeListIds,
         },
+      },
+      masteryScore: {
+        gt: 0,
       },
     },
     orderBy: {
@@ -149,6 +178,7 @@ export const createMasterQuiz = async (
     },
     take: 5,
   });
+  console.log("Old words are ", oldWords);
   const allWords = words.concat(oldWords.flatMap((word) => word.word));
   const allShuffledWords = allWords.sort(() => Math.random() - 0.5);
   const questions = allShuffledWords.map((word, index) => {
