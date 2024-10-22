@@ -1,6 +1,6 @@
 import prisma from "@/prisma/prisma";
 import { Metadata } from "next";
-import StudyQuizPage from "@/components/study/studySpaceQuiz";
+import StudyFlashcardPage from "@/components/study/studySpaceFlashcards";
 export const metadata: Metadata = {
   title: "MX Words Words | Study Quiz",
   description: "MX Words Words Study Quiz",
@@ -50,7 +50,7 @@ const page = async ({ params }: { params: { studySpaceID: string, classID: strin
   quiz.questions.forEach((question) => {
     question.allAnswers = question.allAnswers.sort(() => Math.random() - 0.5);
   });
-  return <StudyQuizPage quiz={quiz} classID={params.classID} />;
+  return <StudyFlashcardPage quiz={quiz} classID={params.classID} />;
 
 };
 

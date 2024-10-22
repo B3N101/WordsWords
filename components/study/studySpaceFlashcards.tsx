@@ -2,7 +2,7 @@
 
 import { type Word } from "@prisma/client";
 import { Button } from "@/components/ui/button";
-import { Loader2, Star } from "lucide-react";
+import { Loader2, Star, Check, X } from "lucide-react";
 import { useState } from "react";
 import AudioButton from "../audioButton";
 import { StarButton } from "./singleWordDisplay";
@@ -61,6 +61,7 @@ export default function StudyFlashcardPage({
       setCompleted(true);
       setIsUpserted(true);
     }
+    setPageContent("blank");
     setIsButtonDisabled(false);
   }
 
@@ -88,7 +89,7 @@ export default function StudyFlashcardPage({
           </p>
         </div>
       ) : !completed ? (
-        <div className="flex flex-col gap-10 h-dvh">
+        <div className="flex flex-col gap-10 h-[90dvh] relative">
             <header className="pb-10 pt-10 flex-col items-center align-middle">
               <ProgressBar
                 value={((currentIndex + 1) / questions.length) * 100}
@@ -96,21 +97,22 @@ export default function StudyFlashcardPage({
               <div className="text-center pt-5">
                 Card {currentIndex + 1} / {questions.length}
               </div>
-        </header>
-        <h1 className="flex flex-row gap-3 text-5xl font-bold text-center mx-auto mt-20">
+            </header>
+            <h1 className="flex flex-row gap-3 text-5xl font-bold items-center text-center mx-auto">
+                <Button
+                        onClick={() => handleStarClick(words[currentIndex].wordId)}
+                        disabled={isStarButtonDisabled}
+                    >
+                        {isStarred ? 
+                            <Star className="h-4 w-4" fill="black" strokeWidth={0} /> : 
+                            <Star className="h-4 w-4" />}
+                </Button>
+
             {words[currentIndex].word}
             {words[currentIndex].audioSrc ? (
               <AudioButton src={words[currentIndex].audioSrc} />
             ) : null}
-            <Button
-                    onClick={() => handleStarClick(words[currentIndex].wordId)}
-                    disabled={isStarButtonDisabled}
-                >
-                    {isStarred ? 
-                        <Star className="h-4 w-4" fill="black" strokeWidth={0} /> : 
-                        <Star className="h-4 w-4" />}
-            </Button>
-          </h1>
+            </h1>
           {pageContent === "blank" ? (
             <h2 className="text-2xl font-semibold text-center mx-auto">
               {words[currentIndex].partOfSpeech}
@@ -127,43 +129,44 @@ export default function StudyFlashcardPage({
               ? words[currentIndex].context
               : words[currentIndex].definition)}
           </p>
-          <footer className="flex group items-center justify-between">
-            <div className="float-right position: absolute right-6 flex flex-col">
-              <Button onClick={() => {
-                setPageContent("definition");
-              }}>
-                See Definition
-              </Button>
-            </div>
-            <div className="grid-cols-2 w-auto m-auto">
-                <Button onClick={() => handleNext(true)}
-                    variant="incorrect"
-                    disabled={isButtonDisabled}
-                >
-                    I don't know this
-                </Button>
-                <Button onClick={() => handleNext(false)}
-                    variant="correct"
-                    disabled={isButtonDisabled}
-                >
-                    I know this
-                </Button>
-            </div>
-            <div className="float-left flex flex-col">
+          <footer className="flex group items-center justify-between absolute inset-x-0 bottom-0">
+           <div className="float-left flex flex-col mr-auto p-2">
               <Button onClick = {() => {
                 setPageContent("context");
               }}>
                 See Context
               </Button>
             </div>
+            <div className="grid-cols-2 w-auto m-auto space-x-10 p-2">
+                <Button onClick={() => handleNext(true)}
+                    variant="incorrect"
+                    disabled={isButtonDisabled}
+                >
+                    <X className="h-4 w-4" />
+                </Button>
+                <Button onClick={() => handleNext(false)}
+                    variant="correct"
+                    disabled={isButtonDisabled}
+                >
+                    <Check className="h-4 w-4" />
+                </Button>
+            </div>
+            <div className="float-right ml-auto flex flex-col p-2">
+              <Button onClick={() => {
+                setPageContent("definition");
+              }}>
+                See Definition
+              </Button>
+            </div>
+            
           </footer>
         </div>
       ) : (
         <div className="flex h-dvh">
-          <h1 className="text-2xl font-bold text-center m-auto">
-            You&apos;ve completed flashcards!
-          </h1>
-          <div className="grid grid-cols-1 gap-6 m-12">
+          <div className="grid grid-cols-1 gap-6 m-12 mx-auto">
+            <h1 className="text-2xl font-bold text-center m-auto">
+                You&apos;ve completed flashcards!
+            </h1>
             <Button
               onClick={async () => {
                 if (!isUpserted){

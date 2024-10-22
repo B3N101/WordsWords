@@ -25,6 +25,6 @@
       "@/public/*": ["./public/*"]
     }
   },
-  "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", ".next/types/**/*.ts"],
+  "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", ".next/types/**/*.ts", "app/class/[classID]/study/[studySpaceID]/flashcard"],
   "exclude": ["node_modules"]
 }
