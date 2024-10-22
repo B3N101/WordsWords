@@ -9,7 +9,7 @@ import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { WordListSubMenu } from "./sideBarSubMenu";
 import { ClassWordsListWithWordsList } from "@/prisma/types";
-import { ClipboardList } from "lucide-react";
+import { ClipboardList, Brain } from "lucide-react";
 
 import Link from "next/link";
 
@@ -150,6 +150,24 @@ export default function SideBarStructure({
                 People
               </span>
             </Link>
+          </li>
+          <li>
+            {isTeacher ? null : (
+              <Link
+                href={"/class/" + classID + "/study"}
+                className={`flex items-center gap-3 rounded-md px-3 py-2 text-muted-foreground transition-colors hover:bg-accent hover:text-accent-foreground ${
+                  isExpanded ? "justify-start" : "justify-center"
+                }`}
+                prefetch={false}
+              >
+                <Brain className="h-5 w-5" />
+                <span
+                  className={`text-sm font-medium ${isExpanded ? "block" : "hidden"}`}
+                >
+                  Study
+                </span>
+              </Link>
+            )}
           </li>
         </ul>
       </nav>

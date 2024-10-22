@@ -20,6 +20,14 @@ function pickNRandom(arr: string[], n: number) {
     return result;
   }
 
+export const deleteStudySpace = async (studySpaceId: string) => {
+    await prisma.studySpace.delete({
+        where: {
+            id: studySpaceId,
+        },
+    });
+    return;
+}
 export const createNewStudySpace = async (
     userId: string,
     classId: string,

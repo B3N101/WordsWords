@@ -5,9 +5,9 @@ import { Button } from "@/components/ui/button";
 import { Star, Loader2 } from "lucide-react";
 import ProgressBar from "@/components/progressBar";
 import {
-    updateStudySpaceWord,
-    updateStudySpaceQuestionCompleted,
-    updateStudyQuizCompleted,
+  updateStudySpaceWord,
+  updateStudySpaceQuestionCompleted,
+  updateStudyQuizCompleted,
 } from "@/actions/study_space";
 
 import { type StudyQuizWithQuestions } from "@/prisma/types";
@@ -53,18 +53,17 @@ export default function StudyQuizPage({ quiz, classID }: Props) {
   );
   const [questionSubmitted, setQuestionSubmitted] = useState<boolean>(false);
   const [isStarred, setIsStarred] = useState<boolean>(
-    questions[currentIndex].studyWord.starred
+    questions[currentIndex].studyWord.starred,
   );
-  const [isStarButtonDisabled, setIsStarButtonDisabled] = useState<boolean>(
-    false,
-  );
+  const [isStarButtonDisabled, setIsStarButtonDisabled] =
+    useState<boolean>(false);
   const [isLoadingResults, setIsLoadingResults] = useState<boolean>(false);
   const [isLoadingNewQuiz, setIsLoadingNewQuiz] = useState<boolean>(false);
   const [isUpserted, setIsUpserted] = useState<boolean>(false);
 
   const question = questions[currentIndex];
   const options = question.allAnswers;
-  
+
   /*TODO: Track user progress so that refresh sends them to the current answer*/
   const handleAnswerClick = (answer: String) => {
     setIsCurrentCorrect(answer === question.correctAnswer);
@@ -88,8 +87,7 @@ export default function StudyQuizPage({ quiz, classID }: Props) {
       if (isCurrentCorrect) {
         setScore(score + 1);
         setIsStarred(false);
-      }
-      else{
+      } else {
         setIsStarred(true);
       }
       await updateStudySpaceQuestionCompleted(
@@ -101,7 +99,7 @@ export default function StudyQuizPage({ quiz, classID }: Props) {
         studySpaceID,
         question.wordID,
         !answeredCorrectly, // starred is false when we answer correctly
-      )
+      );
       setQuestionSubmitted(true);
       setIsButtonDisabled(false);
     }
@@ -123,19 +121,19 @@ export default function StudyQuizPage({ quiz, classID }: Props) {
       }
     }
   };
-  const handleStarClick = async(wordID: string) => {
+  const handleStarClick = async (wordID: string) => {
     setIsStarButtonDisabled(true);
     setIsStarred(!isStarred);
     if (isStarred) {
-        //unstar
+      //unstar
       await updateStudySpaceWord(studySpaceID, wordID, false);
     } else {
-        //star
-      await updateStudySpaceWord(studySpaceID, wordID, true)
+      //star
+      await updateStudySpaceWord(studySpaceID, wordID, true);
     }
     setIsStarButtonDisabled(false);
     return;
-  }
+  };
   console.log("Current word", questions[currentIndex].studyWord);
   return (
     <div>
@@ -162,7 +160,9 @@ export default function StudyQuizPage({ quiz, classID }: Props) {
           ) : null}
           <main className="flex justify-center flex-1 align-middle h-dvh">
             {!started ? (
-              <h1 className="text-3xl font-bold p-4 pt-10">Welcome to Your Studying Quiz!</h1>
+              <h1 className="text-3xl font-bold p-4 pt-10">
+                Welcome to Your Studying Quiz!
+              </h1>
             ) : (
               <div className="w-full">
                 <h2 className="text-2xl font-bold text-center w-3/4 mx-auto">
@@ -203,21 +203,27 @@ export default function StudyQuizPage({ quiz, classID }: Props) {
             }
           >
             <div className="float-left">
-                {started ? <Button
-                    onClick={() => handleStarClick(question.wordID)}
-                    disabled={isStarButtonDisabled}
+              {started ? (
+                <Button
+                  onClick={() => handleStarClick(question.wordID)}
+                  disabled={isStarButtonDisabled}
                 >
-                    {isStarred ? 
-                        <Star className="h-4 w-4" fill="black" strokeWidth={0} /> : 
-                        <Star className="h-4 w-4" />}
-                    {isStarred ? " Unstar" : " Star"}
-                </Button> : null }
+                  {isStarred ? (
+                    <Star className="h-4 w-4" fill="black" strokeWidth={0} />
+                  ) : (
+                    <Star className="h-4 w-4" />
+                  )}
+                  {isStarred ? " Unstar" : " Star"}
+                </Button>
+              ) : null}
             </div>
 
             <div className="float-right">
               <Button
                 onClick={handleNext}
-                disabled={started ? (selected === null || isButtonDisabled) : false}
+                disabled={
+                  started ? selected === null || isButtonDisabled : false
+                }
               >
                 {!started ? "Start" : questionSubmitted ? "Next" : "Submit"}
               </Button>
@@ -234,11 +240,10 @@ export default function StudyQuizPage({ quiz, classID }: Props) {
           <div className="grid grid-cols-1 gap-6 m-12">
             <Button
               onClick={async () => {
-                if (!isUpserted){
+                if (!isUpserted) {
                   await updateStudyQuizCompleted(quiz.id, true, score);
                 }
-                window.location.href =
-                  "/class/" + classID + "/study";
+                window.location.href = "/class/" + classID + "/study";
               }}
             >
               Back to Dashboard

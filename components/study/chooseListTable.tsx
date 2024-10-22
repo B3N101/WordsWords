@@ -25,12 +25,8 @@ import { useToast } from "@/components/ui/use-toast";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import {
-  createNewStudySpace,
-} from "@/actions/study_space";
-import {
-  ChooseListTableType,
-} from "@/components/study/chooseListsColumns";
+import { createNewStudySpace } from "@/actions/study_space";
+import { ChooseListTableType } from "@/components/study/chooseListsColumns";
 
 import { Grade } from "@prisma/client";
 
@@ -186,33 +182,33 @@ function CreateStudySpaceCard({
   ) => {
     e.preventDefault();
     setIsLoading(true);
-    try{
-        await createNewStudySpace(
-            userId,
-            classId,
-            listIds,
-        );
-    }
-    catch (error){
-        console.error(error);
+    try {
+      await createNewStudySpace(userId, classId, listIds);
+    } catch (error) {
+      console.error(error);
     }
     setIsLoading(false);
     return toast({
       title: "Success!",
       description: "Study Space Created!",
-      action: <ToastAction altText="Refresh" onClick={() => {window.location.reload()}}>Refresh</ToastAction>,
-        });
-    };
+      action: (
+        <ToastAction
+          altText="Refresh"
+          onClick={() => {
+            window.location.reload();
+          }}
+        >
+          Refresh
+        </ToastAction>
+      ),
+    });
+  };
   return (
     <form onSubmit={handleWordsListAssignment}>
       <div className="grid gap-4 m-4">
-        <div className="grid grid-cols-2 gap-2">
-        </div>
+        <div className="grid grid-cols-2 gap-2"></div>
         <Button type="submit" disabled={isLoading || listIds.length === 0}>
-          {isLoading
-              ? "Creating Study Space..."
-              : "Create Study Space"
-              }
+          {isLoading ? "Creating Study Space..." : "Create Study Space"}
         </Button>
       </div>
     </form>
