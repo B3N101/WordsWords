@@ -64,6 +64,7 @@ model User {
   quizzes Quiz[]
 
   UserWordsListProgress UserWordsListProgress[]
+  StudySpaces           StudySpace[]
 }
 
 model Class {
@@ -76,6 +77,7 @@ model Class {
   userWordsListProgresses UserWordsListProgress[]
   classWordsLists         ClassWordsList[]
   students                User[]                  @relation("UserClasses")
+  StudySpaces             StudySpace[]
 }
 
 model Word {
@@ -95,6 +97,7 @@ model Word {
   audioSrc             String?
   questions            Question[]
   userWordMasteries    UserWordMastery[]
+  studySpaceWords      StudySpaceWord[]
   wordsList            WordsList?       @relation(fields: [listId], references: [listId], onDelete: Cascade)
 }
 
@@ -106,6 +109,8 @@ model WordsList {
   UserWordsListProgress UserWordsListProgress[]
   ClassWordsList        ClassWordsList[]
   words                 Word[]
+  
+  StudySpaces           StudySpace[]
 }
 
 model UserWordsListProgress {
@@ -179,6 +184,56 @@ model Question {
   word              Word     @relation(fields: [wordId], references: [wordId], onDelete: Cascade)
 }
 
+model StudySpace{
+  id String @id @default(cuid())
+  userID String
+  classID String
+
+  wordLists WordsList[]
+  user User @relation(fields: [userID], references: [id], onDelete: Cascade)
+  class Class @relation(fields: [classID], references: [classId], onDelete: Cascade)
+
+  StudySpaceWords StudySpaceWord[]
+  StudySpaceQuizzes StudySpaceQuiz[]
+  @@unique([userID, classID])
+}
+
+model StudySpaceQuiz{
+  id String @id @default(cuid())
+  completed             Boolean               @default(false)
+  score                 Float                 @default(0)
+  length                Int
+  questions             StudySpaceQuestion[]
+  studyType StudyQuizType @default(QUIZ)
+
+  studySpaceID String
+  studySpace StudySpace @relation(fields: [studySpaceID], references: [id], onDelete: Cascade)
+}
+model StudySpaceQuestion{
+  id        String   @id @default(cuid())
+  questionString    String
+  rank              Int
+  studyQuizID            String
+  studySpaceID            String
+  allAnswers        String[]
+  correctAnswer     String
+  completed         Boolean  @default(false)
+  correctlyAnswered Boolean  @default(false)
+  wordID String
+  
+  studyQuiz StudySpaceQuiz @relation(fields: [studyQuizID], references: [id], onDelete: Cascade)
+  studyWord StudySpaceWord @relation(fields: [wordID, studySpaceID], references: [wordID, studySpaceID], onDelete: Cascade)
+}
+model StudySpaceWord{
+  studySpaceID String
+  wordID String
+  studySpace StudySpace @relation(fields: [studySpaceID], references: [id], onDelete: Cascade)
+  word Word @relation(fields: [wordID], references: [wordId], onDelete: Cascade)
+  studySpaceQuestions StudySpaceQuestion[]
+
+  starred Boolean @default(false)
+  @@id([studySpaceID, wordID], name: "studySpaceWordId")
+}
 model RoleRequest {
   userId String @unique
   role Role
@@ -206,4 +261,9 @@ enum partOfSpeech {
 enum QuizType {
   MINI
   MASTERY
+}
+
+enum StudyQuizType {
+  QUIZ
+  FLASHCARD
 }
