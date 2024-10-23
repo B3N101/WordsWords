@@ -16,6 +16,7 @@ function pickNRandom(arr: string[], n: number) {
   }
   return result;
 }
+
 export const createMiniQuiz = async (
   wordListId: string,
   userId: string,

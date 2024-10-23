@@ -3,6 +3,42 @@ import { UserWordsListProgress } from "@prisma/client";
 import { analytics } from "googleapis/build/src/apis/analytics";
 import prisma from "./prisma";
 
+export const getStudySession = async (userId: string, classId: string) => {
+  const data = await prisma.studySpace.findFirst({
+    where: {
+      userID: userId,
+      classID: classId,
+    },
+    include:{
+      wordLists: true,
+      StudySpaceWords: {
+        include:{
+          word: true,
+        }
+      },
+      StudySpaceQuizzes: true,
+    }
+  });
+  return data;
+}
+export const getAllCompletedWordsLists = async (userId: string, classId: string) => {
+  const data = await prisma.userWordsListProgress.findMany({
+    where: {
+      userId: userId,
+      classId: classId,
+      completed: true,
+    },
+    include: {
+      wordsList: {
+        include: {
+          words: true,
+        },
+      },
+    },
+  });
+
+  return data;
+}
 export const getListSize = cache(async (wordListID: string) => {
   const data = await prisma.wordsList.findFirst({
     where: {
