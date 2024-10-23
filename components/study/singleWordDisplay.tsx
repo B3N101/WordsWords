@@ -35,7 +35,7 @@ export default function SingleWordDisplay({
     }
   };
   return (
-    <div className="flex group items-center justify-between border-2 border-[#ff6b6b] rounded-lg p-2">
+    <div className="flex group items-center justify-between border-0 border-[#ff6b6b] rounded-lg p-2 bg-gray-100">
       <div className="text-lg text-gray-600 font-semibold">
         {studyWord.word.word}
       </div>

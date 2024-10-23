@@ -1,7 +1,6 @@
 "use server";
 
 import prisma from "@/prisma/prisma";
-import { StudySpaceWord } from "@prisma/client";
 import { StudySpaceWordWithWord } from "@/prisma/types";
 
 
