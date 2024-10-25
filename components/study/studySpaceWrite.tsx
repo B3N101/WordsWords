@@ -107,7 +107,6 @@ export default function StudyWritePage({ quiz, classID }: Props) {
     setAnswerSubmitted(true);
   return;
 }
-// TODO: Update score, add additional parameter for was original correct
 const handleNextClick = async (manualIsCorrect: boolean, updating: boolean ) => {
   setIsButtonDisabled(true);
   if (manualIsCorrect){
@@ -116,9 +115,10 @@ const handleNextClick = async (manualIsCorrect: boolean, updating: boolean ) => 
   else{
     setIsStarred(true);
   }
+  await updateStudySpaceQuestionCompleted(question.id, true, manualIsCorrect);
+  await updateStudySpaceWord(studySpaceID, word.wordId, !manualIsCorrect);
+
   if (updating){
-    await updateStudySpaceQuestionCompleted(question.id, true, manualIsCorrect);
-    await updateStudySpaceWord(studySpaceID, word.wordId, !manualIsCorrect);
     if (manualIsCorrect !== isCorrect){
       if (manualIsCorrect){
         setScore(score + 1);
