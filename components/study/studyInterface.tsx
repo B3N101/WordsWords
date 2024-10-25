@@ -15,6 +15,7 @@ import { Button } from "../ui/button";
 import {
   createFlashCardQuiz,
   createStudyQuiz,
+  createWriteQuiz,
   deleteStudySpace,
 } from "@/actions/study_space";
 import { useState } from "react";
@@ -94,6 +95,20 @@ export default function StudyInterface({ studySpace }: StudyInterfaceProps) {
                     />
                   </DialogContent>
                 </Dialog>
+                <Dialog>
+                  <DialogTrigger asChild>
+                    <Button className="bg-[#ff6b6b] text-white hover:bg-[#ff6b6baf] font-bold py-2 px-4 rounded-lg border-red-300 border-2">
+                      Write Mode
+                    </Button>
+                  </DialogTrigger>
+                  <DialogContent>
+                    <DialogHeader>Enter Write Mode</DialogHeader>
+                    <WriteSelectionButtons
+                      studySpace={studySpace}
+                      words={starredWords}
+                    />
+                  </DialogContent>
+                </Dialog>
               </div>
             ) : null}
           </div>
@@ -139,6 +154,20 @@ export default function StudyInterface({ studySpace }: StudyInterfaceProps) {
                   <DialogContent>
                     <DialogHeader>Start Quizzing</DialogHeader>
                     <QuizSelectionButtons
+                      studySpace={studySpace}
+                      words={unstarredWords}
+                    />
+                  </DialogContent>
+                </Dialog>
+                <Dialog>
+                  <DialogTrigger asChild>
+                    <Button className="bg-[#ff6b6b] text-white hover:bg-[#ff6b6baf] font-bold py-2 px-4 rounded-lg border-red-300 border-2">
+                      Write Mode
+                    </Button>
+                  </DialogTrigger>
+                  <DialogContent>
+                    <DialogHeader>Enter Write Mode</DialogHeader>
+                    <WriteSelectionButtons
                       studySpace={studySpace}
                       words={unstarredWords}
                     />
@@ -196,6 +225,20 @@ export default function StudyInterface({ studySpace }: StudyInterfaceProps) {
                   />
                 </DialogContent>
               </Dialog>
+              <Dialog>
+                  <DialogTrigger asChild>
+                    <Button className="bg-[#ff6b6b] text-white hover:bg-[#ff6b6baf] font-bold py-2 px-4 rounded-lg border-red-300 border-2">
+                      Write Mode
+                    </Button>
+                  </DialogTrigger>
+                  <DialogContent>
+                    <DialogHeader>Enter Write Mode</DialogHeader>
+                    <WriteSelectionButtons
+                      studySpace={studySpace}
+                      words={allWords}
+                    />
+                  </DialogContent>
+                </Dialog>
             </div>
           </div>
           <div className="space-y-4 py-5">
@@ -361,6 +404,72 @@ function FlashcardSelectionButtons({
         onClick={() => getNewFlashcards()}
       >
         Start New Flashcards
+      </Button>
+    );
+  }
+}
+
+
+function WriteSelectionButtons({
+  studySpace,
+  words,
+}: {
+  studySpace: StudySpaceWithLists;
+  words: StudySpaceWordWithWord[];
+}) {
+  async function getNewWriteQuiz() {
+    await createWriteQuiz(studySpace.id, words);
+    window.location.href = `study/${studySpace.id}/write/`;
+  }
+
+  if (!studySpace.StudySpaceQuizzes) {
+    return (
+      <Button
+        className="bg-white text-[#ff6b6b] font-bold py-2 px-4 rounded-lg"
+        onClick={() => getNewWriteQuiz()}
+      >
+        Start New Write
+      </Button>
+    );
+  }
+  const oldQuizzes = studySpace.StudySpaceQuizzes.filter(
+    (quiz) => quiz.studyType === "WRITE",
+  );
+  if (!oldQuizzes) {
+    return (
+      <Button
+        className="bg-white text-[#ff6b6b] font-bold py-2 px-4 rounded-lg"
+        onClick={() => getNewWriteQuiz()}
+      >
+        Start New Write
+      </Button>
+    );
+  }
+  const oldQuiz = oldQuizzes[0];
+
+  if (oldQuiz && !oldQuiz.completed && oldQuiz.length > 0) {
+    return (
+      <div className="flex flex-row justify-between">
+        <Link href={`study/${studySpace.id}/write/`} passHref>
+          <button className="bg-[#ff6b6b] text-white font-bold py-2 px-4 rounded-lg">
+            Continue Previous Session
+          </button>
+        </Link>
+        <Button
+          className="bg-white text-[#ff6b6b] font-bold py-2 px-4 rounded-lg"
+          onClick={() => getNewWriteQuiz()}
+        >
+          Start New Write
+        </Button>
+      </div>
+    );
+  } else {
+    return (
+      <Button
+        className="bg-white text-[#ff6b6b] font-bold py-2 px-4 rounded-lg"
+        onClick={() => getNewWriteQuiz()}
+      >
+        Start New Write
       </Button>
     );
   }
