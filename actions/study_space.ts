@@ -156,6 +156,78 @@ export const createFlashCardQuiz = async (
     return studyQuiz;
 }
 
+export const createWriteQuiz = async (
+  studySpaceID: string,
+  studyWords: StudySpaceWordWithWord[],
+) => {
+  try{
+      await prisma.studySpaceQuiz.deleteMany({
+          where:{
+              studySpaceID: studySpaceID,
+              studyType: "WRITE",
+          },
+      })
+  }
+  catch(e){
+      console.log("No previous writing quiz found");
+  }
+  // shuffle the words
+  const shuffledWords = studyWords.sort(() => Math.random() - 0.5);
+  const questions = shuffledWords.map((studyWord, index) => {
+    const word = studyWord.word;
+    // get random number between 0 and 1
+    const random = Math.random();
+    // first type of question
+    if (random < 0.5) {
+      // Take two of the incorrect definitions at random
+      const answerChoices = pickNRandom(word.incorrectDefinitions, 3);
+      // add the correct definition
+      answerChoices.push(word.definition);
+      return {
+        questionString: "What is the definition of " + word.word + "?",
+        rank: index,
+        allAnswers: answerChoices,
+        correctAnswer: word.definition,
+        wordID: word.wordId,
+        studySpaceID: studySpaceID,
+      };
+    }
+    // second type of question
+    else {
+      const answerChoices = word.incorrectFillIns;
+      answerChoices.push(word.correctFillIn);
+      return {
+        questionString: word.exampleSentence,
+        rank: index,
+        allAnswers: answerChoices,
+        correctAnswer: word.correctFillIn,
+        wordID: word.wordId,
+        studySpaceID: studySpaceID,
+      };
+    }
+  });
+  const studyQuiz = await prisma.studySpaceQuiz.create({
+      data: {
+          studySpace: { connect: { id: studySpaceID } },
+          length: questions.length,
+          studyType: "WRITE",
+          questions: {
+              createMany: {
+                  data: questions,
+              },
+          },
+      },
+      include:{
+          questions: {
+              include:{
+                  studyWord: true,
+              }
+          },
+      }
+  });
+  return studyQuiz;
+}
+
 export const createStudyQuiz = async (
     studySpaceID: string,
     studyWords: StudySpaceWordWithWord[],

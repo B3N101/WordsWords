@@ -266,4 +266,5 @@ enum QuizType {
 enum StudyQuizType {
   QUIZ
   FLASHCARD
+  WRITE
 }
