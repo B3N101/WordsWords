@@ -26,6 +26,7 @@ export function dateFormatter(date: Date) {
 
 export function isOverdue(date: Date) {
   const millisecondsInDay = 1000 * 60 * 60 * 24;
-  const dueDateMidnight = date.getTime() + millisecondsInDay;
+  const timeZoneOffset = 1000*60*60*5; // 5 hours for EDT, 4 hours for EST
+  const dueDateMidnight = date.getTime() + millisecondsInDay + timeZoneOffset;
   return dueDateMidnight < new Date().getTime();
 }
