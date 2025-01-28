@@ -209,11 +209,13 @@ export async function connectClassActiveWordLists(
   if (currClass.students.length === 0) {
     return [];
   }
+  const todayMinusOne = new Date();
+  todayMinusOne.setDate(todayMinusOne.getDate() - 1);
   const activeLists = await prisma.classWordsList.findMany({
     where: {
       classId: classID,
       dueDate: {
-        gte: new Date(),
+        gte: todayMinusOne,
       },
     },
     select: {
