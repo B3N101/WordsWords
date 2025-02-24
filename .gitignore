@@ -47,3 +47,6 @@ google_sheets_secrets.json
 
 # prisma migrations
 /prisma/migrations
+
+# testing
+/app/test
