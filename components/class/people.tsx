@@ -2,7 +2,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { getClassPeople } from "@/prisma/queries";
-
+import { RemoveStudentButton } from "@/components/class/classActionButtons";
 // Helper function to get initials from a name
 const getInitials = (name: string) => {
   return name
@@ -71,6 +71,7 @@ export async function PeopleBoard({ classID }: { classID: string }) {
                         {student.name}
                       </p>
                     </div>
+                    <RemoveStudentButton classID={classID} userID={student.id} />
                   </div>
                 ))}
               </div>

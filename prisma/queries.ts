@@ -138,9 +138,21 @@ export const getWordListName = cache(async (wordListID: string) => {
 });
 export const getListNameAndDueDate = cache(
   async (classId: string, wordListID: string) => {
+    const students = await prisma.user.findMany({
+      where: {
+        role: "STUDENT",
+        Classes: {
+          some: {
+            classId: classId,
+          },
+        }
+      },
+    });
     const data = await prisma.userWordsListProgress.findFirst({
       where: {
-        classId: classId,
+        userId: {
+          in: students.map((student) => student.id),
+        },        
         wordsListListId: wordListID,
       },
       include: { wordsList: true },
@@ -150,9 +162,21 @@ export const getListNameAndDueDate = cache(
 );
 export const getAllUserWordsListProgresses = cache(
   async (classId: string, wordListId: string) => {
+    const students = await prisma.user.findMany({
+      where: {
+        role: "STUDENT",
+        Classes: {
+          some: {
+            classId: classId,
+          },
+        }
+      },
+    });
     const data = await prisma.userWordsListProgress.findMany({
       where: {
-        classId: classId,
+        userId: {
+          in: students.map((student) => student.id),
+        },
         wordsListListId: wordListId,
       },
       include: {

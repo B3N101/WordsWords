@@ -37,7 +37,7 @@ export default async function Footer() {
           </div>
         </div>
         <div className="flex items-center gap-1 text-xs text-muted-foreground">
-          <p>&copy; 2024 Middlesex School</p>
+          <p>&copy; 2025 Middlesex School</p>
           <Separator orientation="vertical" />
           <p>Developed by Ben Feuer &amp; Ian Lam</p>
           <Separator orientation="vertical" />
