@@ -112,7 +112,7 @@ model WordsList {
   
   StudySpaces           StudySpace[]
 }
-
+// todo: make userWordsListProgress belong to multiple classes (or a single class)
 model UserWordsListProgress {
   userId                String
   classId               String

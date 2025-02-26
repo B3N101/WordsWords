@@ -5,7 +5,6 @@
  */
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
-import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import {
   Dialog,
   DialogContent,
@@ -15,26 +14,13 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog";
 
+import DeleteClassButton from "@/components/class/deleteClassButton";
+
 import { Card, CardContent } from "@/components/ui/card";
 import { getClassWordLists } from "@/prisma/queries";
-import { auth } from "@/auth/auth";
 import { isOverdue } from "@/lib/utils";
-import { ClassSkeleton } from "./skeleton";
-function getInitials(name: string) {
-  return name
-    .split(" ")
-    .map((n) => n[0])
-    .join("");
-}
 
-type ClassStatusType = "active" | "upcoming" | "completed";
 type WordListStatusType = "completed" | "active" | "overdue";
-type wordListData = {
-  name: string;
-  status: WordListStatusType;
-  dueDate: Date;
-  wordListID: string;
-};
 
 interface ClassPageProps {
   classID: string;
@@ -125,6 +111,9 @@ export default async function TeacherClassPage({
           </div>
         </CardContent>
       </Card>
+      <div className="flex justify-center">
+        <DeleteClassButton classID={classID}/>
+      </div>
     </div>
   );
 }
