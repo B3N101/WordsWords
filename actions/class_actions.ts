@@ -1,7 +1,6 @@
 "use server";
 
 import prisma from "@/prisma/prisma";
-
 export async function deleteClass ( classId: string ) {
   await prisma.class.delete({
     where: { classId },

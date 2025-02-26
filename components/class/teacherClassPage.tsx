@@ -14,7 +14,7 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog";
 
-import DeleteClassButton from "@/components/class/deleteClassButton";
+import { DeleteClassButton } from "@/components/class/classActionButtons";
 
 import { Card, CardContent } from "@/components/ui/card";
 import { getClassWordLists } from "@/prisma/queries";

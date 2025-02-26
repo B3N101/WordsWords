@@ -11,8 +11,9 @@ import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { toast } from "@/components/ui/use-toast";
 import { useState } from "react";
-import { deleteClass } from "@/actions/class_actions";
-export default function DeleteClassButton({ classID }: { classID: string }) {
+import { X } from "lucide-react";
+import { deleteClass, removeUserFromClass } from "@/actions/class_actions";
+export function DeleteClassButton({ classID }: { classID: string }) {
   const [isDeleting, setIsDeleting] = useState<boolean>(false);
   const router = useRouter();
     return (
@@ -51,6 +52,50 @@ export default function DeleteClassButton({ classID }: { classID: string }) {
               }}
             >
               {isDeleting ? "Deleting ..." : "Delete"}
+            </Button>
+          </DialogContent>
+        </Dialog>
+    );
+  }
+
+  export function RemoveStudentButton({ classID, userID }: { classID: string; userID: string }) {
+    const [isDeleting, setIsDeleting] = useState<boolean>(false);
+    return (
+      <Dialog>
+          <DialogTrigger asChild>
+            <Button variant="destructive">
+                <X />
+            </Button>
+          </DialogTrigger>
+          <DialogContent>
+            <DialogDescription>
+              Remove Student
+            </DialogDescription>
+            <DialogHeader>
+              <DialogTitle>
+                <div className="text-center ">
+                  {"Remove Student"}
+                </div>
+              </DialogTitle>
+            </DialogHeader>
+            <div className="text-center">
+              <p>Are you sure you want to remove this student from the class?</p>
+              <p className="font-bold">This action cannot be undone!</p>
+            </div>
+            <Button
+              variant="destructive"
+              disabled={isDeleting}
+              onClick={async () => {
+                setIsDeleting(true);
+                await removeUserFromClass(classID, userID);
+                toast({
+                  title: "Success!",
+                  description: "Student Removed",
+                });
+                window.location.reload();
+              }}
+            >
+              {isDeleting ? "Removing ..." : "Remove"}
             </Button>
           </DialogContent>
         </Dialog>
