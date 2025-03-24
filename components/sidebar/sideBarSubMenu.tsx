@@ -1,7 +1,5 @@
 // Server component that will await auth and render submenu of wordlists
 
-import { auth } from "@/auth/auth";
-import { getUserWordLists } from "@/prisma/queries";
 import { ClassWordsListWithWordsList } from "@/prisma/types";
 import {} from "@prisma/client";
 import Link from "next/link";

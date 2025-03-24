@@ -274,7 +274,6 @@ function BookIcon(props: React.SVGProps<SVGSVGElement>) {
   );
 }
 
-// TODO: Fix assign icon
 function AssignIcon(props: React.SVGProps<SVGSVGElement>) {
   return (
     <svg

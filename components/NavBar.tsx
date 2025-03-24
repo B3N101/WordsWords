@@ -23,6 +23,9 @@ function getInitials(name: string) {
 
 export default async function Navbar() {
   const session = await auth();
+  if (!session) {
+    return null;
+  }
   const imageURL: string = session?.user?.image! || "";
   const name: string = session?.user?.name! || "";
   const role = await getUserRole(session?.user?.id!);

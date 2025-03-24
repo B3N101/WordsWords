@@ -315,7 +315,6 @@ function QuizSelectionButtons({
   }
   const oldQuiz = oldQuizzes[0];
 
-  // TODO: Make other stuff redirect to new quiz
   if (oldQuiz && !oldQuiz.completed && oldQuiz.length > 0) {
     return (
       <div className="flex flex-row justify-between">

@@ -25,6 +25,7 @@ export async function generateMetadata({
   const userWordList = await getUserWordListProgressWithList(
     userId,
     params.wordListID,
+    params.classID,
   );
   const listName = userWordList?.wordsList.name;
 
@@ -67,6 +68,7 @@ export default async function Page({
             <StudentWordListHeader
               userID={userId}
               wordListID={wordListString}
+              classID={classString}
             />
           </Suspense>
           <Suspense fallback={<QuizTableSkeleton />}>
@@ -77,7 +79,7 @@ export default async function Page({
             />
           </Suspense>
           <Suspense fallback={<AttemptsTableSkeleton />}>
-            <AttemptsTable wordsListId={wordListString} userId={userId} />
+            <AttemptsTable wordsListId={wordListString} userId={userId} classId={classString}/>
           </Suspense>
         </div>
       )}

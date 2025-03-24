@@ -86,6 +86,7 @@ export const createMiniQuiz = async (
       user: { connect: { id: userId } },
       wordsList: { connect: { listId: wordListId } },
       quizType: QuizType.MINI,
+      class: { connect: { classId: classId } },
       name: "Mini Quiz " + (miniSetId + 1),
       length: questions.length,
       miniSetNumber: miniSetId,
@@ -101,6 +102,7 @@ export const createMiniQuiz = async (
             userWordsListProgressId: {
               userId: userId,
               wordsListListId: wordListId,
+              classId: classId,
             },
           },
         },
@@ -162,6 +164,7 @@ export const createMasterQuiz = async (
   const oldWords = await prisma.userWordMastery.findMany({
     where: {
       userId: userId,
+      classId: classId,
       word: {
         listId: {
           in: lastThreeListIds,
@@ -222,6 +225,7 @@ export const createMasterQuiz = async (
       length: questions.length,
       miniSetNumber: -1,
       learnCompleted: true,
+      class: { connect: { classId: classId } },
       userWordsListProgress: {
         connectOrCreate: {
           create: {
@@ -233,6 +237,7 @@ export const createMasterQuiz = async (
             userWordsListProgressId: {
               userId: userId,
               wordsListListId: wordListId,
+              classId: classId,
             },
           },
         },
@@ -298,6 +303,7 @@ export const fetchQuizzes = async (
         userId: userId,
         quizType: QuizType.MINI,
         miniSetNumber: miniSetNumber,
+        classId: classId,
         completed: true,
       },
       orderBy: {
@@ -310,6 +316,7 @@ export const fetchQuizzes = async (
         where: {
           wordsListId: wordListId,
           userId: userId,
+          classId: classId,
           quizType: QuizType.MINI,
           miniSetNumber: miniSetNumber,
         },
@@ -345,6 +352,7 @@ export const fetchQuizzes = async (
   let masterQuiz = await prisma.quiz.findFirst({
     where: {
       wordsListId: wordListId,
+      classId: classId,
       userId: userId,
       quizType: QuizType.MASTERY,
       completed: true,
@@ -357,6 +365,7 @@ export const fetchQuizzes = async (
     masterQuiz = await prisma.quiz.findFirst({
       where: {
         wordsListId: wordListId,
+        classId: classId,
         userId: userId,
         quizType: QuizType.MASTERY,
       },

@@ -113,7 +113,6 @@ function StudentQuizDisplay({
                 </TableRow>
               </TableHeader>
               <TableBody>
-                {/* TODO: Make quizzes only display completed attempts. Make row action update state, use state to display attempts remaining. */}
                 {completedQuizzes.map((quiz, index) => (
                   <TableRow key={index}>
                     <TableCell>
@@ -150,6 +149,7 @@ function ChangeDueDateForm({
       await updateUserListDueDate(
         studentListProgress.userId,
         studentListProgress.wordsListListId,
+        studentListProgress.classId,
         new Date(dueDate),
       );
     } catch (error) {
@@ -490,7 +490,6 @@ export const tenElevenColumns: ColumnDef<TenElevenStudentInfo>[] = [
     id: "actions",
     header: () => <div className="font-bold text-lg">Actions</div>,
     cell: ({ row }) => {
-      // TODO: make this a separate component called ActionCell so that it can utilize useState
       return <ActionCell row={row} />;
     },
   },

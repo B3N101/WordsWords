@@ -15,11 +15,13 @@ import Link from "next/link";
 export async function AttemptsTable({
   wordsListId,
   userId,
+  classId,
 }: {
   wordsListId: string;
   userId: string;
+  classId: string
 }) {
-  const quizzes = await getQuizzesFromWordsList(wordsListId, userId);
+  const quizzes = await getQuizzesFromWordsList(wordsListId, userId, classId);
   return (
     <div className="p-6 w-full">
       <Card className="bg-white rounded-lg shadow-md">

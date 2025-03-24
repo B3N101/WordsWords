@@ -28,7 +28,6 @@ export default function QuizPage({ quiz, userID }: Props) {
   questions.sort((a, b) => a.rank - b.rank);
   const classId = quiz.userWordsListProgress.classId;
   const wordListId = quiz.wordsListId;
-  // TODO: shuffle questions here
   const [completed, setCompleted] = useState<boolean>(quiz.completed);
   const [selected, setSelected] = useState<string | null>(null);
   const [isButtonDisabled, setIsButtonDisabled] = useState(false);
@@ -79,7 +78,6 @@ export default function QuizPage({ quiz, userID }: Props) {
   }
   const question = questions[currentIndex];
   const options = question.allAnswers;
-  /*TODO: Track user progress so that refresh sends them to the current answer*/
   const handleAnswerClick = (answer: String) => {
     setIsCurrentCorrect(answer === question.correctAnswer);
     setSelected(String(answer));
@@ -112,6 +110,7 @@ export default function QuizPage({ quiz, userID }: Props) {
         question.wordId,
         isCurrentCorrect!,
         wordListId,
+        classId,
         quiz.quizType,
       );
       setQuestionSubmitted(true);
@@ -130,7 +129,7 @@ export default function QuizPage({ quiz, userID }: Props) {
         setIsUpserted(true);
         if (quiz.quizType === "MASTERY") {
           if (score >= questions.length * 0.8) {
-            await updateWordListProgress(wordListId, userID, true);
+            await updateWordListProgress(wordListId, userID, classId, true);
           }
         }
         setCompleted(true);
