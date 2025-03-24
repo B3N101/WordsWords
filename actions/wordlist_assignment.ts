@@ -6,6 +6,7 @@ import prisma from "@/prisma/prisma";
 export const updateUserListDueDate = async (
   userId: string,
   wordsListId: string,
+  classId: string,
   dueDate: Date,
 ) => {
   console.log("Changing date to ", dueDate);
@@ -15,11 +16,13 @@ export const updateUserListDueDate = async (
     "string is ",
     dueDate.toString(),
   );
+  //TODO: change this to adding classID once database has been updated
   await prisma.userWordsListProgress.update({
     where: {
       userWordsListProgressId: {
         userId: userId,
         wordsListListId: wordsListId,
+        classId: classId
       },
     },
     data: {
@@ -76,12 +79,15 @@ export const createUserWordsListForClass = async (
   console.log("Creating user words list for class");
 
   for (const student of currClass.students) {
+    //TODO: change this to adding classID once database has been updated
     await prisma.userWordsListProgress.upsert({
       where: {
         userWordsListProgressId: {
           userId: student.id,
           wordsListListId: wordsListId,
+          classId: classId,
         },
+        // classId: classId,
       },
       update: {
         dueDate: dueDate,
@@ -94,11 +100,13 @@ export const createUserWordsListForClass = async (
                 userWordMasteryId: {
                   userId: student.id,
                   wordId: word.wordId,
+                  classId: classId,
                 },
               },
               create: {
                 word: { connect: { wordId: word.wordId } },
                 user: { connect: { id: student.id } },
+                class: { connect: { classId: classId } },
                 masteryScore: 0,
               },
               update: {},
@@ -115,6 +123,7 @@ export const createUserWordsListForClass = async (
             return {
               word: { connect: { wordId: word.wordId } },
               user: { connect: { id: student.id } },
+              class: { connect: { classId: classId } },
               masteryScore: 0,
             };
           }),
@@ -226,11 +235,13 @@ export async function connectClassActiveWordLists(
   });
 
   for (const list of activeLists) {
+    // TODO: change this to adding classID once database has been updated
     await prisma.userWordsListProgress.upsert({
       where: {
         userWordsListProgressId: {
           userId: userID,
           wordsListListId: list.listId,
+          classId: classID,
         },
       },
       create: {
@@ -242,7 +253,6 @@ export async function connectClassActiveWordLists(
       update: {
         dueDate: list.dueDate,
         wordsList: { connect: { listId: list.listId } },
-        class: { connect: { classId: classID } },
       },
     });
   }

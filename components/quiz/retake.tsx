@@ -1,14 +1,10 @@
 "use client";
 
-import Link from "next/link";
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
-import ProgressBar from "@/components/progressBar";
 import { upsertRetakesRequested } from "@/actions/quiz_progress";
 
-import { createMiniQuiz } from "@/actions/quiz_creation";
 
-import { upsertWordMastery } from "@/actions/word_progress";
 import { type QuizWithQuestionsAndUserWordsList } from "@/prisma/types";
 type Props = {
   quiz: QuizWithQuestionsAndUserWordsList;
@@ -20,7 +16,6 @@ export default function RequestRetakePage({ quiz }: Props) {
 
   const classId = quiz.userWordsListProgress.classId;
 
-  // TODO: shuffle questions here
   const [requested, setRequested] = useState<boolean>(
     userWordsList.retakesRequested[miniSet],
   );
@@ -29,6 +24,7 @@ export default function RequestRetakePage({ quiz }: Props) {
     upsertRetakesRequested(
       userWordsList.userId,
       userWordsList.wordsListListId,
+      classId,
       miniSet,
       true,
     );

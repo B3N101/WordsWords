@@ -24,7 +24,6 @@ export default function StudyWritePage({ quiz, classID }: Props) {
   questions.sort((a, b) => a.rank - b.rank);
   const words = questions.map((question) => question.studyWord.word);
 
-  // TODO: shuffle questions here
   const [completed, setCompleted] = useState<boolean>(quiz.completed);
   const [selected, setSelected] = useState<string | null>(null);
   const [isButtonDisabled, setIsButtonDisabled] = useState(false);

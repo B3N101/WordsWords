@@ -21,7 +21,6 @@ export default function StudyQuizPage({ quiz, classID }: Props) {
   const studySpaceID = quiz.studySpaceID;
   // sort questions by their rank attribute:
   questions.sort((a, b) => a.rank - b.rank);
-  // TODO: shuffle questions here
   const [completed, setCompleted] = useState<boolean>(quiz.completed);
   const [selected, setSelected] = useState<string | null>(null);
   const [isButtonDisabled, setIsButtonDisabled] = useState(false);
@@ -64,7 +63,6 @@ export default function StudyQuizPage({ quiz, classID }: Props) {
   const question = questions[currentIndex];
   const options = question.allAnswers;
 
-  /*TODO: Track user progress so that refresh sends them to the current answer*/
   const handleAnswerClick = (answer: String) => {
     setIsCurrentCorrect(answer === question.correctAnswer);
     setSelected(String(answer));

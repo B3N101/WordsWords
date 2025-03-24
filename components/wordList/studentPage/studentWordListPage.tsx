@@ -34,13 +34,16 @@ type MasterQuizProps = {
 export async function StudentWordListHeader({
   userID,
   wordListID,
+  classID,
 }: {
   userID: string;
   wordListID: string;
+  classID: string,
 }) {
   const userWordList = await getUserWordListProgressWithList(
     userID,
     wordListID,
+    classID,
   );
   if (!userWordList) {
     throw new Error("Wordlist not found");

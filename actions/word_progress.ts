@@ -6,13 +6,16 @@ import prisma from "@/prisma/prisma";
 export const updateWordListProgress = async (
   wordListId: string,
   userId: string,
+  classId: string,
   completed: boolean,
 ) => {
   await prisma.userWordsListProgress.update({
+    // TODO: change this to adding classID once database has been updated
     where: {
       userWordsListProgressId: {
         userId: userId,
         wordsListListId: wordListId,
+        classId: classId,
       },
     },
     data: {
@@ -24,6 +27,7 @@ export const upsertWordMastery = async (
   wordId: string,
   isCorrect: boolean,
   wordListId: string,
+  classId: string,
   quizType: QuizType,
 ) => {
   console.log("Upserding word mastery");
@@ -34,9 +38,11 @@ export const upsertWordMastery = async (
     throw new Error("User not found");
   }
   const currWordMastery = await prisma.userWordMastery.findFirst({
+    // TODO: change this to adding classID once database has been updated
     where: {
       wordId: wordId,
       userId: userId,
+      classId: classId,
     },
   });
   let masteryScore;
@@ -58,11 +64,13 @@ export const upsertWordMastery = async (
       masteryScore = Math.max(0.25, currWordMastery.masteryScore - 0.25);
     }
   }
+  // TODO: change this to adding classID once database has been updated
   await prisma.userWordMastery.upsert({
     where: {
       userWordMasteryId: {
         userId: userId,
         wordId: wordId,
+        classId: classId,
       },
     },
     update: {
@@ -71,6 +79,7 @@ export const upsertWordMastery = async (
     create: {
       wordId: wordId,
       userId: userId,
+      classId: classId,
       masteryScore: masteryScore,
       wordsListId: wordListId,
     },

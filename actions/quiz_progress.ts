@@ -82,20 +82,23 @@ export const upsertQuizCompleted = async (
     },
   });
   const miniSetId = quiz.quizType == "MINI" ? quiz.miniSetNumber : 3;
-  await upsertQuizAttempts(userId, quiz.wordsListId, miniSetId, -1);
+  await upsertQuizAttempts(userId, quiz.wordsListId, quiz.classId!, miniSetId, -1);
   return;
 };
 
 export const upsertQuizAttempts = async (
   userId: string,
   wordListId: string,
+  classId: string,
   miniSetId: number,
   addAttempts: number,
 ) => {
+  // TODO: change this to adding classID once database has been updated
   const wordsListProgress = await prisma.userWordsListProgress.findFirst({
     where: {
       userId: userId,
       wordsListListId: wordListId,
+      classId: classId,
     },
     select: {
       quizAttemptsRemaining: true,
@@ -112,11 +115,13 @@ export const upsertQuizAttempts = async (
   const newRetakes = wordsListProgress.retakesRequested;
   newRetakes[miniSetId] = false;
 
+  // TODO: change this to adding classID once database has been updated
   await prisma.userWordsListProgress.update({
     where: {
       userWordsListProgressId: {
         userId: userId,
         wordsListListId: wordListId,
+        classId: classId,
       },
     },
     data: {
@@ -129,13 +134,17 @@ export const upsertQuizAttempts = async (
 export const upsertRetakesRequested = async (
   userId: string,
   wordListId: string,
+  classId: string,
   miniSetId: number,
   requested: boolean,
 ) => {
+
+  // TODO: change this to adding classID once database has been updated
   const wordsListProgress = await prisma.userWordsListProgress.findFirst({
     where: {
       userId: userId,
       wordsListListId: wordListId,
+      classId: classId,
     },
     select: {
       retakesRequested: true,
@@ -147,12 +156,13 @@ export const upsertRetakesRequested = async (
 
   const newRetakes = wordsListProgress.retakesRequested;
   newRetakes[miniSetId] = requested;
-
+  // TODO: change this to adding classID once database has been updated
   await prisma.userWordsListProgress.update({
     where: {
       userWordsListProgressId: {
         userId: userId,
         wordsListListId: wordListId,
+        classId: classId,
       },
     },
     data: {
@@ -179,10 +189,12 @@ export const upsertRetakesGranted = async (
   }
 
   await prisma.userWordsListProgress.update({
+    // TODO: change this to adding classID once database has been updated
     where: {
       userWordsListProgressId: {
         userId: wordsListProgress.userId,
         wordsListListId: wordsListProgress.wordsListListId,
+        classId: wordsListProgress.classId,
       },
     },
     data: {
