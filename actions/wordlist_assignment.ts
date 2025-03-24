@@ -87,7 +87,6 @@ export const createUserWordsListForClass = async (
           wordsListListId: wordsListId,
           classId: classId,
         },
-        // classId: classId,
       },
       update: {
         dueDate: dueDate,
