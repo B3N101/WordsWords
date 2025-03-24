@@ -129,7 +129,6 @@ model UserWordsListProgress {
   wordsList             WordsList         @relation(fields: [wordsListListId], references: [listId], onDelete: Cascade)
 
   @@id([userId, wordsListListId, classId], name: "userWordsListProgressId")
-  // @@id([userId, wordsListListId], name: "userWordsListProgressId")
 }
 
 model ClassWordsList{
@@ -143,18 +142,14 @@ model ClassWordsList{
 }
 model UserWordMastery {
   @@id([userId, wordId, classId], name: "userWordMasteryId")
-  // @@id([userId, wordId], name: "userWordMasteryId")
   wordId                String                
   wordsListId           String
   classId               String
-  // classId               String?
   masteryScore          Float                 @default(0)
   userId                String
   class                 Class                @relation(fields: [classId], references: [classId], onDelete: Cascade)
   user                  User                  @relation(fields: [userId], references: [id], onDelete: Cascade)
-  // userWordsListProgresses UserWordsListProgress[]
   userWordsListProgress UserWordsListProgress @relation(fields: [userId, wordsListId, classId], references: [userId, wordsListListId, classId], onDelete: Cascade)
-  // userWordsListProgress UserWordsListProgress @relation(fields: [userId, wordsListId], references: [userId, wordsListListId], onDelete: Cascade)
   word                  Word                  @relation(fields: [wordId], references: [wordId], onDelete: Cascade)
 }
 
@@ -165,7 +160,6 @@ model Quiz {
   userId                String
   wordsListId           String
   classId               String
-  // classId               String?
   completed             Boolean               @default(false)
   score                 Float                 @default(0)
   dueDate               DateTime?
@@ -178,7 +172,6 @@ model Quiz {
   class                 Class                 @relation(fields: [classId], references: [classId], onDelete: Cascade)
   user                  User                  @relation(fields: [userId], references: [id], onDelete: Cascade)
   userWordsListProgress UserWordsListProgress @relation(fields: [userId, wordsListId, classId], references: [userId, wordsListListId, classId], onDelete: Cascade)
-  // userWordsListProgress UserWordsListProgress @relation(fields: [userId, wordsListId], references: [userId, wordsListListId], onDelete: Cascade)
   wordsList             WordsList             @relation(fields: [wordsListId], references: [listId], onDelete: Cascade)
 }
 
